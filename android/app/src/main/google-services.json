@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "843573419446",
+    "project_id": "aplikasi-wisata-trenggalek",
+    "storage_bucket": "aplikasi-wisata-trenggalek.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:843573419446:android:ee7e963cb46c189d507517",
+        "android_client_info": {
+          "package_name": "com.example.aplikasi_wisata"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5jBR9Qdjl61WOgLPnXuI_L34qm3x9K7k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

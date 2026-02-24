@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "633396942184",
+    "project_id": "virtual-tourism-trenggalek",
+    "storage_bucket": "virtual-tourism-trenggalek.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:633396942184:android:1759e71ea22302a08532dd",
+        "android_client_info": {
+          "package_name": "com.example.aplikasi_wisata"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAY0Bk9phP8S0C_jQMKjXkR00bH74X41M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
