@@ -1,295 +1,396 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+class ProfilePage extends StatefulWidget {
+const ProfilePage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF3F4F6),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: Colors.black),
-          onPressed: () =>
-              Navigator.pop(context),
-        ),
-        title: const Text(
-          "Profile",
-          style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold),
+@override
+State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+
+final user = FirebaseAuth.instance.currentUser;
+
+final nameController = TextEditingController();
+final phoneController = TextEditingController();
+
+File? imageFile;
+
+final firestore = FirebaseFirestore.instance;
+
+@override
+void initState() {
+super.initState();
+loadUserData();
+}
+
+Future<void> loadUserData() async {
+
+final doc = await firestore
+    .collection('users')
+    .doc(user!.uid)
+    .get();
+
+if (doc.exists) {
+
+  final data = doc.data();
+
+  nameController.text = data?['name'] ?? "";
+  phoneController.text = data?['phone'] ?? "";
+
+  setState(() {});
+}
+
+}
+
+Future<void> saveUserData() async {
+
+await firestore
+    .collection('users')
+    .doc(user!.uid)
+    .set({
+  'name': nameController.text,
+  'phone': phoneController.text,
+  'email': user!.email
+}, SetOptions(merge: true));
+
+}
+
+Future<void> pickImage() async {
+
+final picked =
+    await ImagePicker().pickImage(
+  source: ImageSource.gallery,
+);
+
+if (picked != null) {
+
+  setState(() {
+    imageFile = File(picked.path);
+  });
+}
+
+}
+
+void editField(
+String title,
+TextEditingController controller) {
+
+showDialog(
+  context: context,
+  builder: (_) => AlertDialog(
+    title: Text("Edit $title"),
+    content: TextField(
+      controller: controller,
+    ),
+    actions: [
+
+      TextButton(
+        onPressed: () =>
+            Navigator.pop(context),
+        child: const Text("Cancel"),
+      ),
+
+      TextButton(
+        onPressed: () async {
+
+          await saveUserData();
+
+          setState(() {});
+
+          Navigator.pop(context);
+        },
+        child: const Text("Save"),
+      )
+    ],
+  ),
+);
+
+}
+
+void logout() async {
+
+await FirebaseAuth.instance.signOut();
+
+if (!mounted) return;
+
+Navigator.pushReplacementNamed(
+  context,
+  '/login',
+);
+
+}
+
+Widget infoItem(
+String label,
+String value,
+IconData icon,
+VoidCallback onTap) {
+
+return GestureDetector(
+
+  onTap: onTap,
+
+  child: Container(
+    padding:
+        const EdgeInsets.all(16),
+
+    decoration: const BoxDecoration(
+      border: Border(
+        bottom: BorderSide(
+          color: Color(0xFFEAEAEA),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(
-            bottom: 100),
-        child: Column(
-          children: [
+    ),
 
-            const SizedBox(height: 25),
+    child: Row(
+      children: [
 
-            // PROFILE IMAGE
-            Stack(
-              alignment: Alignment.bottomRight,
-              children: [
-                Container(
-                  height: 110,
-                  width: 110,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFFE5E7EB),
-                  ),
-                  child: const Icon(
-                    Icons.person,
-                    size: 60,
-                    color: Colors.grey,
-                  ),
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color:
+                const Color(0xFF13EC80)
+                    .withOpacity(0.15),
+            borderRadius:
+                BorderRadius.circular(10),
+          ),
+          child: Icon(
+            icon,
+            color:
+                const Color(0xFF13EC80),
+          ),
+        ),
+
+        const SizedBox(width: 12),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
+            children: [
+
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
                 ),
-                Container(
-                  height: 34,
-                  width: 34,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.blue,
-                  ),
-                  child: const Icon(
-                    Icons.edit,
-                    size: 18,
-                    color: Colors.white,
-                  ),
-                )
-              ],
-            ),
-
-            const SizedBox(height: 15),
-
-            const Text(
-              "Alex Wisnu",
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: 4),
-
-            const Text(
-              "Member since 2023",
-              style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey),
-            ),
-
-            const SizedBox(height: 30),
-
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(
-                      horizontal: 20),
-              child: Column(
-                children: [
-
-                  // USERNAME FIELD
-                  buildProfileField(
-                    icon: Icons.badge,
-                    label: "User Name",
-                    value: "Alex Wisnu",
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // EMAIL FIELD
-                  buildProfileField(
-                    icon: Icons.mail,
-                    label: "Email",
-                    value:
-                        "alex.wisnu@gmail.com",
-                  ),
-                ],
               ),
-            ),
 
-            const SizedBox(height: 35),
+              const SizedBox(height: 4),
 
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(
-                      horizontal: 20),
-              child: Column(
-                children: [
-
-                  buildMenuItem(
-                    icon: Icons.edit_square,
-                    title: "Edit Profile",
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  buildMenuItem(
-                    icon: Icons.settings,
-                    title: "Settings",
-                  ),
-                ],
+              Text(
+                value.isEmpty ? "-" : value,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
+            ],
+          ),
+        ),
 
-            const SizedBox(height: 40),
+        const Icon(
+          Icons.chevron_right,
+          color: Colors.grey,
+        ),
+      ],
+    ),
+  ),
+);
 
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(
-                      horizontal: 20),
-              child: SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.logout,
-                    color: Colors.red,
-                  ),
-                  label: const Text(
-                    "Log Out",
+}
+
+@override
+Widget build(BuildContext context) {
+
+return Scaffold(
+
+  backgroundColor:
+      const Color(0xFFF6F8F7),
+
+  body: SafeArea(
+
+    child: Column(
+      children: [
+
+        Padding(
+          padding:
+              const EdgeInsets.all(16),
+
+          child: Row(
+            children: [
+
+              IconButton(
+                icon:
+                    const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+
+              const Expanded(
+                child: Center(
+                  child: Text(
+                    "Profile",
                     style: TextStyle(
-                        color: Colors.red),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(
-                        color: Colors.red),
-                    padding:
-                        const EdgeInsets
-                            .symmetric(
-                                vertical: 14),
-                    shape:
-                        RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius
-                              .circular(10),
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
 
-  Widget buildProfileField({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
-    return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
+              const Icon(Icons.settings),
+            ],
           ),
         ),
-        const SizedBox(height: 6),
+
         Container(
+          color: Colors.white,
           padding:
-              const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 14),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF9FAFB),
-            borderRadius:
-                BorderRadius.circular(10),
-            border: Border.all(
-                color: const Color(
-                    0xFFE5E7EB)),
-          ),
-          child: Row(
+              const EdgeInsets.all(20),
+
+          child: Column(
             children: [
-              Icon(icon,
-                  size: 18,
-                  color: Colors.grey),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  value,
-                  style: const TextStyle(
-                      fontWeight:
-                          FontWeight.w500),
+
+              Stack(
+                children: [
+
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage:
+                        imageFile != null
+                            ? FileImage(imageFile!)
+                            : const NetworkImage(
+                                "https://i.pravatar.cc/150")
+                            as ImageProvider,
+                  ),
+
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child:
+                        GestureDetector(
+                      onTap: pickImage,
+                      child: Container(
+                        padding:
+                            const EdgeInsets.all(6),
+                        decoration:
+                            const BoxDecoration(
+                          color: Color(0xFF13EC80),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.edit,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              Text(
+                nameController.text.isEmpty
+                    ? "Your Name"
+                    : nameController.text,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-              )
+              ),
+
+              const SizedBox(height: 4),
+
+              Text(
+                user?.email ?? "-",
+                style: const TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
             ],
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        Expanded(
+          child: Container(
+            color: Colors.white,
+            child: Column(
+              children: [
+
+                infoItem(
+                  "Full Name",
+                  nameController.text,
+                  Icons.person,
+                  () => editField(
+                    "Name",
+                    nameController,
+                  ),
+                ),
+
+                infoItem(
+                  "Phone Number",
+                  phoneController.text,
+                  Icons.phone,
+                  () => editField(
+                    "Phone",
+                    phoneController,
+                  ),
+                ),
+
+                infoItem(
+                  "Email",
+                  user?.email ?? "",
+                  Icons.mail,
+                  () {},
+                ),
+
+                const Spacer(),
+
+                Padding(
+                  padding:
+                      const EdgeInsets.all(16),
+
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 50,
+
+                    child:
+                        ElevatedButton.icon(
+                      onPressed: logout,
+
+                      style:
+                          ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Colors.red.shade50,
+                        foregroundColor:
+                            Colors.red,
+                      ),
+
+                      icon: const Icon(Icons.logout),
+
+                      label:
+                          const Text("Logout"),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         )
       ],
-    );
-  }
+    ),
+  ),
+);
 
-  Widget buildMenuItem({
-    required IconData icon,
-    required String title,
-  }) {
-    return Container(
-      padding:
-          const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius:
-            BorderRadius.circular(10),
-        border: Border.all(
-            color:
-                const Color(0xFFE5E7EB)),
-      ),
-      child: Row(
-        mainAxisAlignment:
-            MainAxisAlignment
-                .spaceBetween,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding:
-                    const EdgeInsets
-                        .all(6),
-                decoration:
-                    BoxDecoration(
-                  color: Colors.blue
-                      .withOpacity(
-                          0.1),
-                  borderRadius:
-                      BorderRadius
-                          .circular(6),
-                ),
-                child: Icon(icon,
-                    size: 18,
-                    color:
-                        Colors.blue),
-              ),
-              const SizedBox(
-                  width: 10),
-              Text(
-                title,
-                style:
-                    const TextStyle(
-                  fontWeight:
-                      FontWeight
-                          .w500,
-                ),
-              ),
-            ],
-          ),
-          const Icon(
-              Icons.chevron_right,
-              color: Colors.grey),
-        ],
-      ),
-    );
-  }
+}
 }

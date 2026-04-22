@@ -21,7 +21,7 @@ class _MainScreenState
   final List<Widget> pages = const [
     HomePage(),
     ExplorePage(),
-    FavoritesPage(),
+    FavoritePage(),
     ProfilePage(),
   ];
 
