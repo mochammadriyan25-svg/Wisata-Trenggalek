@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "C:/Kuliah/SKRIPSI/aplikasi_wisata/linux"
+    "cmake.sourceDirectory": "C:/Kuliah/SKRIPSI/aplikasi_wisata/linux",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

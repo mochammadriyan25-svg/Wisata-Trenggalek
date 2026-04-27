@@ -1,0 +1,1963 @@
+{
+  "categories": [
+    {
+      "id": "cat_paket_wisata",
+      "name": "Paket Wisata",
+      "icon": "package",
+      "imageUrl": "https://picsum.photos/seed/paket/400/300",
+      "type": "package"
+    },
+    {
+      "id": "cat_pantai",
+      "name": "Pantai",
+      "icon": "beach_access",
+      "imageUrl": "https://picsum.photos/seed/pantai/400/300",
+      "type": "destination"
+    },
+    {
+      "id": "cat_alam",
+      "name": "Wisata Alam",
+      "icon": "nature",
+      "imageUrl": "https://picsum.photos/seed/alam/400/300",
+      "type": "destination"
+    },
+    {
+      "id": "cat_kuliner",
+      "name": "Kuliner",
+      "icon": "restaurant",
+      "imageUrl": "https://picsum.photos/seed/kuliner/400/300",
+      "type": "destination"
+    },
+    {
+      "id": "cat_goa",
+      "name": "Goa",
+      "icon": "landslide",
+      "imageUrl": "https://picsum.photos/seed/goa/400/300",
+      "type": "destination"
+    },
+    {
+      "id": "cat_air_terjun",
+      "name": "Air Terjun",
+      "icon": "water",
+      "imageUrl": "https://picsum.photos/seed/airterjun/400/300",
+      "type": "destination"
+    },
+    {
+      "id": "cat_bukit",
+      "name": "Bukit",
+      "icon": "terrain",
+      "imageUrl": "https://picsum.photos/seed/bukit/400/300",
+      "type": "destination"
+    },
+    {
+      "id": "cat_agrowisata",
+      "name": "Agrowisata",
+      "icon": "agriculture",
+      "imageUrl": "https://picsum.photos/seed/agro/400/300",
+      "type": "destination"
+    },
+    {
+      "id": "cat_desa_wisata",
+      "name": "Desa Wisata",
+      "icon": "cottage",
+      "imageUrl": "https://picsum.photos/seed/desa/400/300",
+      "type": "destination"
+    },
+    {
+      "id": "cat_wisata_buatan",
+      "name": "Wisata Buatan",
+      "icon": "attractions",
+      "imageUrl": "https://picsum.photos/seed/buatan/400/300",
+      "type": "destination"
+    },
+    {
+      "id": "cat_budaya",
+      "name": "Budaya",
+      "icon": "museum",
+      "imageUrl": "https://picsum.photos/seed/budaya/400/300",
+      "type": "destination"
+    },
+    {
+      "id": "cat_hutan",
+      "name": "Hutan",
+      "icon": "forest",
+      "imageUrl": "https://picsum.photos/seed/hutan/400/300",
+      "type": "destination"
+    },
+    {
+      "id": "cat_hotel",
+      "name": "Hotel",
+      "icon": "hotel",
+      "imageUrl": "https://picsum.photos/seed/hotel/400/300",
+      "type": "accommodation"
+    },
+    {
+      "id": "cat_villa",
+      "name": "Villa",
+      "icon": "villa",
+      "imageUrl": "https://picsum.photos/seed/villa/400/300",
+      "type": "accommodation"
+    },
+    {
+      "id": "cat_homestay",
+      "name": "Homestay",
+      "icon": "home",
+      "imageUrl": "https://picsum.photos/seed/homestay/400/300",
+      "type": "accommodation"
+    },
+    {
+      "id": "cat_glamping",
+      "name": "Glamping",
+      "icon": "cabin",
+      "imageUrl": "https://picsum.photos/seed/glamping/400/300",
+      "type": "accommodation"
+    }
+  ],
+
+  "destinations": [
+    {
+      "id": "dest_pantai_prigi",
+      "name": "Pantai Prigi",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Prigi terletak di Desa Tasikmadu, Kecamatan Watulimo, Kabupaten Trenggalek, kurang lebih 39 km Timur Laut Kota Trenggalek. Pantai Prigi merupakan destinasi wisata inklusif yang sangat menarik karena menyajikan pemandangan alam yang indah dengan fasilitas dan pusat kuliner yang inklusif dan nyaman. Aktivitas rekreasi: jogging sambil menikmati taman, hamparan pasir, bermain air, bermain layang-layang, voli pantai, kuliner seafood, dan motocross.",
+      "categoryId": "cat_pantai",
+      "rating": 4.7,
+      "imageUrl": "https://picsum.photos/seed/prigi/800/600",
+      "images": [
+        "https://picsum.photos/seed/prigi1/800/600",
+        "https://picsum.photos/seed/prigi2/800/600"
+      ],
+      "latitude": -8.2828,
+      "longitude": 111.7289,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.2828,111.7289",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_pantai_karanggongso",
+      "name": "Pantai Pasir Putih Karanggongso",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Pasir Putih Karanggongso terletak di Desa Tasikmadu, Kecamatan Watulimo, Kabupaten Trenggalek, sekitar 4 km di sebelah timur Pantai Prigi. Bagi penggemar pantai, Pasir Putih Karanggongso merupakan surga karena wisatawan bisa berenang, naik perahu wisata, naik banana boat, dan snorkeling di tengah ombak yang nyaman dengan hamparan pasir putih, bersih dan teduh.",
+      "categoryId": "cat_pantai",
+      "rating": 4.6,
+      "imageUrl": "https://picsum.photos/seed/karanggongso/800/600",
+      "images": [
+        "https://picsum.photos/seed/karanggongso1/800/600",
+        "https://picsum.photos/seed/karanggongso2/800/600"
+      ],
+      "latitude": -8.2863,
+      "longitude": 111.7225,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.2863,111.7225",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_pantai_mutiara",
+      "name": "Pantai Mutiara",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Mutiara berlokasi di Desa Tasikmadu, Kecamatan Watulimo, Kabupaten Trenggalek, tepatnya sekitar 4 km sebelah timur Pantai Pasir Putih Karanggongso. Bagi wisatawan yang lebih menyukai suasana tidak terlalu ramai, Pantai Mutiara merupakan tempat rekreasi yang cocok karena pantai ini indah, berpasir putih, bersih, dan ombaknya tenang.",
+      "categoryId": "cat_pantai",
+      "rating": 4.4,
+      "imageUrl": "https://picsum.photos/seed/mutiara/800/600",
+      "images": [
+        "https://picsum.photos/seed/mutiara1/800/600",
+        "https://picsum.photos/seed/mutiara2/800/600"
+      ],
+      "latitude": -8.287,
+      "longitude": 111.735,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.287,111.735",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_pantai_simbaronce",
+      "name": "Pantai Simbaronce",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Simbaronce berada di kawasan Watulimo dekat Pantai Prigi. Salah satu pantai yang masuk dalam kawasan wisata Watulimo Kondang.",
+      "categoryId": "cat_pantai",
+      "rating": 4.2,
+      "imageUrl": "https://picsum.photos/seed/simbaronce/800/600",
+      "images": [
+        "https://picsum.photos/seed/simbaronce1/800/600"
+      ],
+      "latitude": -8.29,
+      "longitude": 111.728,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.29,111.728",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_pantai_damas",
+      "name": "Pantai Damas",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Damas terletak di Desa Karanggandu, Kecamatan Watulimo, berjarak 43,7 km dari Kota Trenggalek atau 8,6 km sebelah barat Pantai Prigi. Bagi wisatawan pencinta situasi yang alami dan tenang, Pantai Damas merupakan destinasi favorit karena pantainya masih alami, pemandangannya indah dan belum terlalu dikunjungi.",
+      "categoryId": "cat_pantai",
+      "rating": 4.5,
+      "imageUrl": "https://picsum.photos/seed/damas/800/600",
+      "images": [
+        "https://picsum.photos/seed/damas1/800/600",
+        "https://picsum.photos/seed/damas2/800/600"
+      ],
+      "latitude": -8.31,
+      "longitude": 111.69,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.31,111.69",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_pantai_kili_kili",
+      "name": "Pantai Kili-Kili",
+      "location": "Kec. Panggul, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Kili-Kili berada di Desa Wonocoyo, Kecamatan Panggul, Kabupaten Trenggalek, berjarak sekitar 54 km sebelah barat daya kota Trenggalek. Pantai ini merupakan kawasan ekosistem esensial dengan konservasi penyu. Wisatawan bisa menikmati pemandangan pantai yang indah, swafoto dengan penyu, dan memperoleh pengetahuan tentang penyu dari pemandu setempat.",
+      "categoryId": "cat_pantai",
+      "rating": 4.6,
+      "imageUrl": "https://picsum.photos/seed/kilikili/800/600",
+      "images": [
+        "https://picsum.photos/seed/kilikili1/800/600",
+        "https://picsum.photos/seed/kilikili2/800/600"
+      ],
+      "latitude": -8.36,
+      "longitude": 111.58,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.36,111.58",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_pantai_pelang",
+      "name": "Pantai Pelang",
+      "location": "Kec. Panggul, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Pelang berlokasi di Desa Wonocoyo, Kecamatan Panggul, Kabupaten Trenggalek, berjarak 56 km sebelah barat pusat kota. Bagi wisatawan penggemar air terjun dan panorama pantai, Pantai Pelang sangat menarik karena memiliki pemandangan yang eksotis dan alami. Ada air terjun yang cantik di dekat muara sungai yang menjadi tempat mandi dan bermain air.",
+      "categoryId": "cat_pantai",
+      "rating": 4.7,
+      "imageUrl": "https://picsum.photos/seed/pelang/800/600",
+      "images": [
+        "https://picsum.photos/seed/pelang1/800/600",
+        "https://picsum.photos/seed/pelang2/800/600"
+      ],
+      "latitude": -8.27,
+      "longitude": 111.51,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.27,111.51",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_pantai_konang",
+      "name": "Pantai Konang",
+      "location": "Kec. Panggul, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Konang bertempat di Desa Nglebeng, Kecamatan Panggul, berjarak sekitar 3 km sebelah timur Pantai Pelang. Pantai Konang memiliki garis pantai yang panjang dan ombak yang besar. Tempat ini memiliki pemandangan matahari terbenam yang sangat indah. Tersedia kuliner ikan laut yang sangat memanjakan wisatawan.",
+      "categoryId": "cat_pantai",
+      "rating": 4.5,
+      "imageUrl": "https://picsum.photos/seed/konang/800/600",
+      "images": [
+        "https://picsum.photos/seed/konang1/800/600",
+        "https://picsum.photos/seed/konang2/800/600"
+      ],
+      "latitude": -8.34,
+      "longitude": 111.61,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.34,111.61",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_pantai_kuyon",
+      "name": "Pantai Kuyon",
+      "location": "Kec. Panggul, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Kuyon merupakan destinasi wisata baru yang dioperatori oleh Kelompok Sadar Wisata Suka Maju, Desa Wisata Nglebeng, Kecamatan Panggul. Setelah menempuh perjalanan yang agak menguji adrenaline, wisatawan akan menikmati keindahan pemandangan Pantai Kuyon yang masih alami.",
+      "categoryId": "cat_pantai",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/kuyon/800/600",
+      "images": [
+        "https://picsum.photos/seed/kuyon1/800/600"
+      ],
+      "latitude": -8.305,
+      "longitude": 111.603,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.305,111.603",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_pantai_rajaan",
+      "name": "Pantai Rajaan",
+      "location": "Kec. Munjungan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Rajaan merupakan pantai cantik yang terletak di Desa Ngulungkulon, Kecamatan Munjungan. Meskipun belum dikelola, pantai ini memiliki pemandangan yang sangat eksotis dan cukup menantang bagi wisatawan yang berjiwa petualang.",
+      "categoryId": "cat_pantai",
+      "rating": 4.2,
+      "imageUrl": "https://picsum.photos/seed/rajaan/800/600",
+      "images": [
+        "https://picsum.photos/seed/rajaan1/800/600"
+      ],
+      "latitude": -8.41,
+      "longitude": 111.52,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.41,111.52",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 5000,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_pantai_kebo",
+      "name": "Pantai Kebo",
+      "location": "Kec. Munjungan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Kebo terletak di desa Ngulung Wetan, Kecamatan Munjungan. Pantai ini sangat menawan karena memiliki hamparan pasir yang luas dan landai dengan pemandangan hijaunya pegunungan di sebelah utara dan birunya Samudra Hindia di sebelah selatan. Keunikan pantai ini adalah memiliki laguna yang dapat dimanfaatkan untuk olahraga air seperti kayak dan perahu wisata.",
+      "categoryId": "cat_pantai",
+      "rating": 4.4,
+      "imageUrl": "https://picsum.photos/seed/kebo/800/600",
+      "images": [
+        "https://picsum.photos/seed/kebo1/800/600",
+        "https://picsum.photos/seed/kebo2/800/600"
+      ],
+      "latitude": -8.43,
+      "longitude": 111.51,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.43,111.51",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_pantai_blado",
+      "name": "Pantai Blado",
+      "location": "Kec. Munjungan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Blado memiliki garis pantai yang sangat panjang yang membentang dari Desa Munjungan sampai Desa Masaran, Kecamatan Munjungan. Pantai Blado menawarkan pemandangan pantai selatan yang indah. Juga tempat diselenggarakannya Upacara Adat Longkangan di Kecamatan Munjungan pada bulan Selo hari Jumat Kliwon.",
+      "categoryId": "cat_pantai",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/blado/800/600",
+      "images": [
+        "https://picsum.photos/seed/blado1/800/600"
+      ],
+      "latitude": -8.45,
+      "longitude": 111.5,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.45,111.5",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 5000,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_pantai_ngampiran",
+      "name": "Pantai Ngampiran",
+      "location": "Kec. Munjungan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Ngampiran berada di Desa Tawing, Kecamatan Munjungan, sekitar 4 km arah Timur laut dari pusat Kecamatan Munjungan atau sekitar 50 km barat daya dari Kota Trenggalek. Pantai Ngampiran masih alami serta memiliki pasir putih.",
+      "categoryId": "cat_pantai",
+      "rating": 4.2,
+      "imageUrl": "https://picsum.photos/seed/ngampiran/800/600",
+      "images": [
+        "https://picsum.photos/seed/ngampiran1/800/600"
+      ],
+      "latitude": -8.47,
+      "longitude": 111.49,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.47,111.49",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 5000,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_pantai_ngulungwetan",
+      "name": "Pantai Ngulungwetan",
+      "location": "Kec. Munjungan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Ngulungwetan berada di Kecamatan Munjungan, Trenggalek. Pantai alami dengan suasana yang tenang dan jarang dikunjungi.",
+      "categoryId": "cat_pantai",
+      "rating": 4.1,
+      "imageUrl": "https://picsum.photos/seed/ngulungwetan/800/600",
+      "images": [
+        "https://picsum.photos/seed/ngulungwetan1/800/600"
+      ],
+      "latitude": -8.42,
+      "longitude": 111.505,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.42,111.505",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 5000,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_pantai_ngadipuro",
+      "name": "Pantai Ngadipuro",
+      "location": "Kec. Munjungan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pantai Ngadipuro merupakan pantai alami di Kecamatan Munjungan, Trenggalek, yang masih belum banyak dikunjungi wisatawan.",
+      "categoryId": "cat_pantai",
+      "rating": 4.1,
+      "imageUrl": "https://picsum.photos/seed/ngadipuro/800/600",
+      "images": [
+        "https://picsum.photos/seed/ngadipuro1/800/600"
+      ],
+      "latitude": -8.46,
+      "longitude": 111.485,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.46,111.485",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 5000,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_mangrove_cengkrong",
+      "name": "Hutan Mangrove Cengkrong",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Hutan Mangrove Cengkrong menawarkan banyak atraksi bagi wisatawan: jogging di jembatan kayu yang melintas di tengah hutan mangrove, swafoto dengan objek gunung, menikmati indahnya hutan mangrove, naik perahu menyusuri sungai dalam hutan mangrove jika air laut pasang, memberi makan burung dara, dan budidaya kepiting.",
+      "categoryId": "cat_hutan",
+      "rating": 4.6,
+      "imageUrl": "https://picsum.photos/seed/mangrove/800/600",
+      "images": [
+        "https://picsum.photos/seed/mangrove1/800/600",
+        "https://picsum.photos/seed/mangrove2/800/600"
+      ],
+      "latitude": -8.275,
+      "longitude": 111.715,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.275,111.715",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_goa_lowo",
+      "name": "Goa Lowo",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Goa Lowo berlokasi di Desa Watuagung, Kecamatan Watulimo, 23,7 km arah Tenggara dari pusat Kota Trenggalek. Ditemukan tahun 1931, dan menurut penelitian ahli Goa dari Perancis Gilbert Mantovani dan Kingston Kho (1985), Goa Lowo dinyatakan sebagai gua terbesar dan terpanjang se-Asia Tenggara.",
+      "categoryId": "cat_goa",
+      "rating": 4.8,
+      "imageUrl": "https://picsum.photos/seed/goalowo/800/600",
+      "images": [
+        "https://picsum.photos/seed/goalowo1/800/600",
+        "https://picsum.photos/seed/goalowo2/800/600"
+      ],
+      "latitude": -8.2435,
+      "longitude": 111.721,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.2435,111.721",
+      "hasVirtualTour": true,
+      "maps360Url": "https://example.com/360/goalowo",
+      "priceAdult": 20000,
+      "priceChild": 10000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_goa_ngerit",
+      "name": "Goa Ngerit",
+      "location": "Kec. Kampak, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Goa Ngerit merupakan goa alam yang berada di kawasan Kampak, Trenggalek, dekat dengan Ngerit Stone Park.",
+      "categoryId": "cat_goa",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/goangerit/800/600",
+      "images": [
+        "https://picsum.photos/seed/goangerit1/800/600"
+      ],
+      "latitude": -8.13,
+      "longitude": 111.66,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.13,111.66",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_coban_wonoasri",
+      "name": "Coban Wonoasri",
+      "location": "Kec. Munjungan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Coban Wonoasri berada di Desa Bangun, Kecamatan Munjungan. Air terjun ini masih alami dan menawarkan pemandangan indah alam di sekitarnya. Wisatawan bisa menikmati jernihnya dan dinginnya air pegunungan di coban ini.",
+      "categoryId": "cat_air_terjun",
+      "rating": 4.4,
+      "imageUrl": "https://picsum.photos/seed/wonoasri/800/600",
+      "images": [
+        "https://picsum.photos/seed/wonoasri1/800/600",
+        "https://picsum.photos/seed/wonoasri2/800/600"
+      ],
+      "latitude": -8.5,
+      "longitude": 111.47,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.5,111.47",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_coban_rambat",
+      "name": "Coban Rambat",
+      "location": "Kec. Bendungan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Coban Rambat merupakan air terjun alami yang berada di kawasan Bendungan, Trenggalek. Destinasi alam yang cocok untuk wisatawan pecinta alam dan tracking.",
+      "categoryId": "cat_air_terjun",
+      "rating": 4.4,
+      "imageUrl": "https://picsum.photos/seed/cobanrambat/800/600",
+      "images": [
+        "https://picsum.photos/seed/cobanrambat1/800/600"
+      ],
+      "latitude": -7.96,
+      "longitude": 111.79,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-7.96,111.79",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_airterjun_bonago",
+      "name": "Air Terjun Bonago Langit",
+      "location": "Kec. Suruh, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Air Terjun Bonago Langit berada di Kecamatan Suruh, Trenggalek. Destinasi alam yang menawarkan keindahan air terjun alami di tengah pegunungan.",
+      "categoryId": "cat_air_terjun",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/bonago/800/600",
+      "images": [
+        "https://picsum.photos/seed/bonago1/800/600"
+      ],
+      "latitude": -8.09,
+      "longitude": 111.78,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.09,111.78",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_tebing_lingga",
+      "name": "Tebing Lingga",
+      "location": "Kec. Suruh, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Wisata Tebing Lingga terletak di Desa Nglebo, Kecamatan Suruh, sekitar 19 km sebelah barat kota Trenggalek. Atraksi wisata utama destinasi ini adalah gunung batu andesit terbesar di dunia dengan ketinggian 360 m dan kemiringan nyaris 90°. Pernah dipakai latihan panjat tebing oleh KOPASUS.",
+      "categoryId": "cat_alam",
+      "rating": 4.7,
+      "imageUrl": "https://picsum.photos/seed/teblingga/800/600",
+      "images": [
+        "https://picsum.photos/seed/teblingga1/800/600",
+        "https://picsum.photos/seed/teblingga2/800/600"
+      ],
+      "latitude": -8.1,
+      "longitude": 111.8,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.1,111.8",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_ngerit_stone_park",
+      "name": "Ngerit Stone Park",
+      "location": "Kec. Kampak, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Ngerit Stone Park terletak di Desa Senden, Kecamatan Kampak, berjarak 20 km dari pusat Kota Trenggalek. Ngerit Stone Park merupakan taman yang indah dari batu-batu karst. Di tengah-tengah taman batu tersebut mengalir sungai yang gemericik airnya yang semakin menambah keasrian destinasi wisata ini.",
+      "categoryId": "cat_alam",
+      "rating": 4.5,
+      "imageUrl": "https://picsum.photos/seed/ngerit/800/600",
+      "images": [
+        "https://picsum.photos/seed/ngerit1/800/600",
+        "https://picsum.photos/seed/ngerit2/800/600"
+      ],
+      "latitude": -8.12,
+      "longitude": 111.65,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.12,111.65",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_putri_maron",
+      "name": "Putri Maron",
+      "location": "Kec. Bendungan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Putri Maron merupakan destinasi wisata alam di kawasan Bendungan, Trenggalek, menawarkan pemandangan pegunungan yang indah.",
+      "categoryId": "cat_alam",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/putrimaron/800/600",
+      "images": [
+        "https://picsum.photos/seed/putrimaron1/800/600"
+      ],
+      "latitude": -7.98,
+      "longitude": 111.76,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-7.98,111.76",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_argo_lawi",
+      "name": "Argo Lawi (Argo Park)",
+      "location": "Kec. Pule, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Argo Lawi (Argo Park) merupakan taman pertanian terpadu yang merupakan wahana wisata edukasi bagi anak-anak, berlokasi di Pule, Trenggalek.",
+      "categoryId": "cat_alam",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/argolawi/800/600",
+      "images": [
+        "https://picsum.photos/seed/argolawi1/800/600"
+      ],
+      "latitude": -8.11,
+      "longitude": 111.79,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.11,111.79",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_beji_maron",
+      "name": "Beji Maron",
+      "location": "Kec. Gandusari, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Beji Maron merupakan wisata alam berupa mata air yang terdapat di Kecamatan Gandusari, Trenggalek.",
+      "categoryId": "cat_alam",
+      "rating": 4.2,
+      "imageUrl": "https://picsum.photos/seed/bejimaron/800/600",
+      "images": [
+        "https://picsum.photos/seed/bejimaron1/800/600"
+      ],
+      "latitude": -8.07,
+      "longitude": 111.77,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.07,111.77",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 5000,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_gunung_sepikul",
+      "name": "Gunung Sepikul / Via Ferrata",
+      "location": "Kec. Kampak, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Gunung Sepikul menawarkan wisata via ferrata (panjat tebing dengan tangga besi) di Kecamatan Kampak, Trenggalek. Cocok untuk wisatawan pecinta petualangan.",
+      "categoryId": "cat_alam",
+      "rating": 4.5,
+      "imageUrl": "https://picsum.photos/seed/sepikul/800/600",
+      "images": [
+        "https://picsum.photos/seed/sepikul1/800/600",
+        "https://picsum.photos/seed/sepikul2/800/600"
+      ],
+      "latitude": -8.14,
+      "longitude": 111.67,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.14,111.67",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_banyunget",
+      "name": "Wisata Banyunget",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Wisata Banyunget merupakan destinasi wisata alam yang terletak di kawasan Watulimo, Trenggalek.",
+      "categoryId": "cat_alam",
+      "rating": 4.2,
+      "imageUrl": "https://picsum.photos/seed/banyunget/800/600",
+      "images": [
+        "https://picsum.photos/seed/banyunget1/800/600"
+      ],
+      "latitude": -8.26,
+      "longitude": 111.7,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.26,111.7",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 5000,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_bukit_paralayang",
+      "name": "Bukit Paralayang Tunggangan",
+      "location": "Kec. Durenan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Bukit Paralayang Tunggangan berada di Dusun Ngrandu, Desa Kendalrejo, Kecamatan Durenan, Trenggalek, dengan luas area 20 Ha dan ketinggian 250 mdpl. Wisatawan dapat menyaksikan matahari terbit. Bukit ini juga merupakan satu-satunya base spot olahraga paralayang dan ganthole di Trenggalek yang sudah teruji secara nasional.",
+      "categoryId": "cat_bukit",
+      "rating": 4.7,
+      "imageUrl": "https://picsum.photos/seed/paralayang/800/600",
+      "images": [
+        "https://picsum.photos/seed/paralayang1/800/600",
+        "https://picsum.photos/seed/paralayang2/800/600"
+      ],
+      "latitude": -8.1,
+      "longitude": 111.83,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.1,111.83",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_bukit_banyon",
+      "name": "Bukit Banyon",
+      "location": "Kec. Gandusari, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Bukit Banyon lebih viral dengan sebutan 'Negeri di Atas Awan'. Pada pagi hari musim kabut, seluruh daerah di kaki Bukit Banyon diselimuti oleh kabut tebal sehingga ketika wisatawan berada di atas bukit, mereka akan merasakan sensasi berada di atas awan. Di malam hari, Bukit Banyon juga menawarkan pemandangan lampu yang sangat indah.",
+      "categoryId": "cat_bukit",
+      "rating": 4.8,
+      "imageUrl": "https://picsum.photos/seed/banyon/800/600",
+      "images": [
+        "https://picsum.photos/seed/banyon1/800/600",
+        "https://picsum.photos/seed/banyon2/800/600"
+      ],
+      "latitude": -8.08,
+      "longitude": 111.76,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.08,111.76",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_dilem_wilis",
+      "name": "Argowisata Dilem Wilis",
+      "location": "Kec. Bendungan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Argowisata Dilem Wilis merupakan destinasi wisata agro di Trenggalek yang juga merupakan satu-satunya wisata heritage. Berlokasi di Desa Dompyong, Kecamatan Bendungan, dengan luas 228.123 Ha. Menawarkan panorama alam pegunungan yang indah dengan udara yang sejuk. Atraksi: kebun bunga, kebun buah, sapi perah dan pengolahan susu, pabrik kopi peninggalan Belanda.",
+      "categoryId": "cat_agrowisata",
+      "rating": 4.7,
+      "imageUrl": "https://picsum.photos/seed/dilemwilis/800/600",
+      "images": [
+        "https://picsum.photos/seed/dilemwilis1/800/600",
+        "https://picsum.photos/seed/dilemwilis2/800/600"
+      ],
+      "latitude": -7.95,
+      "longitude": 111.78,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-7.95,111.78",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 20000,
+      "priceChild": 10000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_dilem_wilis_kebun",
+      "name": "Dilem Wilis (Wisata Perkebunan)",
+      "location": "Kec. Bendungan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Kawasan wisata perkebunan di Bendungan, Trenggalek, dengan panorama alam pegunungan Wilis yang memukau.",
+      "categoryId": "cat_agrowisata",
+      "rating": 4.5,
+      "imageUrl": "https://picsum.photos/seed/dilemkebun/800/600",
+      "images": [
+        "https://picsum.photos/seed/dilemkebun1/800/600"
+      ],
+      "latitude": -7.94,
+      "longitude": 111.77,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-7.94,111.77",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_desa_durensari",
+      "name": "Desa Wisata Duren Sari (Durensari)",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Desa Wisata Durensari berlokasi di Desa Sawahan, Kecamatan Watulimo, berjarak 38 km dari pusat kota Trenggalek atau 7,6 km dari Pantai Prigi. Bagi wisatawan keluarga dan kelompok, Desa Wisata Durensari sangat menarik. Aktivitas: outbound, rivertubing, petik durian, stone balancing, gerduren, edukasi pembuatan reyang & angklung bambu, permainan tradisional.",
+      "categoryId": "cat_desa_wisata",
+      "rating": 4.6,
+      "imageUrl": "https://picsum.photos/seed/durensari/800/600",
+      "images": [
+        "https://picsum.photos/seed/durensari1/800/600",
+        "https://picsum.photos/seed/durensari2/800/600"
+      ],
+      "latitude": -8.3,
+      "longitude": 111.71,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.3,111.71",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_wisata_sawahan",
+      "name": "Wisata Sawahan",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Wisata Sawahan merupakan bagian dari kawasan Desa Wisata Duren Sari di Desa Sawahan, Kecamatan Watulimo. Menawarkan pengalaman wisata pedesaan dengan aktivitas sawah dan alam.",
+      "categoryId": "cat_desa_wisata",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/sawahan/800/600",
+      "images": [
+        "https://picsum.photos/seed/sawahan1/800/600"
+      ],
+      "latitude": -8.305,
+      "longitude": 111.708,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.305,111.708",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_green_park",
+      "name": "Green Park Trenggalek",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Green Park merupakan taman kota Trenggalek yang menyuguhkan taman dan tempat bermain bagi anak. Destinasi wisata keluarga yang terletak di jantung kota Trenggalek.",
+      "categoryId": "cat_wisata_buatan",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/greenpark/800/600",
+      "images": [
+        "https://picsum.photos/seed/greenpark1/800/600"
+      ],
+      "latitude": -8.058,
+      "longitude": 111.712,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.058,111.712",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 5000,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_argo_park",
+      "name": "Argo Park (Taman Pertanian Kota)",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Argo Park menyuguhkan taman pertanian terpadu yang merupakan wahana wisata edukasi bagi anak. Terletak di jantung kota Trenggalek bersama Green Park dan Hutan Kota.",
+      "categoryId": "cat_wisata_buatan",
+      "rating": 4.2,
+      "imageUrl": "https://picsum.photos/seed/argopark/800/600",
+      "images": [
+        "https://picsum.photos/seed/argopark1/800/600"
+      ],
+      "latitude": -8.057,
+      "longitude": 111.711,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.057,111.711",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 5000,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_hutan_kota",
+      "name": "Hutan Kota Trenggalek",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Hutan Kota menyuguhkan atraksi udara sejuk dan bersih di tengah-tengah kota, satwa dilindungi seperti merak, kijang, dan burung kasuari, serta area jogging track. Di kawasan Hutan Kota ini juga terdapat track downhill yang menarik.",
+      "categoryId": "cat_wisata_buatan",
+      "rating": 4.4,
+      "imageUrl": "https://picsum.photos/seed/hutankota/800/600",
+      "images": [
+        "https://picsum.photos/seed/hutankota1/800/600",
+        "https://picsum.photos/seed/hutankota2/800/600"
+      ],
+      "latitude": -8.056,
+      "longitude": 111.71,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.056,111.71",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 5000,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_tirta_jwalita",
+      "name": "Kolam Renang Tirta Jwalita",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Kolam Renang Tirta Jwalita merupakan kolam renang yang dikelola Pemerintah Kabupaten Trenggalek, berlokasi di Jl. Soekarno-Hatta, Kelutan, Trenggalek.",
+      "categoryId": "cat_wisata_buatan",
+      "rating": 4.2,
+      "imageUrl": "https://picsum.photos/seed/tirtajwalita/800/600",
+      "images": [
+        "https://picsum.photos/seed/tirtajwalita1/800/600"
+      ],
+      "latitude": -8.062,
+      "longitude": 111.714,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.062,111.714",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_caribean_water_park",
+      "name": "Caribean Water Park",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Caribean Water Park merupakan destinasi wisata air yang berlokasi di pusat kota Trenggalek, cocok untuk wisata keluarga dan anak-anak.",
+      "categoryId": "cat_wisata_buatan",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/caribean/800/600",
+      "images": [
+        "https://picsum.photos/seed/caribean1/800/600",
+        "https://picsum.photos/seed/caribean2/800/600"
+      ],
+      "latitude": -8.059,
+      "longitude": 111.713,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.059,111.713",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 35000,
+      "priceChild": 20000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_taman_pantai_prigi",
+      "name": "Taman Pantai Prigi",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Taman Pantai Prigi merupakan taman yang berada di kawasan Pantai Prigi, menawarkan suasana santai dengan taman yang asri dan spot foto yang menarik.",
+      "categoryId": "cat_wisata_buatan",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/tamanprigi/800/600",
+      "images": [
+        "https://picsum.photos/seed/tamanprigi1/800/600"
+      ],
+      "latitude": -8.2825,
+      "longitude": 111.7285,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.2825,111.7285",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 5000,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_sport_center",
+      "name": "Sport Center Trenggalek",
+      "location": "Kec. Tugu, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Sport Center Trenggalek merupakan pusat olahraga yang terletak di Kecamatan Tugu, Trenggalek.",
+      "categoryId": "cat_wisata_buatan",
+      "rating": 4.1,
+      "imageUrl": "https://picsum.photos/seed/sportcenter/800/600",
+      "images": [
+        "https://picsum.photos/seed/sportcenter1/800/600"
+      ],
+      "latitude": -8.045,
+      "longitude": 111.708,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.045,111.708",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 0,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_anjungan_cerdas",
+      "name": "Anjungan Cerdas (Rest Area)",
+      "location": "Kec. Karangan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Anjungan Cerdas merupakan rest area di Kecamatan Karangan, Trenggalek, yang menyediakan tempat beristirahat bagi wisatawan yang melakukan perjalanan.",
+      "categoryId": "cat_wisata_buatan",
+      "rating": 4.0,
+      "imageUrl": "https://picsum.photos/seed/anjungan/800/600",
+      "images": [
+        "https://picsum.photos/seed/anjungan1/800/600"
+      ],
+      "latitude": -8.085,
+      "longitude": 111.775,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.085,111.775",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 0,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_pusat_oleh_oleh",
+      "name": "Pusat Oleh-Oleh Ngantru",
+      "location": "Kec. Tugu, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pusat oleh-oleh di Ngantru, Trenggalek, menyediakan berbagai oleh-oleh khas Trenggalek seperti alen-alen, manco, geti, kopi Van Dilem, dan produk lokal lainnya.",
+      "categoryId": "cat_wisata_buatan",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/oleholeh/800/600",
+      "images": [
+        "https://picsum.photos/seed/oleholeh1/800/600"
+      ],
+      "latitude": -8.04,
+      "longitude": 111.705,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.04,111.705",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 0,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_pemandian_tapan",
+      "name": "Pemandian Tapan",
+      "location": "Kec. Karangan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pemandian Tapan merupakan destinasi wisata air berupa pemandian alami yang berlokasi di Kecamatan Karangan, Trenggalek.",
+      "categoryId": "cat_wisata_buatan",
+      "rating": 4.2,
+      "imageUrl": "https://picsum.photos/seed/tapan/800/600",
+      "images": [
+        "https://picsum.photos/seed/tapan1/800/600"
+      ],
+      "latitude": -8.09,
+      "longitude": 111.77,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.09,111.77",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 10000,
+      "priceChild": 5000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_kraton_jwaltra",
+      "name": "Kraton/Istana Tilde Jwaltra",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Destinasi wisata buatan di pusat kota Trenggalek.",
+      "categoryId": "cat_wisata_buatan",
+      "rating": 4.1,
+      "imageUrl": "https://picsum.photos/seed/kratonjwaltra/800/600",
+      "images": [
+        "https://picsum.photos/seed/kratonjwaltra1/800/600"
+      ],
+      "latitude": -8.06,
+      "longitude": 111.713,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.06,111.713",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 5000,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_larung_sembonyo",
+      "name": "Larung Sembonyo (Upacara Adat)",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Upacara Larung Sembonyo merupakan atraksi wisata budaya tahunan yang dilaksanakan setiap bulan Selo di Pantai Prigi. Upacara adat yang merupakan ekspresi rasa syukur para nelayan kepada Tuhan YME atas hasil laut yang melimpah.",
+      "categoryId": "cat_budaya",
+      "rating": 4.8,
+      "imageUrl": "https://picsum.photos/seed/larung/800/600",
+      "images": [
+        "https://picsum.photos/seed/larung1/800/600",
+        "https://picsum.photos/seed/larung2/800/600"
+      ],
+      "latitude": -8.2828,
+      "longitude": 111.7289,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.2828,111.7289",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 0,
+      "priceChild": 0,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_longkangan",
+      "name": "Longkangan (Upacara Adat)",
+      "location": "Kec. Munjungan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Longkangan adalah atraksi wisata budaya di Kecamatan Munjungan yang digelar rutin pada bulan Selo, tepatnya pada hari Jumat Kliwon di Pantai Blado. Ini merupakan larung sesaji sebagai ungkapan rasa syukur nelayan kepada Tuhan YME atas hasil laut yang melimpah.",
+      "categoryId": "cat_budaya",
+      "rating": 4.6,
+      "imageUrl": "https://picsum.photos/seed/longkangan/800/600",
+      "images": [
+        "https://picsum.photos/seed/longkangan1/800/600"
+      ],
+      "latitude": -8.45,
+      "longitude": 111.5,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.45,111.5",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 0,
+      "priceChild": 0,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_festival_jaranan",
+      "name": "Festival Turonggo Yakso / Festival Jaranan",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Festival Turonggo Yakso/Festival Jaranan merupakan atraksi wisata budaya tahunan yang digelar pada bulan Agustus sebelum peringatan hari jadi Trenggalek. Festival berskala nasional ini menyuguhkan berbagai jenis jaranan: Sentherewe, Pegon, Brung, dan Turonggo Yakso yang merupakan jaranan khas Trenggalek.",
+      "categoryId": "cat_budaya",
+      "rating": 4.8,
+      "imageUrl": "https://picsum.photos/seed/jaranan/800/600",
+      "images": [
+        "https://picsum.photos/seed/jaranan1/800/600",
+        "https://picsum.photos/seed/jaranan2/800/600"
+      ],
+      "latitude": -8.06,
+      "longitude": 111.713,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.06,111.713",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 0,
+      "priceChild": 0,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_hari_jadi_trenggalek",
+      "name": "Hari Jadi Kabupaten Trenggalek",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Peringatan Hari Jadi Trenggalek merupakan atraksi wisata budaya yang dikemas dengan konsep adat Jawa menampilkan busana, kesenian, serta adat keraton yang sangat menarik. Dilaksanakan 30-31 Agustus setiap tahunnya.",
+      "categoryId": "cat_budaya",
+      "rating": 4.7,
+      "imageUrl": "https://picsum.photos/seed/harijadi/800/600",
+      "images": [
+        "https://picsum.photos/seed/harijadi1/800/600",
+        "https://picsum.photos/seed/harijadi2/800/600"
+      ],
+      "latitude": -8.061,
+      "longitude": 111.713,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.061,111.713",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 0,
+      "priceChild": 0,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_kupatan_durenan",
+      "name": "Hari Raya Kupatan (Tradisi Durenan)",
+      "location": "Kec. Durenan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Tradisi Hari Raya Kupatan di daerah Durenan berasal dari kebiasaan seorang ulama setempat yang hidup antara abad ke-19. Merupakan atraksi wisata religi berupa saling silaturahmi ke sanak saudara, dan setelah bersalaman tamu akan diberikan hidangan berupa ketupat, sayur, dan lain-lain.",
+      "categoryId": "cat_budaya",
+      "rating": 4.7,
+      "imageUrl": "https://picsum.photos/seed/kupatan/800/600",
+      "images": [
+        "https://picsum.photos/seed/kupatan1/800/600",
+        "https://picsum.photos/seed/kupatan2/800/600"
+      ],
+      "latitude": -8.105,
+      "longitude": 111.825,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.105,111.825",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 0,
+      "priceChild": 0,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_kuliner_bu_sihir",
+      "name": "Bu Sihir (Nasi Pecel)",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Bu Sihir berlokasi di Jl. P. Sudirman, Trenggalek. Menu khas: Nasi Pecel. Jam buka: 07.00-15.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.5,
+      "imageUrl": "https://picsum.photos/seed/busihir/800/600",
+      "images": [
+        "https://picsum.photos/seed/busihir1/800/600"
+      ],
+      "latitude": -8.058,
+      "longitude": 111.713,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.058,111.713",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 20000,
+      "priceChild": 15000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_kuliner_mbah_suti",
+      "name": "Warung Mbah Suti",
+      "location": "Kec. Tugu, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Warung Mbah Suti berlokasi di Ngantru, Tugu, Trenggalek. Menu khas: Nasi Pecel. Jam buka: 00.00-12.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.6,
+      "imageUrl": "https://picsum.photos/seed/mbahsuti/800/600",
+      "images": [
+        "https://picsum.photos/seed/mbahsuti1/800/600"
+      ],
+      "latitude": -8.043,
+      "longitude": 111.706,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.043,111.706",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_kuliner_mekar_sari",
+      "name": "Mekar Sari",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Mekar Sari berlokasi di Jl. P. Sudirman, Trenggalek. Menu khas: Sop Buntut. Jam buka: 08.00-21.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.4,
+      "imageUrl": "https://picsum.photos/seed/mekarsari/800/600",
+      "images": [
+        "https://picsum.photos/seed/mekarsari1/800/600"
+      ],
+      "latitude": -8.057,
+      "longitude": 111.712,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.057,111.712",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 30000,
+      "priceChild": 20000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_kuliner_ayam_jogja",
+      "name": "Ayam Goreng Jogja",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Ayam Goreng Jogja berlokasi di Jl. Jaksa Agung Suprapto, Trenggalek. Menu khas: Ayam Goreng. Jam buka: 10.00-21.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.4,
+      "imageUrl": "https://picsum.photos/seed/ayamjogja/800/600",
+      "images": [
+        "https://picsum.photos/seed/ayamjogja1/800/600"
+      ],
+      "latitude": -8.0565,
+      "longitude": 111.7142,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.0565,111.7142",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 25000,
+      "priceChild": 15000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_kuliner_madona",
+      "name": "Madona",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Madona berlokasi di Ds. Bendorejo, Trenggalek. Menu khas: Pindang Sapi. Jam buka: 09.00-24.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.5,
+      "imageUrl": "https://picsum.photos/seed/madona/800/600",
+      "images": [
+        "https://picsum.photos/seed/madona1/800/600"
+      ],
+      "latitude": -8.061,
+      "longitude": 111.71,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.061,111.71",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 25000,
+      "priceChild": 15000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_kuliner_pak_usup",
+      "name": "Pak Usup (Ayam Lodho)",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pak Usup berlokasi di Ds. Kedunglurah, Trenggalek. Menu khas: Ayam Lodho. Jam buka: 07.00-22.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.6,
+      "imageUrl": "https://picsum.photos/seed/pakusup/800/600",
+      "images": [
+        "https://picsum.photos/seed/pakusup1/800/600"
+      ],
+      "latitude": -8.063,
+      "longitude": 111.718,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.063,111.718",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 30000,
+      "priceChild": 20000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_kuliner_arimbi",
+      "name": "Arimbi",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Arimbi berlokasi di Ds. Dermosari, Trenggalek. Menu khas: Aneka Menu. Jam buka: 08.00-17.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/arimbi/800/600",
+      "images": [
+        "https://picsum.photos/seed/arimbi1/800/600"
+      ],
+      "latitude": -8.0625,
+      "longitude": 111.7165,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.0625,111.7165",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 20000,
+      "priceChild": 15000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_kuliner_warung_malidi",
+      "name": "Warung Malidi",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Warung Malidi berlokasi di Surondakan, Trenggalek. Menu khas: Nasi Pecel. Jam buka: 07.00-21.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/malidi/800/600",
+      "images": [
+        "https://picsum.photos/seed/malidi1/800/600"
+      ],
+      "latitude": -8.064,
+      "longitude": 111.719,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.064,111.719",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_kuliner_mbah_temin",
+      "name": "Mbah Temin (Gurami Bakar)",
+      "location": "Kec. Tugu, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Mbah Temin berlokasi di Tugu, Trenggalek. Menu khas: Gurami Bakar. Jam buka: 08.00-21.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.5,
+      "imageUrl": "https://picsum.photos/seed/mbahtemin/800/600",
+      "images": [
+        "https://picsum.photos/seed/mbahtemin1/800/600"
+      ],
+      "latitude": -8.043,
+      "longitude": 111.706,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.043,111.706",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 35000,
+      "priceChild": 20000,
+      "isRecommended": true
+    },
+    {
+      "id": "dest_kuliner_bojana_rasa",
+      "name": "Bojana Rasa",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Bojana Rasa berlokasi di Kelutan, Trenggalek. Menu khas: Ayam Lodho khas Jawa Timur. Jam buka: 09.00-21.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.5,
+      "imageUrl": "https://picsum.photos/seed/bojanarasa/800/600",
+      "images": [
+        "https://picsum.photos/seed/bojanarasa1/800/600"
+      ],
+      "latitude": -8.0555,
+      "longitude": 111.7135,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.0555,111.7135",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 30000,
+      "priceChild": 20000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_kuliner_bu_parti",
+      "name": "Bu Parti",
+      "location": "Kec. Karangan, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Bu Parti berlokasi di Karangan, Trenggalek. Menu khas: Nasi Rames. Jam buka: 08.00-21.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/buparti/800/600",
+      "images": [
+        "https://picsum.photos/seed/buparti1/800/600"
+      ],
+      "latitude": -8.082,
+      "longitude": 111.764,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.082,111.764",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_kuliner_sate_roso",
+      "name": "Sate Roso Lego",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Sate Roso Lego berlokasi di Ds. Bendorejo, Trenggalek. Menu khas: Sate Kambing. Jam buka: 09.00-21.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.5,
+      "imageUrl": "https://picsum.photos/seed/sateroso/800/600",
+      "images": [
+        "https://picsum.photos/seed/sateroso1/800/600"
+      ],
+      "latitude": -8.0612,
+      "longitude": 111.7102,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.0612,111.7102",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 25000,
+      "priceChild": 15000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_kuliner_tanjung_benua",
+      "name": "Tanjung Benua",
+      "location": "Kec. Panggul, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Tanjung Benua berlokasi di Panggul, Trenggalek. Menu khas: Kikil Sapi. Jam buka: 08.00-21.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.3,
+      "imageUrl": "https://picsum.photos/seed/tanjungbenua/800/600",
+      "images": [
+        "https://picsum.photos/seed/tanjungbenua1/800/600"
+      ],
+      "latitude": -8.31,
+      "longitude": 111.59,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.31,111.59",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 20000,
+      "priceChild": 15000,
+      "isRecommended": false
+    },
+    {
+      "id": "dest_kuliner_pojok_loji",
+      "name": "Pojok Loji",
+      "location": "Kec. Panggul, Kabupaten Trenggalek, Jawa Timur",
+      "description": "Pojok Loji berlokasi di Panggul, Trenggalek. Menu khas: Nasi Campur. Jam buka: 08.00-21.00.",
+      "categoryId": "cat_kuliner",
+      "rating": 4.2,
+      "imageUrl": "https://picsum.photos/seed/pojokloji/800/600",
+      "images": [
+        "https://picsum.photos/seed/pojokloji1/800/600"
+      ],
+      "latitude": -8.312,
+      "longitude": 111.592,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.312,111.592",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "priceAdult": 15000,
+      "priceChild": 10000,
+      "isRecommended": false
+    }
+  ],
+
+  "accommodations": [
+    {
+      "id": "acc_hotel_prigi",
+      "name": "Hotel Prigi",
+      "categoryId": "cat_hotel",
+      "description": "Hotel Prigi berlokasi di Pantai Prigi, Kecamatan Watulimo. Jumlah kamar: 26. Fasilitas: AC, TV, Airphone, Ruang Tamu, Air Panas, Parkir, Ruang Pertemuan, Restoran, Lapangan Tenis.",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/hotelprigi/800/600",
+      "images": [
+        "https://picsum.photos/seed/hotelprigi1/800/600",
+        "https://picsum.photos/seed/hotelprigi2/800/600"
+      ],
+      "latitude": -8.283,
+      "longitude": 111.728,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.283,111.728",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 300000,
+      "rating": 4.3,
+      "isRecommended": true
+    },
+    {
+      "id": "acc_pondok_prigi",
+      "name": "Pondok Prigi Cottage",
+      "categoryId": "cat_hotel",
+      "description": "Pondok Prigi Cottage berlokasi di Pantai Karanggongso, Kecamatan Watulimo. Jumlah kamar: 17. Fasilitas: AC, TV, Air Panas, Parkir, Ruang Pertemuan, Restoran, Lapangan Tenis.",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/pondokprigi/800/600",
+      "images": [
+        "https://picsum.photos/seed/pondokprigi1/800/600",
+        "https://picsum.photos/seed/pondokprigi2/800/600"
+      ],
+      "latitude": -8.286,
+      "longitude": 111.7225,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.286,111.7225",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 250000,
+      "rating": 4.2,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_hotel_logano",
+      "name": "Hotel Logano",
+      "categoryId": "cat_hotel",
+      "description": "Hotel Logano berlokasi di Pantai Karanggongso, Kecamatan Watulimo. Jumlah kamar: 18.",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/hotellogano/800/600",
+      "images": [
+        "https://picsum.photos/seed/hotellogano1/800/600"
+      ],
+      "latitude": -8.2865,
+      "longitude": 111.7228,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.2865,111.7228",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 200000,
+      "rating": 4.0,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_hotel_hayam_wuruk",
+      "name": "Hotel Hayam Wuruk",
+      "categoryId": "cat_hotel",
+      "description": "Hotel Hayam Wuruk berlokasi di Jl. Soekarno-Hatta No. 2, Trenggalek. Jumlah kamar: 62. Fasilitas: AC, TV, Airphone, Restoran, Air Panas, Parkir, Ruang Pertemuan.",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/hayamwuruk/800/600",
+      "images": [
+        "https://picsum.photos/seed/hayamwuruk1/800/600",
+        "https://picsum.photos/seed/hayamwuruk2/800/600"
+      ],
+      "latitude": -8.058,
+      "longitude": 111.712,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.058,111.712",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 350000,
+      "rating": 4.4,
+      "isRecommended": true
+    },
+    {
+      "id": "acc_hotel_widowati",
+      "name": "Hotel Widowati",
+      "categoryId": "cat_hotel",
+      "description": "Hotel Widowati berlokasi di Jl. Soekarno-Hatta No. 20, Trenggalek. Jumlah kamar: 36. Fasilitas: AC, TV, Restoran.",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/widowati/800/600",
+      "images": [
+        "https://picsum.photos/seed/widowati1/800/600"
+      ],
+      "latitude": -8.061,
+      "longitude": 111.711,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.061,111.711",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 250000,
+      "rating": 4.1,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_hotel_gotong_royong",
+      "name": "Hotel Gotong Royong",
+      "categoryId": "cat_hotel",
+      "description": "Hotel Gotong Royong berlokasi di Jl. Dewi Sartika No. 2, Trenggalek. Jumlah kamar: 32. Fasilitas: AC, TV, Wartel, Hall.",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/gotongroyong/800/600",
+      "images": [
+        "https://picsum.photos/seed/gotongroyong1/800/600"
+      ],
+      "latitude": -8.06,
+      "longitude": 111.712,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.06,111.712",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 200000,
+      "rating": 4.0,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_hotel_ratu_panggul",
+      "name": "Hotel Ratu Panggul",
+      "categoryId": "cat_hotel",
+      "description": "Hotel Ratu Panggul berlokasi di Kecamatan Panggul, Trenggalek. Jumlah kamar: 20. Fasilitas: AC, TV, Ruang Pertemuan, Restoran, Parkir.",
+      "location": "Kec. Panggul, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/ratupanggul/800/600",
+      "images": [
+        "https://picsum.photos/seed/ratupanggul1/800/600"
+      ],
+      "latitude": -8.32,
+      "longitude": 111.6,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.32,111.6",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 200000,
+      "rating": 4.1,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_hotel_bukit_jaas",
+      "name": "Hotel Bukit Jaas Permai",
+      "categoryId": "cat_hotel",
+      "description": "Hotel Bukit Jaas Permai berlokasi di Jl. Mayjend Sungkono No. 1, Trenggalek. Jumlah kamar: 100. Fasilitas: AC, TV, Restoran.",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/bukitjaas/800/600",
+      "images": [
+        "https://picsum.photos/seed/bukitjaas1/800/600",
+        "https://picsum.photos/seed/bukitjaas2/800/600"
+      ],
+      "latitude": -8.054,
+      "longitude": 111.709,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.054,111.709",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 400000,
+      "rating": 4.4,
+      "isRecommended": true
+    },
+    {
+      "id": "acc_hotel_atriaz",
+      "name": "Hotel Atriaz",
+      "categoryId": "cat_hotel",
+      "description": "Hotel Atriaz berlokasi di Jl. Panglima Sudirman 125, Trenggalek. Jumlah kamar: 29.",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/atriaz/800/600",
+      "images": [
+        "https://picsum.photos/seed/atriaz1/800/600"
+      ],
+      "latitude": -8.062,
+      "longitude": 111.714,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.062,111.714",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 250000,
+      "rating": 4.2,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_penginapan_purnama",
+      "name": "Penginapan Purnama",
+      "categoryId": "cat_hotel",
+      "description": "Penginapan Purnama berlokasi di Desa Wonocoyo, Kec. Panggul. Jumlah kamar: 11.",
+      "location": "Kec. Panggul, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/purnama/800/600",
+      "images": [
+        "https://picsum.photos/seed/purnama1/800/600"
+      ],
+      "latitude": -8.31,
+      "longitude": 111.59,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.31,111.59",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 150000,
+      "rating": 4.0,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_penginapan_kuda_laut",
+      "name": "Penginapan Kuda Laut",
+      "categoryId": "cat_hotel",
+      "description": "Penginapan Kuda Laut berlokasi di Kecamatan Munjungan. Jumlah kamar: 6.",
+      "location": "Kec. Munjungan, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/kudalaut/800/600",
+      "images": [
+        "https://picsum.photos/seed/kudalaut1/800/600"
+      ],
+      "latitude": -8.44,
+      "longitude": 111.51,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.44,111.51",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 120000,
+      "rating": 4.0,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_penginapan_sinar_guru",
+      "name": "Penginapan Sinar Guru",
+      "categoryId": "cat_hotel",
+      "description": "Penginapan Sinar Guru berlokasi di Kecamatan Munjungan. Jumlah kamar: 14.",
+      "location": "Kec. Munjungan, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/sinarguru/800/600",
+      "images": [
+        "https://picsum.photos/seed/sinarguru1/800/600"
+      ],
+      "latitude": -8.442,
+      "longitude": 111.508,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.442,111.508",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 120000,
+      "rating": 4.0,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_hotel_pondok_konang",
+      "name": "Hotel Pondok Konang",
+      "categoryId": "cat_hotel",
+      "description": "Hotel Pondok Konang berlokasi di Desa Nglebeng, Kec. Panggul. Jumlah kamar: 15.",
+      "location": "Kec. Panggul, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/pondokkonang/800/600",
+      "images": [
+        "https://picsum.photos/seed/pondokkonang1/800/600"
+      ],
+      "latitude": -8.338,
+      "longitude": 111.609,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.338,111.609",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 175000,
+      "rating": 4.1,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_hotel_karanggongso",
+      "name": "Hotel Karanggongso",
+      "categoryId": "cat_hotel",
+      "description": "Hotel Karanggongso berlokasi di Desa Tasikmadu, Kec. Watulimo. Jumlah kamar: 15.",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/hotelkaranggongso/800/600",
+      "images": [
+        "https://picsum.photos/seed/hotelkaranggongso1/800/600"
+      ],
+      "latitude": -8.2862,
+      "longitude": 111.7224,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.2862,111.7224",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 200000,
+      "rating": 4.1,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_kpri_sinar_baru",
+      "name": "Penginapan KPRI Sinar Baru",
+      "categoryId": "cat_hotel",
+      "description": "Penginapan KPRI Sinar Baru berlokasi di Munjungan. Jumlah kamar: 16.",
+      "location": "Kec. Munjungan, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/kprisinarbaru/800/600",
+      "images": [
+        "https://picsum.photos/seed/kprisinarbaru1/800/600"
+      ],
+      "latitude": -8.445,
+      "longitude": 111.506,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.445,111.506",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 120000,
+      "rating": 4.0,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_hotel_moro_seneng",
+      "name": "Hotel Moro Seneng",
+      "categoryId": "cat_hotel",
+      "description": "Hotel Moro Seneng berlokasi di Jl. Soekarno-Hatta Gg. Apel No. 13, Kelutan, Trenggalek. Jumlah kamar: 27.",
+      "location": "Kec. Trenggalek, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/moroseneng/800/600",
+      "images": [
+        "https://picsum.photos/seed/moroseneng1/800/600"
+      ],
+      "latitude": -8.065,
+      "longitude": 111.716,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.065,111.716",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 220000,
+      "rating": 4.1,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_hotel_sanra",
+      "name": "Hotel Sanra",
+      "categoryId": "cat_hotel",
+      "description": "Hotel Sanra berlokasi di Dsn. Bendogolor 36/10, Desa Wonocoyo, Kec. Panggul. Jumlah kamar: 30. Fasilitas: AC, Smart TV, Wastafel, Water Heater, Shower.",
+      "location": "Kec. Panggul, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/hotelsanra/800/600",
+      "images": [
+        "https://picsum.photos/seed/hotelsanra1/800/600",
+        "https://picsum.photos/seed/hotelsanra2/800/600"
+      ],
+      "latitude": -8.271,
+      "longitude": 111.511,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.271,111.511",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 280000,
+      "rating": 4.3,
+      "isRecommended": true
+    },
+    {
+      "id": "acc_omah_blado",
+      "name": "Omah Blado Resort",
+      "categoryId": "cat_hotel",
+      "description": "Omah Blado Resort berlokasi di Desa Masaran, Kec. Munjungan. Jumlah kamar: 8. Fasilitas: AC, TV, Water Heater.",
+      "location": "Kec. Munjungan, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/omahblado/800/600",
+      "images": [
+        "https://picsum.photos/seed/omahblado1/800/600",
+        "https://picsum.photos/seed/omahblado2/800/600"
+      ],
+      "latitude": -8.45,
+      "longitude": 111.495,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.45,111.495",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 300000,
+      "rating": 4.3,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_penginapan_sinar_gunu",
+      "name": "Penginapan Sinar Gunu",
+      "categoryId": "cat_hotel",
+      "description": "Penginapan Sinar Gunu berlokasi di kawasan Panggul, dekat Pantai Kili-Kili.",
+      "location": "Kec. Panggul, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/sinargunu/800/600",
+      "images": [
+        "https://picsum.photos/seed/sinargunu1/800/600"
+      ],
+      "latitude": -8.36,
+      "longitude": 111.58,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.36,111.58",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 120000,
+      "rating": 4.0,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_penginapan_kuda_bali",
+      "name": "Penginapan Kuda Bali",
+      "categoryId": "cat_hotel",
+      "description": "Penginapan Kuda Bali berlokasi di Munjungan, dekat kawasan pantai.",
+      "location": "Kec. Munjungan, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/kudabali/800/600",
+      "images": [
+        "https://picsum.photos/seed/kudabali1/800/600"
+      ],
+      "latitude": -8.435,
+      "longitude": 111.515,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.435,111.515",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 120000,
+      "rating": 4.0,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_villa_bukit_hijau",
+      "name": "Villa Bukit Hijau",
+      "categoryId": "cat_villa",
+      "description": "Villa Bukit Hijau menawarkan pengalaman menginap premium di tengah perbukitan hijau Trenggalek. Dilengkapi dengan private pool, dapur lengkap, dan teras luas dengan pemandangan alam yang memukau. Cocok untuk keluarga atau rombongan kecil.",
+      "location": "Kec. Bendungan, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/villa_bukit/800/600",
+      "images": [
+        "https://picsum.photos/seed/villa_bukit1/800/600",
+        "https://picsum.photos/seed/villa_bukit2/800/600",
+        "https://picsum.photos/seed/villa_bukit3/800/600"
+      ],
+      "latitude": -8.12,
+      "longitude": 111.71,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.12,111.71",
+      "hasVirtualTour": true,
+      "maps360Url": "https://example.com/360/villa_bukit_hijau",
+      "pricePerNight": 750000,
+      "rating": 4.8,
+      "isRecommended": true
+    },
+    {
+      "id": "acc_homestay_mbak_sum",
+      "name": "Homestay Mbak Sum",
+      "categoryId": "cat_homestay",
+      "description": "Homestay Mbak Sum menghadirkan nuansa rumah sendiri di Trenggalek. Dikelola oleh warga lokal yang ramah, tamu bisa merasakan kehidupan desa yang autentik dan menikmati masakan rumahan khas Trenggalek.",
+      "location": "Kec. Durenan, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/homestay_sum/800/600",
+      "images": [
+        "https://picsum.photos/seed/homestay_sum1/800/600",
+        "https://picsum.photos/seed/homestay_sum2/800/600"
+      ],
+      "latitude": -8.105,
+      "longitude": 111.82,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.105,111.82",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 150000,
+      "rating": 4.6,
+      "isRecommended": false
+    },
+    {
+      "id": "acc_glamping_lowo_camp",
+      "name": "Lowo Camp Glamping",
+      "categoryId": "cat_glamping",
+      "description": "Lowo Camp Glamping menawarkan pengalaman berkemah mewah di kaki perbukitan dekat Goa Lowo. Tenda-tenda premium dilengkapi kasur nyaman, pencahayaan hangat, dan sarapan pagi.",
+      "location": "Kec. Watulimo, Kabupaten Trenggalek, Jawa Timur",
+      "imageUrl": "https://picsum.photos/seed/glamping_lowo/800/600",
+      "images": [
+        "https://picsum.photos/seed/glamping_lowo1/800/600",
+        "https://picsum.photos/seed/glamping_lowo2/800/600",
+        "https://picsum.photos/seed/glamping_lowo3/800/600"
+      ],
+      "latitude": -8.058,
+      "longitude": 111.724,
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=-8.058,111.724",
+      "hasVirtualTour": false,
+      "maps360Url": null,
+      "pricePerNight": 450000,
+      "rating": 4.7,
+      "isRecommended": true
+    }
+  ],
+
+  "packages": [
+    {
+      "id": "pkg_pantai_2d1n",
+      "categoryId": "cat_paket_wisata",
+      "name": "Paket Pantai 2 Hari 1 Malam",
+      "description": "Nikmati keindahan pantai Trenggalek selama 2 hari 1 malam. Rasakan deburan ombak Pantai Prigi dan pesona sunset Pantai Damas dalam satu perjalanan tak terlupakan.",
+      "imageUrl": "https://picsum.photos/seed/pkg1/800/600",
+      "images": [
+        "https://picsum.photos/seed/pkg1a/800/600",
+        "https://picsum.photos/seed/pkg1b/800/600"
+      ],
+      "price": 350000,
+      "durationDays": 2,
+      "durationNights": 1,
+      "includes": ["Pemandu wisata", "Tiket masuk destinasi"],
+      "destinationIds": ["dest_pantai_prigi", "dest_pantai_damas"],
+      "isActive": true,
+      "tiers": [
+        {
+          "name": "Hemat",
+          "price": 350000,
+          "description": "Cocok untuk solo traveler atau pasangan yang ingin menikmati pantai dengan budget terjangkau.",
+          "includes": ["Tiket masuk 2 destinasi", "Pemandu wisata lokal", "Air mineral"],
+          "maxPerson": 2,
+          "isPopular": false
+        },
+        {
+          "name": "Standar",
+          "price": 550000,
+          "description": "Paket terlengkap untuk keluarga kecil. Sudah termasuk penginapan 1 malam dan makan pagi.",
+          "includes": ["Tiket masuk 2 destinasi", "Pemandu wisata lokal", "Penginapan 1 malam", "Makan pagi 2x", "Air mineral"],
+          "maxPerson": 4,
+          "isPopular": true
+        },
+        {
+          "name": "Premium",
+          "price": 850000,
+          "description": "Pengalaman wisata pantai terbaik dengan fasilitas lengkap.",
+          "includes": ["Tiket masuk 2 destinasi", "Pemandu wisata profesional", "Penginapan 1 malam bintang 3", "Makan 3x sehari", "Transport antar destinasi", "Antar-jemput dari kota", "Asuransi perjalanan"],
+          "maxPerson": 8,
+          "isPopular": false
+        }
+      ]
+    },
+    {
+      "id": "pkg_lengkap_3d2n",
+      "categoryId": "cat_paket_wisata",
+      "name": "Paket Lengkap Trenggalek 3 Hari 2 Malam",
+      "description": "Jelajahi keindahan alam, pantai, dan kuliner khas Trenggalek dalam satu paket lengkap 3 hari 2 malam.",
+      "imageUrl": "https://picsum.photos/seed/pkg2/800/600",
+      "images": [
+        "https://picsum.photos/seed/pkg2a/800/600",
+        "https://picsum.photos/seed/pkg2b/800/600"
+      ],
+      "price": 650000,
+      "durationDays": 3,
+      "durationNights": 2,
+      "includes": ["Pemandu wisata", "Tiket masuk destinasi"],
+      "destinationIds": ["dest_pantai_prigi", "dest_pantai_damas", "dest_goa_lowo"],
+      "isActive": true,
+      "tiers": [
+        {
+          "name": "Hemat",
+          "price": 650000,
+          "description": "Paket backpacker untuk kamu yang ingin menjelajah Trenggalek dengan budget minimal.",
+          "includes": ["Tiket masuk 3 destinasi", "Pemandu wisata lokal", "Air mineral"],
+          "maxPerson": 2,
+          "isPopular": false
+        },
+        {
+          "name": "Standar",
+          "price": 950000,
+          "description": "Pilihan terbaik untuk keluarga. Sudah termasuk penginapan 2 malam dan makan lengkap.",
+          "includes": ["Tiket masuk 3 destinasi", "Pemandu wisata lokal", "Penginapan 2 malam", "Makan 3x sehari", "Transport antar destinasi", "Air mineral"],
+          "maxPerson": 4,
+          "isPopular": true
+        },
+        {
+          "name": "Premium",
+          "price": 1500000,
+          "description": "Liburan all-inclusive tanpa khawatir. Semua sudah diurus dari akomodasi hingga dokumentasi.",
+          "includes": ["Tiket masuk 3 destinasi", "Pemandu wisata profesional", "Penginapan 2 malam bintang 3", "Makan 3x sehari", "Transport antar destinasi", "Antar-jemput dari kota", "Asuransi perjalanan", "Dokumentasi foto", "Oleh-oleh khas Trenggalek"],
+          "maxPerson": 8,
+          "isPopular": false
+        }
+      ]
+    }
+  ]
+}

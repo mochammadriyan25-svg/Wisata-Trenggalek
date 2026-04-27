@@ -12,7 +12,20 @@
           "package_name": "com.example.aplikasi_wisata"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "633396942184-5568dnbgdbd5tgo4iusj8stigl5m21d1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.aplikasi_wisata",
+            "certificate_hash": "f30c398e6adb053b58ea42ee5fb2cc7f34fffa86"
+          }
+        },
+        {
+          "client_id": "633396942184-9fai14jp7h3ki5dpoc6pupnun4koieu5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAAY0Bk9phP8S0C_jQMKjXkR00bH74X41M"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "633396942184-9fai14jp7h3ki5dpoc6pupnun4koieu5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "633396942184-neuuqscfcgftfkhvcnkmme58r1l74oj5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.aplikasiWisata"
+              }
+            }
+          ]
         }
       }
     }
