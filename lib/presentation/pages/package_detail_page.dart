@@ -893,26 +893,6 @@ class _BottomBar extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.shopping_bag_outlined,
-                        color: AppColors.textOnDark,
-                        size: 18,
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Text(
-                        'Pesan Sekarang',
-                        style: AppTextStyles.buttonLabel.copyWith(
-                          fontSize: 15,
-                          color: AppColors.textOnDark,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ),
             ),
           ),
