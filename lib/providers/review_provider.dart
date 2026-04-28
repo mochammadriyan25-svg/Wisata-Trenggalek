@@ -1,4 +1,3 @@
-
 // lib/providers/review_provider.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,13 +5,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../data/models/review_model.dart';
 import '../data/services/firestore/review_service.dart';
 
+export '../data/services/firestore/review_service.dart' show ReviewTarget;
+
 enum ReviewSubmitState { idle, loading, success, error, alreadyReviewed }
 
 class ReviewProvider extends ChangeNotifier {
   final ReviewService _reviewService;
 
   ReviewProvider({ReviewService? reviewService})
-      : _reviewService = reviewService ?? ReviewService();
+    : _reviewService = reviewService ?? ReviewService();
 
   // ─── State ───────────────────────────────────────────────
   ReviewSubmitState _submitState = ReviewSubmitState.idle;
@@ -31,15 +32,14 @@ class ReviewProvider extends ChangeNotifier {
   String get _userId => FirebaseAuth.instance.currentUser?.uid ?? '';
   String get _userName =>
       FirebaseAuth.instance.currentUser?.displayName ?? 'Anonymous';
-  String get _userAvatar =>
-      FirebaseAuth.instance.currentUser?.photoURL ?? '';
+  String get _userAvatar => FirebaseAuth.instance.currentUser?.photoURL ?? '';
 
-  // ─── Stream review berdasarkan destinasiId ────────────────
-  Stream<List<ReviewModel>> getReviews(String destinationId) {
-    return _reviewService.getReviews(destinationId);
+  // ─── Stream reviews ───────────────────────────────────────
+  Stream<List<ReviewModel>> getReviews(ReviewTarget target, String targetId) {
+    return _reviewService.getReviews(target, targetId);
   }
 
-  // ─── Toggle tampil/sembunyikan form ──────────────────────
+  // ─── Toggle form ─────────────────────────────────────────
   void toggleForm() {
     _showForm = !_showForm;
     _submitState = ReviewSubmitState.idle;
@@ -52,7 +52,7 @@ class ReviewProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ─── Update rating yang dipilih ───────────────────────────
+  // ─── Set rating ──────────────────────────────────────────
   void setRating(double rating) {
     _selectedRating = rating;
     notifyListeners();
@@ -60,7 +60,8 @@ class ReviewProvider extends ChangeNotifier {
 
   // ─── Submit review ────────────────────────────────────────
   Future<void> submitReview({
-    required String destinationId,
+    required ReviewTarget target,
+    required String targetId,
     required String comment,
   }) async {
     if (comment.trim().isEmpty) return;
@@ -70,10 +71,10 @@ class ReviewProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Cek apakah user sudah pernah review
       final alreadyReviewed = await _reviewService.hasUserReviewed(
+        target,
+        targetId,
         _userId,
-        destinationId,
       );
 
       if (alreadyReviewed) {
@@ -84,7 +85,6 @@ class ReviewProvider extends ChangeNotifier {
 
       final review = ReviewModel(
         id: '',
-        destinationId: destinationId,
         userId: _userId,
         userName: _userName,
         userAvatar: _userAvatar,
@@ -93,7 +93,7 @@ class ReviewProvider extends ChangeNotifier {
         createdAt: Timestamp.now(),
       );
 
-      await _reviewService.addReview(review);
+      await _reviewService.addReview(target, targetId, review);
 
       _submitState = ReviewSubmitState.success;
       _showForm = false;
@@ -106,7 +106,21 @@ class ReviewProvider extends ChangeNotifier {
     }
   }
 
-  // ─── Reset state setelah snackbar ditampilkan ─────────────
+  // ─── Delete review ────────────────────────────────────────
+  Future<void> deleteReview({
+    required ReviewTarget target,
+    required String targetId,
+    required String reviewId,
+  }) async {
+    try {
+      await _reviewService.deleteReview(target, targetId, reviewId);
+    } catch (e) {
+      _errorMessage = 'Gagal menghapus ulasan.';
+      notifyListeners();
+    }
+  }
+
+  // ─── Reset state ──────────────────────────────────────────
   void resetSubmitState() {
     _submitState = ReviewSubmitState.idle;
     notifyListeners();

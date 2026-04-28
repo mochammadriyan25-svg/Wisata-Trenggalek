@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../data/models/destination_model.dart';
+import '../data/models/favorite_model.dart';
 import '../providers/favorite_provider.dart';
 
 class FavoriteCard extends StatelessWidget {
@@ -17,12 +18,14 @@ class FavoriteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final favoriteProvider = context.watch<FavoriteProvider>();
-    final isFavorite = favoriteProvider.isFavorite(destination.id);
+    final isFavorite = favoriteProvider.isFavorite(
+      destination.id,
+      FavoriteItemType.destination, // ✅ tambah ini
+    );
 
     return GestureDetector(
       onTap: () {
         // Navigasi ke detail page jika diinginkan
-        // Navigator.push(...);
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
@@ -73,12 +76,12 @@ class FavoriteCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      // ✅ Bisa di-tap untuk toggle favorite
                       GestureDetector(
                         onTap: () {
                           context.read<FavoriteProvider>().toggleFavorite(
                             userId,
                             destination.id,
+                            FavoriteItemType.destination, // ✅ tambah ini
                           );
                         },
                         child: Container(

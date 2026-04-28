@@ -8,7 +8,8 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../data/models/destination_model.dart';
 import '../../data/models/accommodation_model.dart';
-
+// tambah import di bagian atas
+import '../../data/models/package_model.dart';
 // ── CATEGORY CHIP ─────────────────────────────────────────────────────────────
 
 class ExploreCategoryChip extends StatelessWidget {
@@ -69,7 +70,7 @@ class ExploreCategoryChip extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// DESTINATION CARD — layout horizontal ASLI (dikembalikan persis seperti semula)
+// DESTINATION CARD — layout horizontal
 // ═══════════════════════════════════════════════════════════════════════════════
 
 class ExploreDestinationCard extends StatelessWidget {
@@ -255,7 +256,7 @@ class ExploreDestinationCard extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// ACCOMMODATION CARD — vertikal stylish dengan hero image + gradient overlay
+// ACCOMMODATION CARD — layout horizontal (seragam dengan destination card)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 class ExploreAccommodationCard extends StatelessWidget {
@@ -272,261 +273,360 @@ class ExploreAccommodationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
       child: Container(
-        margin: const EdgeInsets.only(bottom: AppSpacing.md),
+        margin: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
+        padding: const EdgeInsets.all(AppSpacing.sm + 4),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          border: Border.all(
+            color: AppColors.divider.withOpacity(0.7),
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadowNeutral.withOpacity(0.10),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
+              color: AppColors.shadowNeutral.withOpacity(0.07),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Hero image dengan gradient + teks overlay
-              _AccommodationHeroImage(item: item),
-
-              // ── Body info
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.md,
-                  AppSpacing.sm + 2,
-                  AppSpacing.md,
-                  AppSpacing.md,
+        child: Row(
+          children: [
+            // ── Thumbnail
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  child: Image.network(
+                    item.imageUrl,
+                    width: 90,
+                    height: 90,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        width: 90,
+                        height: 90,
+                        color: AppColors.primarySurface,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      );
+                    },
+                    errorBuilder:
+                        (_, __, ___) => Container(
+                          width: 90,
+                          height: 90,
+                          decoration: const BoxDecoration(
+                            gradient: AppColors.primaryGradient,
+                          ),
+                          child: const Icon(
+                            Icons.hotel_rounded,
+                            color: AppColors.textOnDark,
+                            size: 28,
+                          ),
+                        ),
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    // Harga per malam
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: AppColors.primarySurface,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.king_bed_outlined,
-                              size: 14,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                          const SizedBox(width: 7),
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Per malam",
-                                  style: AppTextStyles.caption.copyWith(
-                                    fontSize: 10,
-                                    color: AppColors.textHint,
-                                  ),
-                                ),
-                                Text(
-                                  item.formattedPricePerNight,
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    fontSize: 13,
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                if (item.isRecommended)
+                  Positioned(
+                    top: 5,
+                    left: 5,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.radiusSm,
+                        ),
+                      ),
+                      child: const Text(
+                        "⭐ Top",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
+                  ),
+              ],
+            ),
 
-                    // Divider vertikal
-                    Container(
-                      height: 32,
-                      width: 1,
-                      color: AppColors.divider,
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm,
-                      ),
+            const SizedBox(width: AppSpacing.sm + 4),
+
+            // ── Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.headlineSmall.copyWith(
+                      fontSize: 14,
+                      color: AppColors.textPrimary,
                     ),
-
-                    // Rating + VR badge
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        ExploreRatingBadge(rating: item.rating),
-                        if (item.hasVirtualTour) ...[
-                          const SizedBox(height: 4),
-                          const ExploreVirtualTourBadge(),
-                        ],
+                  ),
+                  const SizedBox(height: AppSpacing.xs + 2),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_rounded,
+                        size: 12,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: 3),
+                      Expanded(
+                        child: Text(
+                          item.location,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.xs + 2),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.king_bed_outlined,
+                        size: 12,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        item.formattedPricePerNight,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          fontSize: 12,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Row(
+                    children: [
+                      ExploreRatingBadge(rating: item.rating),
+                      if (item.hasVirtualTour) ...[
+                        const SizedBox(width: AppSpacing.sm),
+                        const ExploreVirtualTourBadge(),
                       ],
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.textHint,
+              size: 20,
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-// ── Hero image khusus Akomodasi ───────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// PACKAGE CARD — layout horizontal (seragam dengan card lainnya)
+// ═══════════════════════════════════════════════════════════════════════════════
 
-class _AccommodationHeroImage extends StatelessWidget {
-  final AccommodationModel item;
+class ExplorePackageCard extends StatelessWidget {
+  final PackageModel item;
+  final VoidCallback onTap;
 
-  const _AccommodationHeroImage({required this.item});
+  const ExplorePackageCard({
+    super.key,
+    required this.item,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 170,
-      width: double.infinity,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Gambar
-          Image.network(
-            item.imageUrl,
-            fit: BoxFit.cover,
-            loadingBuilder: (context, child, progress) {
-              if (progress == null) return child;
-              return Container(
-                color: AppColors.primarySurface,
-                child: const Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.primary,
-                  ),
-                ),
-              );
-            },
-            errorBuilder:
-                (_, __, ___) => Container(
-                  color: AppColors.primarySurface,
-                  child: Icon(
-                    Icons.hotel_rounded,
-                    color: AppColors.primary.withOpacity(0.4),
-                    size: 48,
-                  ),
-                ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
+        padding: const EdgeInsets.all(AppSpacing.sm + 4),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          border: Border.all(
+            color: AppColors.divider.withOpacity(0.7),
+            width: 1,
           ),
-
-          // Gradient gelap dari bawah
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: [0.35, 1.0],
-                colors: [Colors.transparent, Colors.black87],
-              ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadowNeutral.withOpacity(0.07),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
             ),
-          ),
-
-          // Badge "⭐ Top Pick"
-          if (item.isRecommended)
-            Positioned(
-              top: AppSpacing.sm,
-              left: AppSpacing.sm,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.35),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+          ],
+        ),
+        child: Row(
+          children: [
+            // ── Thumbnail
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  child: Image.network(
+                    item.imageUrl,
+                    width: 90,
+                    height: 90,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        width: 90,
+                        height: 90,
+                        color: AppColors.primarySurface,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      );
+                    },
+                    errorBuilder:
+                        (_, __, ___) => Container(
+                          width: 90,
+                          height: 90,
+                          decoration: const BoxDecoration(
+                            gradient: AppColors.primaryGradient,
+                          ),
+                          child: const Icon(
+                            Icons.card_travel_rounded,
+                            color: AppColors.textOnDark,
+                            size: 28,
+                          ),
+                        ),
+                  ),
                 ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text("⭐", style: TextStyle(fontSize: 10)),
-                    SizedBox(width: 3),
-                    Text(
-                      "Top Pick",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.3,
+                // Badge "Top" jika isActive
+                if (item.isActive)
+                  Positioned(
+                    top: 5,
+                    left: 5,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.radiusSm,
+                        ),
+                      ),
+                      child: const Text(
+                        "✓ Aktif",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
-                  ],
-                ),
-              ),
+                  ),
+              ],
             ),
 
-          // Nama & lokasi di atas gradient
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
+            const SizedBox(width: AppSpacing.sm + 4),
+
+            // ── Info
+            Expanded(
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     item.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.2,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black54,
-                          blurRadius: 6,
-                          offset: Offset(0, 1),
-                        ),
-                      ],
-                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.headlineSmall.copyWith(
+                      fontSize: 14,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs + 2),
                   Row(
                     children: [
                       const Icon(
                         Icons.location_on_rounded,
                         size: 12,
-                        color: Colors.white70,
+                        color: AppColors.primary,
                       ),
                       const SizedBox(width: 3),
-                      Flexible(
+                      Expanded(
                         child: Text(
                           item.location,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.xs + 2),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.card_travel_rounded,
+                        size: 12,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        item.formattedPrice,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          fontSize: 12,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Row(
+                    children: [
+                      ExploreRatingBadge(rating: item.rating),
+                      if (item.hasVirtualTour) ...[
+                        const SizedBox(width: AppSpacing.sm),
+                        const ExploreVirtualTourBadge(),
+                      ],
                     ],
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.textHint,
+              size: 20,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -648,7 +748,7 @@ class ExploreVirtualTourBadge extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// LOADING STATE (Skeleton) — horizontal sesuai destination card asli
+// LOADING STATE (Skeleton) — horizontal sesuai card layout
 // ═══════════════════════════════════════════════════════════════════════════════
 
 class ExploreLoadingState extends StatelessWidget {

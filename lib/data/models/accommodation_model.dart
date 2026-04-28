@@ -44,11 +44,11 @@ class AccommodationModel {
     required double rating,
     required this.isRecommended,
     this.createdAt,
-  })  : rating = rating.clamp(0.0, 5.0),
-        assert(
-          !hasVirtualTour || maps360Url != null,
-          'maps360Url wajib diisi jika hasVirtualTour = true',
-        );
+  }) : rating = rating.clamp(0.0, 5.0),
+       assert(
+         !hasVirtualTour || maps360Url != null,
+         'maps360Url wajib diisi jika hasVirtualTour = true',
+       );
 
   // ── GETTERS
 

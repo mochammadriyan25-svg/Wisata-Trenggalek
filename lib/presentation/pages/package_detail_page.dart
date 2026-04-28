@@ -2,13 +2,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:aplikasi_wisata/data/models/package_model.dart';
-import 'package:aplikasi_wisata/data/models/destination_model.dart';
-import 'package:aplikasi_wisata/providers/destination_provider.dart';
-import 'package:aplikasi_wisata/presentation/pages/detail_page.dart';
+import 'package:aplikasi_wisata/data/services/firestore/package_service.dart';
+import 'package:aplikasi_wisata/providers/auth_provider.dart';
+import 'package:aplikasi_wisata/providers/favorite_provider.dart';
+import 'package:aplikasi_wisata/widgets/review/review_section.dart';
+import 'package:aplikasi_wisata/data/services/firestore/review_service.dart';
+import 'package:aplikasi_wisata/core/utils/auth_guard.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../widgets/detail/detail_recommendation_section.dart';
+import '../../widgets/detail/accommodation_recommendation_section.dart';
+import '../../data/models/favorite_model.dart';
 
 class PackageDetailPage extends StatefulWidget {
   final PackageModel package;
@@ -19,24 +28,125 @@ class PackageDetailPage extends StatefulWidget {
 }
 
 class _PackageDetailPageState extends State<PackageDetailPage> {
-  int _selectedTierIndex = 0;
-
-  PackageTier? get _selectedTier =>
-      widget.package.hasTiers ? widget.package.tiers[_selectedTierIndex] : null;
+  bool _isTogglingFavorite = false;
+  final ScrollController _scrollController = ScrollController();
+  double _scrollOffset = 0;
 
   @override
   void initState() {
     super.initState();
-    // Default pilih tier Standar (isPopular) kalau ada
-    if (widget.package.hasTiers) {
-      final popularIndex = widget.package.tiers.indexWhere((t) => t.isPopular);
-      if (popularIndex != -1) _selectedTierIndex = popularIndex;
+    _scrollController.addListener(() {
+      if (mounted) {
+        setState(() => _scrollOffset = _scrollController.offset.clamp(0, 300));
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  String? get _userId => context.read<AuthProvider>().userId;
+
+  Future<void> _toggleFavorite() async {
+    final userId = _userId;
+
+    if (userId == null || userId.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'User ID tidak ditemukan. Silakan login ulang.',
+            ),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            ),
+          ),
+        );
+      }
+      return;
     }
+
+    if (_isTogglingFavorite) return;
+
+    final wasFavorite = context.read<FavoriteProvider>().isFavorite(
+      widget.package.id,
+      FavoriteItemType.package,
+    );
+
+    setState(() => _isTogglingFavorite = true);
+
+    try {
+      await context.read<FavoriteProvider>().toggleFavorite(
+        userId,
+        widget.package.id,
+        FavoriteItemType.package,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(
+                  wasFavorite ? Icons.favorite_border : Icons.favorite,
+                  color: AppColors.textOnDark,
+                  size: 18,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    wasFavorite
+                        ? '${widget.package.name} dihapus dari Favorite'
+                        : '${widget.package.name} ditambahkan ke Favorite!',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textOnDark,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor:
+                wasFavorite ? AppColors.textSecondary : AppColors.primary,
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isTogglingFavorite = false);
+    }
+  }
+
+  Future<void> _openUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   @override
   Widget build(BuildContext context) {
     final pkg = widget.package;
+    final isFavorite = context.watch<FavoriteProvider>().isFavorite(
+      pkg.id,
+      FavoriteItemType.package,
+    );
 
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -45,165 +155,147 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
       ),
     );
 
-    // ── FIX: Struktur Column (bukan Stack) agar _BottomBar
-    //         tidak mengapung di atas konten scroll.
-    //         Stack tetap dipakai HANYA untuk hero + back button.
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Column(
+      body: Stack(
         children: [
-          // ── HERO + BACK BUTTON (Stack lokal, bukan full-page)
-          Stack(
-            children: [
-              _HeroImage(imageUrl: pkg.imageUrl),
-              Positioned(
-                top: MediaQuery.of(context).padding.top + AppSpacing.sm,
-                left: AppSpacing.md,
-                child: _BackButton(),
-              ),
-            ],
+          // ── SCROLLABLE CONTENT
+          SingleChildScrollView(
+            controller: _scrollController,
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: [
+                // ── HERO + INFO OVERLAY
+                _HeroWithInfoSection(
+                  pkg: pkg,
+                  onOpenUrl: _openUrl,
+                  scrollOffset: _scrollOffset,
+                ),
+
+                // ── CONTENT CARD
+                _ContentCard(
+                  pkg: pkg,
+                  isFavorite: isFavorite,
+                  isTogglingFavorite: _isTogglingFavorite,
+                  onOpenUrl: _openUrl,
+                  onFavorite:
+                      () => AuthGuard.checkAndRun(
+                        context: context,
+                        action: _toggleFavorite,
+                        redirectBackRoute: '/home_screen',
+                      ),
+                ),
+              ],
+            ),
           ),
 
-          // ── SCROLLABLE CONTENT
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Container(
-                // Rounded top corners menyambung dari hero
-                decoration: const BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(AppSpacing.radiusXl),
-                  ),
-                ),
-                // Geser naik sedikit agar overlap dengan hero
-                transform: Matrix4.translationValues(
-                  0,
-                  -AppSpacing.radiusXl,
-                  0,
-                ),
-                padding: EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  AppSpacing.lg,
-                  AppSpacing.lg,
-                  // Padding bawah cukup (tidak perlu kompensasi bottom bar
-                  // karena bottom bar sudah di luar scroll)
-                  AppSpacing.lg,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Nama + Durasi
-                    _PackageHeader(pkg: pkg),
-                    const SizedBox(height: AppSpacing.lg),
+          // ── BACK BUTTON (floating, glassmorphism → solid saat scroll)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + AppSpacing.sm,
+            left: AppSpacing.md,
+            child: _GlassBackButton(scrollOffset: _scrollOffset),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-                    // Deskripsi
-                    _SectionLabel(label: 'Tentang Paket'),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      pkg.description,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
-                        height: 1.65,
-                        fontSize: 14,
+// ─────────────────────────────────────────────
+// HERO WITH INFO OVERLAY
+// ─────────────────────────────────────────────
+
+class _HeroWithInfoSection extends StatelessWidget {
+  final PackageModel pkg;
+  final Future<void> Function(String) onOpenUrl;
+  final double scrollOffset;
+
+  const _HeroWithInfoSection({
+    required this.pkg,
+    required this.onOpenUrl,
+    this.scrollOffset = 0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const double heroHeight = 420;
+    final double parallaxShift = scrollOffset * 0.4;
+
+    return SizedBox(
+      height: heroHeight,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // ── GAMBAR dengan parallax transform
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(28),
+            ),
+            child: Transform.translate(
+              offset: Offset(0, -parallaxShift),
+              child: Transform.scale(
+                scale: 1.0 + (parallaxShift / heroHeight).clamp(0, 0.12),
+                child: Image.network(
+                  pkg.imageUrl,
+                  fit: BoxFit.cover,
+                  height: heroHeight + 80,
+                  errorBuilder:
+                      (_, __, ___) => Container(
+                        decoration: const BoxDecoration(
+                          gradient: AppColors.primaryGradient,
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.card_travel_rounded,
+                            size: 64,
+                            color: AppColors.textOnDark,
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
+                ),
+              ),
+            ),
+          ),
 
-                    // ── PILIH PAKET (Traveloka style)
-                    if (pkg.hasTiers) ...[
-                      _SectionLabel(label: 'Pilih Paket'),
-                      const SizedBox(height: AppSpacing.sm),
-                      _TierSelector(
-                        tiers: pkg.tiers,
-                        selectedIndex: _selectedTierIndex,
-                        onSelect: (i) => setState(() => _selectedTierIndex = i),
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-
-                      // Detail tier yang dipilih
-                      if (_selectedTier != null) ...[
-                        _TierDetail(tier: _selectedTier!),
-                        const SizedBox(height: AppSpacing.lg),
-                      ],
-                    ],
-
-                    // Fasilitas umum
-                    if (pkg.includes.isNotEmpty) ...[
-                      _SectionLabel(label: 'Fasilitas Umum'),
-                      const SizedBox(height: AppSpacing.sm),
-                      _IncludesList(includes: pkg.includes),
-                      const SizedBox(height: AppSpacing.lg),
-                    ],
-
-                    // Destinasi dalam paket
-                    // FIX: widget ini sekarang fully visible karena
-                    //      tidak tertutup bottom bar yang mengapung
-                    if (pkg.hasDestinations) ...[
-                      _SectionLabel(label: 'Destinasi dalam Paket'),
-                      const SizedBox(height: AppSpacing.sm),
-                      _DestinationList(destinationIds: pkg.destinationIds),
-                      // Sedikit spacing tambahan di akhir list
-                      const SizedBox(height: AppSpacing.md),
-                    ],
+          // ── GRADIENT OVERLAY
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(28),
+            ),
+            child: const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0.0, 0.3, 0.55, 0.75, 1.0],
+                  colors: [
+                    Color(0x33000000),
+                    Color(0x08000000),
+                    Color(0x55051914),
+                    Color(0xCC051410),
+                    Color(0xF5040E0C),
                   ],
                 ),
               ),
             ),
           ),
 
-          // ── BOTTOM BAR — di luar Expanded, tidak overlay konten
-          _BottomBar(tier: _selectedTier, fallbackPrice: pkg.formattedPrice),
-        ],
-      ),
-    );
-  }
-}
+          // ── VIRTUAL TOUR BUTTON (top-right)
+          if (pkg.hasVirtualTour && pkg.maps360Url != null)
+            Positioned(
+              top: MediaQuery.of(context).padding.top + AppSpacing.sm,
+              right: AppSpacing.md,
+              child: _GlassTourButton(onTap: () => onOpenUrl(pkg.maps360Url!)),
+            ),
 
-// ── SUB WIDGETS ────────────────────────────────────────────────────────────
-
-class _HeroImage extends StatelessWidget {
-  final String imageUrl;
-  const _HeroImage({required this.imageUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    // Tinggi hero = 260 + status bar agar gambar muncul di balik status bar
-    final topPadding = MediaQuery.of(context).padding.top;
-    return SizedBox(
-      height: 260 + topPadding,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.network(
-            imageUrl,
-            fit: BoxFit.cover,
-            errorBuilder:
-                (_, __, ___) => Container(
-                  decoration: const BoxDecoration(
-                    gradient: AppColors.primaryGradient,
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.card_travel_rounded,
-                      size: 56,
-                      color: AppColors.textOnDark,
-                    ),
-                  ),
-                ),
-          ),
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: [0.0, 0.6, 1.0],
-                colors: [
-                  Colors.transparent,
-                  Color(0x26064E4E),
-                  Color(0xBF0D2B2B),
-                ],
-              ),
+          // ── INFO OVERLAY (bottom) — fade out saat di-scroll
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Opacity(
+              opacity: (1.0 - ((scrollOffset - 20) / 100)).clamp(0.0, 1.0),
+              child: _HeroInfoOverlay(pkg: pkg),
             ),
           ),
         ],
@@ -212,127 +304,333 @@ class _HeroImage extends StatelessWidget {
   }
 }
 
-class _BackButton extends StatelessWidget {
+class _GlassTourButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _GlassTourButton({required this.onTap});
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pop(context),
+      onTap: onTap,
       child: Container(
-        width: 40,
-        height: 40,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: AppColors.surface.withOpacity(0.92),
-          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadowDeep.withOpacity(0.15),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
+          color: Colors.white.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.view_in_ar_rounded, size: 15, color: Colors.white),
+            const SizedBox(width: 6),
+            Text(
+              '360° Tour',
+              style: AppTextStyles.caption.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 11,
+                letterSpacing: 0.4,
+              ),
             ),
           ],
-        ),
-        child: const Icon(
-          Icons.arrow_back_ios_new_rounded,
-          size: 15,
-          color: AppColors.textPrimary,
         ),
       ),
     );
   }
 }
 
-class _PackageHeader extends StatelessWidget {
+class _HeroInfoOverlay extends StatelessWidget {
   final PackageModel pkg;
-  const _PackageHeader({required this.pkg});
+  const _HeroInfoOverlay({required this.pkg});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          pkg.name,
-          style: AppTextStyles.headlineLarge.copyWith(
-            fontSize: 20,
-            color: AppColors.textPrimary,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Nama paket
+          Text(
+            pkg.name,
+            style: AppTextStyles.headlineLarge.copyWith(
+              fontSize: 26,
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+              height: 1.15,
+              shadows: [
+                const Shadow(
+                  color: Color(0x55000000),
+                  blurRadius: 16,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.xs,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.primarySurface,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                border: Border.all(
-                  color: AppColors.primary.withOpacity(0.3),
-                  width: 1,
+          const SizedBox(height: 10),
+
+          // Baris bawah: lokasi + rating
+          Row(
+            children: [
+              // Lokasi
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.location_on_rounded,
+                      size: 13,
+                      color: Colors.white.withOpacity(0.8),
+                    ),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        pkg.location,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: Colors.white.withOpacity(0.8),
+                          fontSize: 12,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.calendar_today_rounded,
-                    size: 12,
-                    color: AppColors.primary,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    pkg.durationLabel,
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
+              const SizedBox(width: 12),
+
+              // Rating badge (realtime)
+              StreamBuilder<PackageModel?>(
+                stream: PackageService().streamById(pkg.id),
+                builder: (context, snapshot) {
+                  final rating = snapshot.data?.rating ?? pkg.rating;
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
                     ),
-                  ),
-                ],
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.star_rounded,
+                          size: 13,
+                          color: Color(0xFFFFD166),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          rating.toStringAsFixed(1),
+                          style: AppTextStyles.caption.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// GLASS BACK BUTTON
+// ─────────────────────────────────────────────
+
+class _GlassBackButton extends StatelessWidget {
+  final double scrollOffset;
+  const _GlassBackButton({this.scrollOffset = 0});
+
+  @override
+  Widget build(BuildContext context) {
+    final double solidRatio = (scrollOffset / 60).clamp(0.0, 1.0);
+    final Color bgGlass = Colors.white.withOpacity(0.18);
+    final Color bgSolid = AppColors.surface.withOpacity(0.96);
+    final Color iconGlass = Colors.white;
+    final Color iconSolid = AppColors.textPrimary;
+
+    return GestureDetector(
+      onTap: () => Navigator.pop(context),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: Color.lerp(bgGlass, bgSolid, solidRatio),
+          borderRadius: BorderRadius.circular(11),
+          border: Border.all(
+            color:
+                Color.lerp(
+                  Colors.white.withOpacity(0.28),
+                  AppColors.divider,
+                  solidRatio,
+                )!,
+            width: 1,
+          ),
+          boxShadow:
+              solidRatio > 0.5
+                  ? [
+                    BoxShadow(
+                      color: AppColors.shadowDeep.withOpacity(
+                        0.12 * solidRatio,
+                      ),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ]
+                  : [],
+        ),
+        child: Icon(
+          Icons.arrow_back_ios_new_rounded,
+          size: 14,
+          color: Color.lerp(iconGlass, iconSolid, solidRatio),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// CONTENT CARD
+// ─────────────────────────────────────────────
+
+class _ContentCard extends StatelessWidget {
+  final PackageModel pkg;
+  final bool isFavorite;
+  final bool isTogglingFavorite;
+  final Future<void> Function(String) onOpenUrl;
+  final VoidCallback onFavorite;
+
+  const _ContentCard({
+    required this.pkg,
+    required this.isFavorite,
+    required this.isTogglingFavorite,
+    required this.onOpenUrl,
+    required this.onFavorite,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.translate(
+      offset: const Offset(0, -22),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Drag handle
+            Center(
+              child: Container(
+                margin: const EdgeInsets.only(top: 14, bottom: 10),
+                width: 38,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.divider,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
             ),
-            const SizedBox(width: AppSpacing.sm),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.xs,
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.sm,
+                AppSpacing.lg,
+                AppSpacing.xl,
               ),
-              decoration: BoxDecoration(
-                color: AppColors.earthSurface,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                border: Border.all(
-                  color: AppColors.earthLight.withOpacity(0.5),
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.location_on_rounded,
-                    size: 12,
-                    color: AppColors.earth,
-                  ),
-                  const SizedBox(width: 4),
+                  // ── About
+                  const _SectionLabel(label: "Tentang Paket"),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
-                    '${pkg.destinationIds.length} Destinasi',
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.textEarth,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
+                    pkg.description,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.65,
+                      fontSize: 14,
                     ),
                   ),
+                  const SizedBox(height: AppSpacing.lg),
+
+                  // ── Galeri
+                  if (pkg.hasGallery) ...[
+                    const _SectionLabel(label: "Galeri"),
+                    const SizedBox(height: AppSpacing.sm),
+                    _GalleryRow(images: pkg.images),
+                    const SizedBox(height: AppSpacing.lg),
+                  ],
+
+                  // ── Map
+                  _MapSection(pkg: pkg, onOpenUrl: onOpenUrl),
+                  const SizedBox(height: AppSpacing.lg),
+
+                  Divider(color: AppColors.divider, thickness: 1),
+                  const SizedBox(height: AppSpacing.lg),
+
+                  // ── Reviews
+                  ReviewSection(target: ReviewTarget.package, targetId: pkg.id),
+
+                  Divider(color: AppColors.divider, thickness: 1),
+                  const SizedBox(height: AppSpacing.lg),
+
+                  // ── Rekomendasi Paket
+                  RecommendationSection(
+                    currentDestinationId: pkg.id,
+                    currentCategoryId: pkg.categoryId,
+                    currentLatitude: pkg.latitude,
+                    currentLongitude: pkg.longitude,
+                  ),
+
+                  Divider(color: AppColors.divider, thickness: 1),
+                  const SizedBox(height: AppSpacing.lg),
+
+                  // ── Akomodasi Terdekat
+                  AccommodationRecommendationSection(
+                    currentDestinationId: pkg.id,
+                    currentLatitude: pkg.latitude,
+                    currentLongitude: pkg.longitude,
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+
+                  // ── Action buttons
+                  _ActionButtons(
+                    isFavorite: isFavorite,
+                    isLoading: isTogglingFavorite,
+                    onFavorite: onFavorite,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
                 ],
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 }
+
+// ─────────────────────────────────────────────
+// SECTION LABEL
+// ─────────────────────────────────────────────
 
 class _SectionLabel extends StatelessWidget {
   final String label;
@@ -362,542 +660,251 @@ class _SectionLabel extends StatelessWidget {
   }
 }
 
-// ── TIER SELECTOR (Traveloka style) ───────────────────────────────────────
+// ─────────────────────────────────────────────
+// MAP SECTION
+// ─────────────────────────────────────────────
 
-class _TierSelector extends StatelessWidget {
-  final List<PackageTier> tiers;
-  final int selectedIndex;
-  final ValueChanged<int> onSelect;
+class _MapSection extends StatelessWidget {
+  final PackageModel pkg;
+  final Future<void> Function(String) onOpenUrl;
 
-  const _TierSelector({
-    required this.tiers,
-    required this.selectedIndex,
-    required this.onSelect,
+  const _MapSection({required this.pkg, required this.onOpenUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    final lat = pkg.latitude;
+    final lng = pkg.longitude;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const _SectionLabel(label: "Lokasi"),
+            GestureDetector(
+              onTap: () => onOpenUrl(pkg.mapsUrl),
+              child: Row(
+                children: [
+                  Text(
+                    "Get Directions",
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    size: 18,
+                    color: AppColors.primary,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          child: SizedBox(
+            height: 200,
+            child: FlutterMap(
+              options: MapOptions(
+                initialCenter: LatLng(lat, lng),
+                initialZoom: 14,
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  userAgentPackageName: 'com.aplikasi_wisata.app',
+                ),
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      width: 40,
+                      height: 40,
+                      point: LatLng(lat, lng),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.4),
+                              blurRadius: 10,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.location_on_rounded,
+                          color: AppColors.textOnDark,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// GALLERY ROW
+// ─────────────────────────────────────────────
+
+class _GalleryRow extends StatelessWidget {
+  final List<String> images;
+  const _GalleryRow({required this.images});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 100,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: images.length,
+        separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
+        itemBuilder:
+            (_, i) => ClipRRect(
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              child: Image.network(
+                images[i],
+                width: 130,
+                height: 100,
+                fit: BoxFit.cover,
+                errorBuilder:
+                    (_, __, ___) => Container(
+                      width: 130,
+                      height: 100,
+                      decoration: const BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                      ),
+                      child: const Icon(
+                        Icons.image_not_supported_rounded,
+                        color: AppColors.textOnDark,
+                      ),
+                    ),
+              ),
+            ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// ACTION BUTTONS (Favorite + Share)
+// ─────────────────────────────────────────────
+
+class _ActionButtons extends StatelessWidget {
+  final bool isFavorite;
+  final bool isLoading;
+  final VoidCallback onFavorite;
+
+  const _ActionButtons({
+    required this.isFavorite,
+    required this.isLoading,
+    required this.onFavorite,
   });
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: List.generate(tiers.length, (i) {
-        final tier = tiers[i];
-        final isSelected = i == selectedIndex;
-        return Expanded(
+      children: [
+        Expanded(
           child: GestureDetector(
-            onTap: () => onSelect(i),
+            onTap: isLoading ? null : onFavorite,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              margin: EdgeInsets.only(right: i < tiers.length - 1 ? 8 : 0),
-              padding: const EdgeInsets.symmetric(
-                vertical: AppSpacing.sm + 2,
-                horizontal: AppSpacing.sm,
-              ),
+              duration: const Duration(milliseconds: 250),
+              height: 52,
               decoration: BoxDecoration(
-                gradient: isSelected ? AppColors.primaryGradient : null,
-                color: isSelected ? null : AppColors.background,
+                gradient: isFavorite ? null : AppColors.primaryGradient,
+                color: isFavorite ? AppColors.primarySurface : null,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                border: Border.all(
-                  color: isSelected ? AppColors.primary : AppColors.divider,
-                  width: isSelected ? 1.5 : 1,
-                ),
+                border:
+                    isFavorite
+                        ? Border.all(color: AppColors.primary, width: 1.5)
+                        : null,
                 boxShadow:
-                    isSelected
-                        ? [
+                    isFavorite
+                        ? []
+                        : [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.25),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
+                            color: AppColors.primary.withOpacity(0.3),
+                            blurRadius: 14,
+                            offset: const Offset(0, 5),
                           ),
-                        ]
-                        : [],
+                        ],
               ),
-              child: Column(
-                children: [
-                  // Badge "Terlaris"
-                  if (tier.isPopular)
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 4),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color:
-                            isSelected
-                                ? AppColors.surface.withOpacity(0.25)
-                                : AppColors.accentSurface,
-                        borderRadius: BorderRadius.circular(
-                          AppSpacing.radiusFull,
-                        ),
-                      ),
-                      child: Text(
-                        '⭐ Terlaris',
-                        style: AppTextStyles.caption.copyWith(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          color:
-                              isSelected
-                                  ? AppColors.textOnDark
-                                  : AppColors.textPrimary,
-                        ),
-                      ),
-                    ),
-                  Text(
-                    tier.name,
-                    style: AppTextStyles.headlineSmall.copyWith(
-                      fontSize: 13,
-                      color:
-                          isSelected
-                              ? AppColors.textOnDark
-                              : AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    tier.formattedPrice,
-                    style: AppTextStyles.caption.copyWith(
-                      fontSize: 10,
-                      color:
-                          isSelected
-                              ? AppColors.textOnDark.withOpacity(0.85)
-                              : AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Maks. ${tier.maxPerson} orang',
-                    style: AppTextStyles.caption.copyWith(
-                      fontSize: 9,
-                      color:
-                          isSelected
-                              ? AppColors.textOnDark.withOpacity(0.7)
-                              : AppColors.textHint,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }),
-    );
-  }
-}
-
-// ── TIER DETAIL ────────────────────────────────────────────────────────────
-
-class _TierDetail extends StatelessWidget {
-  final PackageTier tier;
-  const _TierDetail({required this.tier});
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 250),
-      child: Container(
-        key: ValueKey(tier.name),
-        width: double.infinity,
-        padding: const EdgeInsets.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          color: AppColors.primarySurface,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-          border: Border.all(
-            color: AppColors.primary.withOpacity(0.2),
-            width: 1,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Deskripsi tier
-            Text(
-              tier.description,
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
-                fontSize: 13,
-                height: 1.6,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Divider(color: AppColors.primary.withOpacity(0.15), thickness: 1),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              'Yang Sudah Termasuk:',
-              style: AppTextStyles.bodyMedium.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            ...tier.includes.map(
-              (item) => Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.xs + 2),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 3),
-                      width: 16,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.12),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.check_rounded,
-                        size: 10,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Text(
-                        item,
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── INCLUDES LIST ──────────────────────────────────────────────────────────
-
-class _IncludesList extends StatelessWidget {
-  final List<String> includes;
-  const _IncludesList({required this.includes});
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: AppSpacing.sm,
-      runSpacing: AppSpacing.sm,
-      children:
-          includes
-              .map(
-                (item) => Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.sm + 2,
-                    vertical: AppSpacing.xs + 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.earthSurface,
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                    border: Border.all(
-                      color: AppColors.earthLight.withOpacity(0.5),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.check_circle_outline_rounded,
-                        size: 13,
-                        color: AppColors.earth,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        item,
-                        style: AppTextStyles.caption.copyWith(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              .toList(),
-    );
-  }
-}
-
-// ── DESTINATION LIST ───────────────────────────────────────────────────────
-
-class _DestinationList extends StatelessWidget {
-  final List<String> destinationIds;
-  const _DestinationList({required this.destinationIds});
-
-  @override
-  Widget build(BuildContext context) {
-    final provider = context.watch<DestinationProvider>();
-    final destinations =
-        provider.allDestinations
-            .where((d) => destinationIds.contains(d.id))
-            .toList();
-
-    if (destinations.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Text(
-              'Memuat destinasi...',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textHint,
-                fontSize: 13,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    // FIX: Tidak menggunakan ListView (yang punya scroll sendiri).
-    //      Cukup Column biasa agar menyatu dengan parent scroll.
-    return Column(
-      children:
-          destinations.map((d) => _DestinationItem(destination: d)).toList(),
-    );
-  }
-}
-
-class _DestinationItem extends StatelessWidget {
-  final DestinationModel destination;
-  const _DestinationItem({required this.destination});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => DetailPage(destination: destination),
-          ),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-        padding: const EdgeInsets.all(AppSpacing.sm),
-        decoration: BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          border: Border.all(
-            color: AppColors.divider.withOpacity(0.7),
-            width: 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            // Thumbnail
-            ClipRRect(
-              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-              child: Image.network(
-                destination.imageUrl,
-                width: 64,
-                height: 64,
-                fit: BoxFit.cover,
-                errorBuilder:
-                    (_, __, ___) => Container(
-                      width: 64,
-                      height: 64,
-                      decoration: const BoxDecoration(
-                        gradient: AppColors.primaryGradient,
-                      ),
-                      child: const Icon(
-                        Icons.landscape_rounded,
-                        color: AppColors.textOnDark,
-                        size: 24,
-                      ),
-                    ),
-              ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            // Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    destination.name,
-                    style: AppTextStyles.headlineSmall.copyWith(
-                      fontSize: 13,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on_rounded,
-                        size: 11,
-                        color: AppColors.primary,
-                      ),
-                      const SizedBox(width: 2),
-                      Expanded(
-                        // FIX: tambah Expanded agar teks lokasi
-                        //      tidak overflow secara horizontal
-                        child: Text(
-                          destination.location,
-                          style: AppTextStyles.caption.copyWith(
-                            fontSize: 11,
-                            color: AppColors.textSecondary,
+              child: Center(
+                child:
+                    isLoading
+                        ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color:
+                                isFavorite
+                                    ? AppColors.primary
+                                    : AppColors.textOnDark,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        )
+                        : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              isFavorite
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
+                              color:
+                                  isFavorite
+                                      ? AppColors.primary
+                                      : AppColors.textOnDark,
+                              size: 18,
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Text(
+                              isFavorite
+                                  ? "Saved to Favorites"
+                                  : "Add to Favorites",
+                              style: AppTextStyles.buttonLabel.copyWith(
+                                fontSize: 14,
+                                color:
+                                    isFavorite
+                                        ? AppColors.primary
+                                        : AppColors.textOnDark,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.star_rounded,
-                        size: 11,
-                        color: Color(0xFFE8A020),
-                      ),
-                      const SizedBox(width: 2),
-                      Text(
-                        destination.rating.toStringAsFixed(1),
-                        style: AppTextStyles.caption.copyWith(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
               ),
             ),
-            // Chevron
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: AppColors.textHint,
-              size: 18,
-            ),
-          ],
+          ),
         ),
-      ),
-    );
-  }
-}
-
-// ── BOTTOM BAR ─────────────────────────────────────────────────────────────
-
-class _BottomBar extends StatelessWidget {
-  final PackageTier? tier;
-  final String fallbackPrice;
-
-  const _BottomBar({required this.tier, required this.fallbackPrice});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      // FIX: padding bottom otomatis ikut safe area device
-      //      (notch, gesture bar, dsb.) tanpa perlu kalkulasi manual
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.md,
-        AppSpacing.md,
-        AppSpacing.md,
-        MediaQuery.of(context).padding.bottom + AppSpacing.md,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border(
-          top: BorderSide(color: AppColors.divider.withOpacity(0.6), width: 1),
+        const SizedBox(width: AppSpacing.sm),
+        Container(
+          height: 52,
+          width: 52,
+          decoration: BoxDecoration(
+            color: AppColors.earthSurface,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            border: Border.all(color: AppColors.earthLight, width: 1.2),
+          ),
+          child: const Icon(
+            Icons.share_rounded,
+            color: AppColors.bark,
+            size: 20,
+          ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowNeutral.withOpacity(0.1),
-            blurRadius: 16,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Harga
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Harga per orang',
-                style: AppTextStyles.caption.copyWith(
-                  fontSize: 11,
-                  color: AppColors.textHint,
-                ),
-              ),
-              Text(
-                tier?.formattedPrice ?? fallbackPrice,
-                style: AppTextStyles.headlineLarge.copyWith(
-                  fontSize: 18,
-                  color: AppColors.primary,
-                ),
-              ),
-              if (tier != null)
-                Text(
-                  'Paket ${tier!.name} · Maks. ${tier!.maxPerson} orang',
-                  style: AppTextStyles.caption.copyWith(
-                    fontSize: 10,
-                    color: AppColors.textHint,
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(width: AppSpacing.md),
-          // Tombol pesan
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                // TODO: navigasi ke halaman booking
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Memesan paket ${tier?.name ?? ''} — segera hadir!',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textOnDark,
-                      ),
-                    ),
-                    backgroundColor: AppColors.primary,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                    ),
-                  ),
-                );
-              },
-              child: Container(
-                height: 52,
-                decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.3),
-                      blurRadius: 14,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+      ],
     );
   }
 }

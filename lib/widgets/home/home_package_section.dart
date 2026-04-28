@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aplikasi_wisata/data/models/package_model.dart';
 import 'package:aplikasi_wisata/providers/package_provider.dart';
-import 'package:aplikasi_wisata/presentation/pages/package_detail_page.dart'; // ✅ TAMBAH INI
+import 'package:aplikasi_wisata/presentation/pages/package_detail_page.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -18,7 +18,7 @@ class HomePackageSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header
+        // ── HEADER
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Row(
@@ -42,7 +42,7 @@ class HomePackageSection extends StatelessWidget {
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Text(
-                    "Paket Wisata",
+                    'Paket Wisata',
                     style: AppTextStyles.headlineSmall.copyWith(
                       color: AppColors.textPrimary,
                     ),
@@ -54,7 +54,7 @@ class HomePackageSection extends StatelessWidget {
                   // TODO: navigasi ke halaman semua paket
                 },
                 child: Text(
-                  "Lihat Semua",
+                  'Lihat Semua',
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w600,
@@ -67,9 +67,10 @@ class HomePackageSection extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.md),
 
+        // ── STATE HANDLING
         if (provider.isLoading)
           const SizedBox(
-            height: 220,
+            height: 200,
             child: Center(
               child: CircularProgressIndicator(
                 color: AppColors.primary,
@@ -105,15 +106,13 @@ class HomePackageSection extends StatelessWidget {
             ),
           )
         else
-          SizedBox(
-            height: 228,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-              itemCount: provider.allPackages.length,
-              itemBuilder:
-                  (context, index) =>
-                      _PackageCard(package: provider.allPackages[index]),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            child: Column(
+              children:
+                  provider.allPackages
+                      .map((package) => _PackageCard(package: package))
+                      .toList(),
             ),
           ),
       ],
@@ -125,7 +124,6 @@ class _PackageCard extends StatelessWidget {
   final PackageModel package;
   const _PackageCard({required this.package});
 
-  // ✅ Helper navigasi ke detail
   void _goToDetail(BuildContext context) {
     Navigator.push(
       context,
@@ -135,12 +133,10 @@ class _PackageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ Bungkus seluruh card dengan GestureDetector
     return GestureDetector(
       onTap: () => _goToDetail(context),
       child: Container(
-        width: 240,
-        margin: const EdgeInsets.only(right: AppSpacing.md),
+        margin: const EdgeInsets.only(bottom: AppSpacing.sm + 2),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
@@ -156,168 +152,125 @@ class _PackageCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            // Gambar
+            // ── GAMBAR di kiri
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppSpacing.radiusLg),
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(AppSpacing.radiusLg),
               ),
-              child: Stack(
-                children: [
-                  Image.network(
-                    package.imageUrl,
-                    height: 125,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder:
-                        (_, __, ___) => Container(
-                          height: 125,
-                          decoration: BoxDecoration(
-                            gradient: AppColors.primaryGradient,
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.image_not_supported_rounded,
-                              color: AppColors.textOnDark,
-                              size: 28,
-                            ),
-                          ),
-                        ),
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Container(
-                        height: 125,
-                        color: AppColors.primarySurface,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  // Badge durasi
-                  Positioned(
-                    top: AppSpacing.sm,
-                    right: AppSpacing.sm,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm,
-                        vertical: AppSpacing.xs,
+              child: Image.network(
+                package.imageUrl,
+                height: 90,
+                width: 90,
+                fit: BoxFit.cover,
+                errorBuilder:
+                    (_, __, ___) => Container(
+                      height: 90,
+                      width: 90,
+                      decoration: const BoxDecoration(
+                        gradient: AppColors.primaryGradient,
                       ),
-                      decoration: BoxDecoration(
-                        color: AppColors.earth.withOpacity(0.92),
-                        borderRadius: BorderRadius.circular(
-                          AppSpacing.radiusSm,
-                        ),
-                      ),
-                      child: Text(
-                        package.durationLabel,
-                        style: AppTextStyles.caption.copyWith(
+                      child: const Center(
+                        child: Icon(
+                          Icons.card_travel_rounded,
                           color: AppColors.textOnDark,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 10,
+                          size: 28,
                         ),
                       ),
                     ),
-                  ),
-                ],
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    height: 90,
+                    width: 90,
+                    color: AppColors.primarySurface,
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
 
-            // Info
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.sm + 2),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Nama paket
-                  Text(
-                    package.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.headlineSmall.copyWith(
-                      fontSize: 13,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-
-                  // Fasilitas
-                  if (package.includes.isNotEmpty)
+            // ── INFO di tengah
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm + 2,
+                  vertical: AppSpacing.sm,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Nama paket
                     Text(
-                      package.includes.take(2).join(' · '),
-                      maxLines: 1,
+                      package.name,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontSize: 11,
-                        color: AppColors.textHint,
+                      style: AppTextStyles.headlineSmall.copyWith(
+                        fontSize: 13,
+                        color: AppColors.textPrimary,
                       ),
                     ),
+                    const SizedBox(height: AppSpacing.xs),
 
-                  const SizedBox(height: AppSpacing.sm),
-
-                  // Harga + tombol pesan
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Mulai dari',
-                            style: AppTextStyles.caption.copyWith(
-                              fontSize: 10,
-                              color: AppColors.textHint,
-                            ),
-                          ),
-                          Text(
-                            package.formattedPrice,
-                            style: AppTextStyles.headlineSmall.copyWith(
-                              fontSize: 12,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      // ✅ Tombol Pesan — navigasi ke detail
-                      GestureDetector(
-                        onTap: () => _goToDetail(context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.sm + 2,
-                            vertical: AppSpacing.xs + 2,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: AppColors.primaryGradient,
-                            borderRadius: BorderRadius.circular(
-                              AppSpacing.radiusSm,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.primary.withOpacity(0.28),
-                                blurRadius: 8,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            'Pesan',
-                            style: AppTextStyles.caption.copyWith(
-                              color: AppColors.textOnDark,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 11,
-                            ),
+                    // ── RATING BINTANG
+                    Row(
+                      children: [
+                        ...List.generate(5, (index) {
+                          final filled = index < package.rating.floor();
+                          final isHalf = !filled && index < package.rating;
+                          return Icon(
+                            isHalf
+                                ? Icons.star_half_rounded
+                                : filled
+                                ? Icons.star_rounded
+                                : Icons.star_outline_rounded,
+                            size: 14,
+                            color: AppColors.earth,
+                          );
+                        }),
+                        const SizedBox(width: 4),
+                        Text(
+                          package.rating > 0
+                              ? package.rating.toStringAsFixed(1)
+                              : 'Belum ada ulasan',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontSize: 11,
+                            color: AppColors.textHint,
                           ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.xs + 2),
+
+                    // Harga
+                    Text(
+                      package.formattedPrice,
+                      style: AppTextStyles.headlineSmall.copyWith(
+                        fontSize: 13,
+                        color:
+                            package.isFree
+                                ? AppColors.success
+                                : AppColors.primary,
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // ── ARROW di kanan
+            Padding(
+              padding: const EdgeInsets.only(right: AppSpacing.sm),
+              child: Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textSecondary,
+                size: 22,
               ),
             ),
           ],

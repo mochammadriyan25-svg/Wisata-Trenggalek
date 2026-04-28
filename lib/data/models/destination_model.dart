@@ -45,58 +45,69 @@ class DestinationModel {
     required this.priceChild,
     required this.isRecommended,
     this.createdAt,
-  }) : rating = rating.clamp(0.0, 5.0), // ✅ clamp di constructor
+  }) : rating = rating.clamp(0.0, 5.0),
        assert(
          !hasVirtualTour || maps360Url != null,
          'maps360Url wajib diisi jika hasVirtualTour = true',
        );
 
-  // ── GETTERS
+  // ── GETTERS ───────────────────────────────────────────────────────────────
 
   bool get isFree => priceAdult == 0;
   bool get hasGallery => images.isNotEmpty;
 
-  /// Format harga tiket dewasa — contoh: "IDR 35.000"
   String get formattedPriceAdult {
     if (isFree) return 'Gratis';
     final formatter = NumberFormat('#,###', 'id_ID');
     return 'IDR ${formatter.format(priceAdult)}';
   }
 
-  /// Format harga tiket anak — contoh: "IDR 20.000"
   String get formattedPriceChild {
     if (priceChild == 0) return 'Gratis';
     final formatter = NumberFormat('#,###', 'id_ID');
     return 'IDR ${formatter.format(priceChild)}';
   }
 
-  // ── FACTORY
+  // ── FACTORY ───────────────────────────────────────────────────────────────
   factory DestinationModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     final hasVirtualTour = data['hasVirtualTour'] ?? false;
+
+    // Helper: aman parse angka dari String maupun num
+    double toDouble(dynamic val) {
+      if (val == null) return 0.0;
+      if (val is num) return val.toDouble();
+      return double.tryParse(val.toString()) ?? 0.0;
+    }
+
+    int toInt(dynamic val) {
+      if (val == null) return 0;
+      if (val is num) return val.toInt();
+      return int.tryParse(val.toString()) ?? 0;
+    }
+
     return DestinationModel(
       id: doc.id,
       name: data['name'] ?? '',
       location: data['location'] ?? '',
       description: data['description'] ?? '',
       categoryId: data['categoryId'] ?? '',
-      rating: (data['rating'] as num?)?.toDouble() ?? 0.0,
+      rating: toDouble(data['rating']),
       imageUrl: data['imageUrl'] ?? '',
       images: List<String>.from(data['images'] ?? []),
-      latitude: (data['latitude'] as num?)?.toDouble() ?? 0.0,
-      longitude: (data['longitude'] as num?)?.toDouble() ?? 0.0,
+      latitude: toDouble(data['latitude']),
+      longitude: toDouble(data['longitude']),
       mapsUrl: data['mapsUrl'] ?? '',
       hasVirtualTour: hasVirtualTour,
-      maps360Url:
-          hasVirtualTour == true ? data['maps360Url'] : null, // ✅ konsisten
-      priceAdult: (data['priceAdult'] as num?)?.toInt() ?? 0,
-      priceChild: (data['priceChild'] as num?)?.toInt() ?? 0,
+      maps360Url: hasVirtualTour == true ? data['maps360Url'] : null,
+      priceAdult: toInt(data['priceAdult']),
+      priceChild: toInt(data['priceChild']),
       isRecommended: data['isRecommended'] ?? false,
       createdAt: data['createdAt'],
     );
   }
 
-  // ── SERIALIZATION
+  // ── SERIALIZATION ─────────────────────────────────────────────────────────
   Map<String, dynamic> toCreateMap() {
     return {
       'name': name,
@@ -113,7 +124,7 @@ class DestinationModel {
       if (hasVirtualTour && maps360Url != null)
         'maps360Url': maps360Url
       else
-        'maps360Url': null, // ✅ explicit null saat create
+        'maps360Url': null,
       'priceAdult': priceAdult,
       'priceChild': priceChild,
       'isRecommended': isRecommended,
@@ -137,14 +148,14 @@ class DestinationModel {
       if (hasVirtualTour && maps360Url != null)
         'maps360Url': maps360Url
       else
-        'maps360Url': FieldValue.delete(), // ✅ hapus field jika tidak relevan
+        'maps360Url': FieldValue.delete(),
       'priceAdult': priceAdult,
       'priceChild': priceChild,
       'isRecommended': isRecommended,
     };
   }
 
-  // ── UTILITY
+  // ── UTILITY ───────────────────────────────────────────────────────────────
   DestinationModel copyWith({
     String? id,
     String? name,

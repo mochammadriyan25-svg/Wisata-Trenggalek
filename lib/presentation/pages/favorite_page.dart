@@ -3,11 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/favorite_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../data/models/favorite_model.dart';
 import '../../data/models/destination_model.dart';
+import '../../data/models/accommodation_model.dart';
+import '../../data/models/package_model.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_spacing.dart';
 import 'detail_page.dart';
+import 'accommodation_detail_page.dart';
+import 'package_detail_page.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key});
@@ -16,15 +21,11 @@ class FavoritePage extends StatefulWidget {
   State<FavoritePage> createState() => _FavoritePageState();
 }
 
-class _FavoritePageState extends State<FavoritePage> {
-  String _selectedCategory = 'All';
+// Tab urutan: All, Destinasi, Akomodasi, Paket Wisata
+enum _FavoriteTab { all, destination, accommodation, package }
 
-  static const List<String> _categories = [
-    'All',
-    'Nature',
-    'Cultural',
-    'Culinary',
-  ];
+class _FavoritePageState extends State<FavoritePage> {
+  _FavoriteTab _selectedTab = _FavoriteTab.all;
 
   @override
   Widget build(BuildContext context) {
@@ -41,11 +42,10 @@ class _FavoritePageState extends State<FavoritePage> {
 
             const SizedBox(height: AppSpacing.sm),
 
-            // ── FILTER CHIPS
-            _FilterChipRow(
-              categories: _categories,
-              selected: _selectedCategory,
-              onSelect: (name) => setState(() => _selectedCategory = name),
+            // ── FILTER TABS
+            _FilterTabRow(
+              selected: _selectedTab,
+              onSelect: (tab) => setState(() => _selectedTab = tab),
             ),
 
             const SizedBox(height: AppSpacing.sm),
@@ -62,12 +62,8 @@ class _FavoritePageState extends State<FavoritePage> {
     AuthProvider authProvider,
     FavoriteProvider favoriteProvider,
   ) {
-    // Belum login
-    if (authProvider.isGuest) {
-      return _GuestPrompt();
-    }
+    if (authProvider.isGuest) return _GuestPrompt();
 
-    // Loading
     if (favoriteProvider.isLoading) {
       return Center(
         child: CircularProgressIndicator(
@@ -77,36 +73,110 @@ class _FavoritePageState extends State<FavoritePage> {
       );
     }
 
-    // Filter kategori
-    final favorites =
-        _selectedCategory == 'All'
-            ? favoriteProvider.favoriteDestinations
-            : favoriteProvider.favoriteDestinations
-                .where((d) => d.categoryId == _selectedCategory)
-                .toList();
-
-    // Kosong
-    if (favorites.isEmpty) {
-      return _EmptyState(category: _selectedCategory);
+    switch (_selectedTab) {
+      case _FavoriteTab.all:
+        return _buildAllList(favoriteProvider, authProvider.userId!);
+      case _FavoriteTab.destination:
+        return _buildDestinationList(favoriteProvider, authProvider.userId!);
+      case _FavoriteTab.accommodation:
+        return _buildAccommodationList(favoriteProvider, authProvider.userId!);
+      case _FavoriteTab.package:
+        return _buildPackageList(favoriteProvider, authProvider.userId!);
     }
+  }
 
+  // ── ALL (gabungan, diurutkan: destination → accommodation → package)
+  Widget _buildAllList(FavoriteProvider prov, String userId) {
+    final destinations = prov.favoriteDestinations;
+    final accommodations = prov.favoriteAccommodations;
+    final packages = prov.favoritePackages;
+
+    final totalCount =
+        destinations.length + accommodations.length + packages.length;
+
+    if (totalCount == 0) return _EmptyState(tab: _FavoriteTab.all);
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      physics: const BouncingScrollPhysics(),
+      children: [
+        // Destinasi
+        if (destinations.isNotEmpty) ...[
+          _SectionLabel(label: 'Destinasi', count: destinations.length),
+          ...destinations.map(
+            (item) => _DestinationCard(item: item, userId: userId),
+          ),
+        ],
+
+        // Akomodasi
+        if (accommodations.isNotEmpty) ...[
+          _SectionLabel(label: 'Akomodasi', count: accommodations.length),
+          ...accommodations.map(
+            (item) => _AccommodationCard(item: item, userId: userId),
+          ),
+        ],
+
+        // Paket Wisata
+        if (packages.isNotEmpty) ...[
+          _SectionLabel(label: 'Paket Wisata', count: packages.length),
+          ...packages.map((item) => _PackageCard(item: item, userId: userId)),
+        ],
+      ],
+    );
+  }
+
+  // ── DESTINASI saja
+  Widget _buildDestinationList(FavoriteProvider prov, String userId) {
+    final items = prov.favoriteDestinations;
+    if (items.isEmpty) return _EmptyState(tab: _FavoriteTab.destination);
     return ListView.builder(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.sm,
       ),
       physics: const BouncingScrollPhysics(),
-      itemCount: favorites.length,
-      itemBuilder:
-          (context, index) => _FavoriteCard(
-            item: favorites[index],
-            userId: authProvider.userId!,
-          ),
+      itemCount: items.length,
+      itemBuilder: (_, i) => _DestinationCard(item: items[i], userId: userId),
+    );
+  }
+
+  // ── AKOMODASI saja
+  Widget _buildAccommodationList(FavoriteProvider prov, String userId) {
+    final items = prov.favoriteAccommodations;
+    if (items.isEmpty) return _EmptyState(tab: _FavoriteTab.accommodation);
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      physics: const BouncingScrollPhysics(),
+      itemCount: items.length,
+      itemBuilder: (_, i) => _AccommodationCard(item: items[i], userId: userId),
+    );
+  }
+
+  // ── PAKET WISATA saja
+  Widget _buildPackageList(FavoriteProvider prov, String userId) {
+    final items = prov.favoritePackages;
+    if (items.isEmpty) return _EmptyState(tab: _FavoriteTab.package);
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      physics: const BouncingScrollPhysics(),
+      itemCount: items.length,
+      itemBuilder: (_, i) => _PackageCard(item: items[i], userId: userId),
     );
   }
 }
 
-// ── Sub-widgets ────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+// SUB-WIDGETS
+// ══════════════════════════════════════════════════════════════════
 
 class _FavoriteHeader extends StatelessWidget {
   @override
@@ -135,7 +205,6 @@ class _FavoriteHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Icon badge — teal gradient
           Container(
             width: 36,
             height: 36,
@@ -158,7 +227,7 @@ class _FavoriteHeader extends StatelessWidget {
           ),
           const SizedBox(width: AppSpacing.sm + 2),
           Text(
-            "Favorite Destinations",
+            "Favorit Saya",
             style: AppTextStyles.headlineSmall.copyWith(
               color: AppColors.textPrimary,
             ),
@@ -169,16 +238,19 @@ class _FavoriteHeader extends StatelessWidget {
   }
 }
 
-class _FilterChipRow extends StatelessWidget {
-  final List<String> categories;
-  final String selected;
-  final ValueChanged<String> onSelect;
+// ── Tab Filter (All / Destinasi / Akomodasi / Paket Wisata)
+class _FilterTabRow extends StatelessWidget {
+  final _FavoriteTab selected;
+  final ValueChanged<_FavoriteTab> onSelect;
 
-  const _FilterChipRow({
-    required this.categories,
-    required this.selected,
-    required this.onSelect,
-  });
+  const _FilterTabRow({required this.selected, required this.onSelect});
+
+  static const _tabs = [
+    (_FavoriteTab.all, 'All'),
+    (_FavoriteTab.destination, 'Destinasi'),
+    (_FavoriteTab.accommodation, 'Akomodasi'),
+    (_FavoriteTab.package, 'Paket Wisata'),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -194,12 +266,12 @@ class _FilterChipRow extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: Row(
           children:
-              categories
+              _tabs
                   .map(
-                    (name) => _FilterChip(
-                      name: name,
-                      isSelected: selected == name,
-                      onTap: () => onSelect(name),
+                    (t) => _FilterChip(
+                      label: t.$2,
+                      isSelected: selected == t.$1,
+                      onTap: () => onSelect(t.$1),
                     ),
                   )
                   .toList(),
@@ -210,12 +282,12 @@ class _FilterChipRow extends StatelessWidget {
 }
 
 class _FilterChip extends StatelessWidget {
-  final String name;
+  final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _FilterChip({
-    required this.name,
+    required this.label,
     required this.isSelected,
     required this.onTap,
   });
@@ -251,7 +323,7 @@ class _FilterChip extends StatelessWidget {
                   : [],
         ),
         child: Text(
-          name,
+          label,
           style: AppTextStyles.bodyMedium.copyWith(
             fontSize: 13,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
@@ -262,6 +334,383 @@ class _FilterChip extends StatelessWidget {
     );
   }
 }
+
+// ── Label section di tab "All"
+class _SectionLabel extends StatelessWidget {
+  final String label;
+  final int count;
+
+  const _SectionLabel({required this.label, required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        top: AppSpacing.sm,
+        bottom: AppSpacing.xs + 2,
+      ),
+      child: Row(
+        children: [
+          Text(
+            label,
+            style: AppTextStyles.headlineSmall.copyWith(
+              fontSize: 13,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.xs),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+            decoration: BoxDecoration(
+              color: AppColors.primarySurface,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+            ),
+            child: Text(
+              '$count',
+              style: AppTextStyles.caption.copyWith(
+                fontSize: 11,
+                color: AppColors.primary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Base card layout yang dipakai ketiga tipe
+class _BaseCard extends StatelessWidget {
+  final String imageUrl;
+  final String name;
+  final String location;
+  final double rating;
+  final String categoryId;
+  final String badgeLabel; // "Destinasi" / "Akomodasi" / "Paket"
+  final String priceLabel; // formatted price string
+  final VoidCallback onTap;
+  final VoidCallback onRemove;
+
+  const _BaseCard({
+    required this.imageUrl,
+    required this.name,
+    required this.location,
+    required this.rating,
+    required this.categoryId,
+    required this.badgeLabel,
+    required this.priceLabel,
+    required this.onTap,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
+        padding: const EdgeInsets.all(AppSpacing.sm + 4),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          border: Border.all(
+            color: AppColors.divider.withOpacity(0.7),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadowNeutral.withOpacity(0.07),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Gambar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              child: Image.network(
+                imageUrl,
+                width: 90,
+                height: 90,
+                fit: BoxFit.cover,
+                errorBuilder:
+                    (_, __, ___) => Container(
+                      width: 90,
+                      height: 90,
+                      decoration: const BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                      ),
+                      child: const Icon(
+                        Icons.landscape_rounded,
+                        color: AppColors.textOnDark,
+                        size: 28,
+                      ),
+                    ),
+              ),
+            ),
+
+            const SizedBox(width: AppSpacing.sm + 4),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Nama + tombol hapus
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          name,
+                          style: AppTextStyles.headlineSmall.copyWith(
+                            fontSize: 14,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: onRemove,
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF0F0),
+                            borderRadius: BorderRadius.circular(
+                              AppSpacing.radiusSm,
+                            ),
+                            border: Border.all(
+                              color: Colors.red.withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.favorite_rounded,
+                            color: Colors.redAccent,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: AppSpacing.xs + 2),
+
+                  // Lokasi
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_rounded,
+                        size: 12,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: 3),
+                      Expanded(
+                        child: Text(
+                          location,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: AppSpacing.sm),
+
+                  // Rating + badge tipe + harga
+                  Row(
+                    children: [
+                      // Rating
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.accentSurface,
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusFull,
+                          ),
+                          border: Border.all(
+                            color: AppColors.accentLight.withOpacity(0.4),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.star_rounded,
+                              size: 11,
+                              color: Color(0xFFE8A020),
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              rating.toStringAsFixed(1),
+                              style: AppTextStyles.caption.copyWith(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 11,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(width: AppSpacing.xs),
+
+                      // Badge tipe (Destinasi / Akomodasi / Paket)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primarySurface,
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusFull,
+                          ),
+                        ),
+                        child: Text(
+                          badgeLabel,
+                          style: AppTextStyles.caption.copyWith(
+                            fontSize: 11,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+
+                      const Spacer(),
+
+                      // Harga
+                      Text(
+                        priceLabel,
+                        style: AppTextStyles.caption.copyWith(
+                          fontSize: 11,
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Card spesifik per tipe (pakai _BaseCard)
+
+class _DestinationCard extends StatelessWidget {
+  final DestinationModel item;
+  final String userId;
+
+  const _DestinationCard({required this.item, required this.userId});
+
+  @override
+  Widget build(BuildContext context) {
+    return _BaseCard(
+      imageUrl: item.imageUrl,
+      name: item.name,
+      location: item.location,
+      rating: item.rating,
+      categoryId: item.categoryId,
+      badgeLabel: 'Destinasi',
+      priceLabel: item.formattedPriceAdult,
+      onTap:
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => DetailPage(destination: item)),
+          ),
+      onRemove:
+          () => context.read<FavoriteProvider>().toggleFavorite(
+            userId,
+            item.id,
+            FavoriteItemType.destination,
+          ),
+    );
+  }
+}
+
+class _AccommodationCard extends StatelessWidget {
+  final AccommodationModel item;
+  final String userId;
+
+  const _AccommodationCard({required this.item, required this.userId});
+
+  @override
+  Widget build(BuildContext context) {
+    return _BaseCard(
+      imageUrl: item.imageUrl,
+      name: item.name,
+      location: item.location,
+      rating: item.rating,
+      categoryId: item.categoryId,
+      badgeLabel: 'Akomodasi',
+      priceLabel: item.formattedPricePerNight,
+      onTap:
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => AccommodationDetailPage(accommodation: item),
+            ),
+          ),
+      onRemove:
+          () => context.read<FavoriteProvider>().toggleFavorite(
+            userId,
+            item.id,
+            FavoriteItemType.accommodation,
+          ),
+    );
+  }
+}
+
+class _PackageCard extends StatelessWidget {
+  final PackageModel item;
+  final String userId;
+
+  const _PackageCard({required this.item, required this.userId});
+
+  @override
+  Widget build(BuildContext context) {
+    return _BaseCard(
+      imageUrl: item.imageUrl,
+      name: item.name,
+      location: item.location,
+      rating: item.rating,
+      categoryId: item.categoryId,
+      badgeLabel: 'Paket Wisata',
+      priceLabel: item.formattedPrice,
+      onTap:
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => PackageDetailPage(package: item)),
+          ),
+      onRemove:
+          () => context.read<FavoriteProvider>().toggleFavorite(
+            userId,
+            item.id,
+            FavoriteItemType.package,
+          ),
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// EMPTY & GUEST STATE
+// ══════════════════════════════════════════════════════════════════
 
 class _GuestPrompt extends StatelessWidget {
   @override
@@ -311,8 +760,21 @@ class _GuestPrompt extends StatelessWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-  final String category;
-  const _EmptyState({required this.category});
+  final _FavoriteTab tab;
+  const _EmptyState({required this.tab});
+
+  String get _message {
+    switch (tab) {
+      case _FavoriteTab.all:
+        return "Belum ada favorit apapun";
+      case _FavoriteTab.destination:
+        return "Belum ada destinasi favorit";
+      case _FavoriteTab.accommodation:
+        return "Belum ada akomodasi favorit";
+      case _FavoriteTab.package:
+        return "Belum ada paket wisata favorit";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -339,9 +801,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
-            category == 'All'
-                ? "Belum ada destinasi favorit"
-                : "Tidak ada favorit di kategori '$category'",
+            _message,
             style: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.textSecondary,
               fontSize: 14,
@@ -349,7 +809,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.xs + 2),
           Text(
-            "Jelajahi dan simpan destinasi\nyang kamu suka!",
+            "Jelajahi dan simpan yang kamu suka!",
             textAlign: TextAlign.center,
             style: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.textHint,
@@ -357,216 +817,6 @@ class _EmptyState extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _FavoriteCard extends StatelessWidget {
-  final DestinationModel item;
-  final String userId;
-
-  const _FavoriteCard({required this.item, required this.userId});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap:
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => DetailPage(destination: item)),
-          ),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
-        padding: const EdgeInsets.all(AppSpacing.sm + 4),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-          border: Border.all(
-            color: AppColors.divider.withOpacity(0.7),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadowNeutral.withOpacity(0.07),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Gambar
-            ClipRRect(
-              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-              child: Image.network(
-                item.imageUrl,
-                width: 90,
-                height: 90,
-                fit: BoxFit.cover,
-                errorBuilder:
-                    (_, __, ___) => Container(
-                      width: 90,
-                      height: 90,
-                      decoration: const BoxDecoration(
-                        gradient: AppColors.primaryGradient,
-                      ),
-                      child: const Icon(
-                        Icons.landscape_rounded,
-                        color: AppColors.textOnDark,
-                        size: 28,
-                      ),
-                    ),
-              ),
-            ),
-
-            const SizedBox(width: AppSpacing.sm + 4),
-
-            // Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Nama + tombol hapus favorit
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          item.name,
-                          style: AppTextStyles.headlineSmall.copyWith(
-                            fontSize: 14,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                      // Remove favorite — subtle
-                      GestureDetector(
-                        onTap:
-                            () => context
-                                .read<FavoriteProvider>()
-                                .toggleFavorite(userId, item.id),
-                        child: Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFF0F0),
-                            borderRadius: BorderRadius.circular(
-                              AppSpacing.radiusSm,
-                            ),
-                            border: Border.all(
-                              color: Colors.red.withOpacity(0.2),
-                              width: 1,
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.favorite_rounded,
-                            color: Colors.redAccent,
-                            size: 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: AppSpacing.xs + 2),
-
-                  // Lokasi
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on_rounded,
-                        size: 12,
-                        color: AppColors.primary,
-                      ),
-                      const SizedBox(width: 3),
-                      Expanded(
-                        child: Text(
-                          item.location,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: AppSpacing.sm),
-
-                  // Rating + kategori
-                  Row(
-                    children: [
-                      // Rating chip — accent sand
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.sm,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.accentSurface,
-                          borderRadius: BorderRadius.circular(
-                            AppSpacing.radiusFull,
-                          ),
-                          border: Border.all(
-                            color: AppColors.accentLight.withOpacity(0.4),
-                            width: 1,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.star_rounded,
-                              size: 11,
-                              color: Color(0xFFE8A020),
-                            ),
-                            const SizedBox(width: 3),
-                            Text(
-                              item.rating.toStringAsFixed(1),
-                              style: AppTextStyles.caption.copyWith(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 11,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(width: AppSpacing.sm),
-
-                      // Kategori pill — teal surface
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.sm,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primarySurface,
-                          borderRadius: BorderRadius.circular(
-                            AppSpacing.radiusFull,
-                          ),
-                        ),
-                        child: Text(
-                          item.categoryId,
-                          style: AppTextStyles.caption.copyWith(
-                            fontSize: 11,
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

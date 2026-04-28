@@ -10,9 +10,12 @@ import '../../providers/accommodation_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../widgets/explore/explore_widget.dart';
 import 'detail_page.dart';
+import 'package:aplikasi_wisata/presentation/pages/accommodation_detail_page.dart';
+import 'package:aplikasi_wisata/presentation/pages/package_detail_page.dart';
+import '../../providers/package_provider.dart'; // ✅
 
-// ── ENUM: jenis konten yang ditampilkan
-enum ExploreMode { destination, accommodation }
+// ── ENUM tetap ada agar tidak merusak navigasi dari halaman lain
+enum ExploreMode { destination, accommodation, package }
 
 class ExplorePage extends StatefulWidget {
   final String initialCategoryId;
@@ -32,23 +35,38 @@ class ExplorePage extends StatefulWidget {
   State<ExplorePage> createState() => _ExplorePageState();
 }
 
+// ✅ Ganti bool _isAccommodationMode dengan enum _activeMode
+enum _ExploreTab { destination, accommodation, package }
+
 class _ExplorePageState extends State<ExplorePage>
     with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
-  late ExploreMode _currentMode;
+
+  _ExploreTab _activeTab = _ExploreTab.destination; // ✅
+
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
 
-  // ── Referensi provider disimpan di sini agar aman dipakai
-  //    di dispose() dan listener tanpa menyentuh context
   late DestinationProvider _destProvider;
   late AccommodationProvider _accomProvider;
+  late PackageProvider _packageProvider; // ✅
   bool _providersInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    _currentMode = widget.initialMode;
+
+    // ✅ Sesuaikan init mode
+    switch (widget.initialMode) {
+      case ExploreMode.accommodation:
+        _activeTab = _ExploreTab.accommodation;
+        break;
+      case ExploreMode.package:
+        _activeTab = _ExploreTab.package;
+        break;
+      default:
+        _activeTab = _ExploreTab.destination;
+    }
 
     _fadeController = AnimationController(
       vsync: this,
@@ -60,8 +78,6 @@ class _ExplorePageState extends State<ExplorePage>
     );
     _fadeController.forward();
 
-    // Listener memakai _destProvider & _accomProvider (field instance),
-    // bukan context.read — sehingga aman meski widget sudah dilepas
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -69,27 +85,24 @@ class _ExplorePageState extends State<ExplorePage>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Simpan referensi provider sekali di sini.
-    // didChangeDependencies dipanggil setelah initState dan setiap kali
-    // dependency (Provider) berubah, tapi selalu saat widget masih aktif.
     if (!_providersInitialized) {
       _destProvider = context.read<DestinationProvider>();
       _accomProvider = context.read<AccommodationProvider>();
+      _packageProvider = context.read<PackageProvider>(); // ✅
       _providersInitialized = true;
 
-      // Inisialisasi filter & search awal
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
 
         if (widget.initialCategoryId.isNotEmpty) {
           _destProvider.filterByCategory(widget.initialCategoryId);
-          // Akomodasi tidak perlu filter kategori awal
         }
 
         if (widget.initialSearch.isNotEmpty) {
           _searchController.text = widget.initialSearch;
           _destProvider.search(widget.initialSearch);
           _accomProvider.search(widget.initialSearch);
+          _packageProvider.search(widget.initialSearch); // ✅
         }
       });
     }
@@ -97,9 +110,9 @@ class _ExplorePageState extends State<ExplorePage>
 
   @override
   void dispose() {
-    // Aman: memakai field instance, bukan context.read
     _destProvider.clearFilter();
     _accomProvider.clearFilter();
+    _packageProvider.clearFilter(); // ✅
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     _fadeController.dispose();
@@ -107,28 +120,39 @@ class _ExplorePageState extends State<ExplorePage>
   }
 
   void _onSearchChanged() {
-    // Aman: memakai field instance, bukan context.read
     final keyword = _searchController.text;
     _destProvider.search(keyword);
     _accomProvider.search(keyword);
+    _packageProvider.search(keyword); // ✅
   }
 
-  void _switchMode(ExploreMode mode) {
-    if (_currentMode == mode) return;
-    _fadeController.reset();
-    setState(() => _currentMode = mode);
-    _fadeController.forward();
+  void _switchTab(_ExploreTab tab, {String categoryId = ''}) {
+    final isSameTab = _activeTab == tab;
+    final isSameCategory =
+        tab == _ExploreTab.destination &&
+        _destProvider.selectedCategoryId == categoryId;
 
-    // Aman: memakai field instance
+    if (isSameTab && isSameCategory) return;
+
+    _fadeController.reset();
+    setState(() => _activeTab = tab);
+    _fadeController.forward();
     _searchController.clear();
+
     _destProvider.clearFilter();
     _accomProvider.clearFilter();
+    _packageProvider.clearFilter();
+
+    if (tab == _ExploreTab.destination && categoryId.isNotEmpty) {
+      _destProvider.filterByCategory(categoryId);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final destProvider = context.watch<DestinationProvider>();
     final accomProvider = context.watch<AccommodationProvider>();
+    final packageProvider = context.watch<PackageProvider>(); // ✅
     final catProvider = context.watch<CategoryProvider>();
 
     return Scaffold(
@@ -136,15 +160,31 @@ class _ExplorePageState extends State<ExplorePage>
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(context, destProvider, accomProvider, catProvider),
+            _buildHeader(
+              context,
+              destProvider,
+              accomProvider,
+              packageProvider, // ✅
+              catProvider,
+            ),
             const SizedBox(height: 8),
             Expanded(
               child: FadeTransition(
                 opacity: _fadeAnimation,
-                child:
-                    _currentMode == ExploreMode.destination
-                        ? _buildDestinationList(context, destProvider)
-                        : _buildAccommodationList(context, accomProvider),
+                child: switch (_activeTab) {
+                  _ExploreTab.destination => _buildDestinationList(
+                    context,
+                    destProvider,
+                  ),
+                  _ExploreTab.accommodation => _buildAccommodationList(
+                    context,
+                    accomProvider,
+                  ),
+                  _ExploreTab.package => _buildPackageList(
+                    context,
+                    packageProvider,
+                  ), // ✅
+                },
               ),
             ),
           ],
@@ -153,27 +193,35 @@ class _ExplorePageState extends State<ExplorePage>
     );
   }
 
-  // ── HEADER ───────────────────────────────────────────────────────────────
+  // ── HEADER
   Widget _buildHeader(
     BuildContext context,
     DestinationProvider destProvider,
     AccommodationProvider accomProvider,
+    PackageProvider packageProvider, // ✅
     CategoryProvider catProvider,
   ) {
-    final totalCount =
-        _currentMode == ExploreMode.destination
-            ? destProvider.filteredDestinations.length
-            : accomProvider.filteredAccommodations.length;
+    // ✅ Hitung total sesuai tab aktif
+    final totalCount = switch (_activeTab) {
+      _ExploreTab.destination => destProvider.filteredDestinations.length,
+      _ExploreTab.accommodation => accomProvider.filteredAccommodations.length,
+      _ExploreTab.package => packageProvider.filteredPackages.length,
+    };
 
-    final isLoading =
-        _currentMode == ExploreMode.destination
-            ? destProvider.isLoading
-            : accomProvider.isLoading;
+    final isLoading = switch (_activeTab) {
+      _ExploreTab.destination => destProvider.isLoading,
+      _ExploreTab.accommodation => accomProvider.isLoading,
+      _ExploreTab.package => packageProvider.isLoading,
+    };
+
+    // ✅ Hint search sesuai tab
+    final searchHint = switch (_activeTab) {
+      _ExploreTab.destination => "Cari destinasi...",
+      _ExploreTab.accommodation => "Cari akomodasi...",
+      _ExploreTab.package => "Cari paket wisata...",
+    };
 
     final selectedCategoryId = destProvider.selectedCategoryId;
-
-    // Category chips hanya tampil di mode destinasi
-    final showCategoryChips = _currentMode == ExploreMode.destination;
 
     return Container(
       width: double.infinity,
@@ -267,20 +315,12 @@ class _ExplorePageState extends State<ExplorePage>
 
           const SizedBox(height: AppSpacing.md),
 
-          // ── MODE TOGGLE: Destinasi | Akomodasi
-          _buildModeToggle(),
-
-          const SizedBox(height: AppSpacing.md),
-
           // ── Search
           TextField(
             controller: _searchController,
             textInputAction: TextInputAction.search,
             decoration: InputDecoration(
-              hintText:
-                  _currentMode == ExploreMode.destination
-                      ? "Cari destinasi..."
-                      : "Cari akomodasi...",
+              hintText: searchHint, // ✅
               hintStyle: TextStyle(color: AppColors.textHint, fontSize: 13),
               prefixIcon: const Icon(
                 Icons.search_rounded,
@@ -295,9 +335,9 @@ class _ExplorePageState extends State<ExplorePage>
                         ),
                         onPressed: () {
                           _searchController.clear();
-                          // Aman: memakai field instance
                           _destProvider.search('');
                           _accomProvider.search('');
+                          _packageProvider.search(''); // ✅
                         },
                       )
                       : null,
@@ -325,121 +365,63 @@ class _ExplorePageState extends State<ExplorePage>
             ),
           ),
 
-          // ── Category chips — hanya tampil di mode Destinasi
-          if (showCategoryChips) ...[
-            const SizedBox(height: AppSpacing.md),
-            SizedBox(
-              height: 36,
-              child:
-                  catProvider.isLoading
-                      ? const SizedBox()
-                      : ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          ExploreCategoryChip(
-                            name: 'Semua',
-                            isSelected: selectedCategoryId.isEmpty,
-                            onTap: () => _destProvider.filterByCategory(''),
+          const SizedBox(height: AppSpacing.md),
+
+          // ── Chips: Semua → Akomodasi → Paket Wisata → kategori destinasi
+          SizedBox(
+            height: 36,
+            child:
+                catProvider.isLoading
+                    ? const SizedBox()
+                    : ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        // Chip: Semua (destinasi tanpa filter)
+                        ExploreCategoryChip(
+                          name: 'Semua',
+                          isSelected:
+                              _activeTab == _ExploreTab.destination &&
+                              selectedCategoryId.isEmpty,
+                          onTap: () => _switchTab(_ExploreTab.destination),
+                        ),
+
+                        // ✅ Chip: Akomodasi
+                        ExploreCategoryChip(
+                          name: 'Akomodasi',
+                          isSelected: _activeTab == _ExploreTab.accommodation,
+                          onTap: () => _switchTab(_ExploreTab.accommodation),
+                        ),
+
+                        // ✅ Chip: Paket Wisata
+                        ExploreCategoryChip(
+                          name: 'Paket Wisata',
+                          isSelected: _activeTab == _ExploreTab.package,
+                          onTap: () => _switchTab(_ExploreTab.package),
+                        ),
+
+                        // Chip: kategori destinasi
+                        ...catProvider.destinationCategories.map(
+                          (cat) => ExploreCategoryChip(
+                            name: cat.name,
+                            isSelected:
+                                _activeTab == _ExploreTab.destination &&
+                                selectedCategoryId == cat.id,
+                            onTap:
+                                () => _switchTab(
+                                  _ExploreTab.destination,
+                                  categoryId: cat.id,
+                                ),
                           ),
-                          ...catProvider.destinationCategories.map(
-                            (cat) => ExploreCategoryChip(
-                              name: cat.name,
-                              isSelected: selectedCategoryId == cat.id,
-                              onTap:
-                                  () => _destProvider.filterByCategory(cat.id),
-                            ),
-                          ),
-                        ],
-                      ),
-            ),
-          ],
+                        ),
+                      ],
+                    ),
+          ),
         ],
       ),
     );
   }
 
-  // ── MODE TOGGLE ──────────────────────────────────────────────────────────
-  Widget _buildModeToggle() {
-    return Container(
-      height: 40,
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        border: Border.all(color: AppColors.divider, width: 1),
-      ),
-      child: Row(
-        children: [
-          _buildToggleOption(
-            mode: ExploreMode.destination,
-            icon: Icons.landscape_rounded,
-            label: "Destinasi",
-          ),
-          _buildToggleOption(
-            mode: ExploreMode.accommodation,
-            icon: Icons.hotel_rounded,
-            label: "Akomodasi",
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildToggleOption({
-    required ExploreMode mode,
-    required IconData icon,
-    required String label,
-  }) {
-    final isSelected = _currentMode == mode;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => _switchMode(mode),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          decoration: BoxDecoration(
-            gradient: isSelected ? AppColors.primaryGradient : null,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-            boxShadow:
-                isSelected
-                    ? [
-                      BoxShadow(
-                        color: AppColors.primary.withOpacity(0.2),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                    : [],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 15,
-                color:
-                    isSelected ? AppColors.textOnDark : AppColors.textSecondary,
-              ),
-              const SizedBox(width: 5),
-              Text(
-                label,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontSize: 13,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  color:
-                      isSelected
-                          ? AppColors.textOnDark
-                          : AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ── DESTINATION LIST ─────────────────────────────────────────────────────
+  // ── DESTINATION LIST
   Widget _buildDestinationList(
     BuildContext context,
     DestinationProvider destProvider,
@@ -487,7 +469,7 @@ class _ExplorePageState extends State<ExplorePage>
     );
   }
 
-  // ── ACCOMMODATION LIST ───────────────────────────────────────────────────
+  // ── ACCOMMODATION LIST
   Widget _buildAccommodationList(
     BuildContext context,
     AccommodationProvider accomProvider,
@@ -523,21 +505,67 @@ class _ExplorePageState extends State<ExplorePage>
         final item = accommodations[index];
         return ExploreAccommodationCard(
           item: item,
-          onTap: () {
-            // TODO: Ganti dengan halaman detail akomodasi kamu
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Buka detail: ${item.name}'),
-                duration: const Duration(seconds: 1),
+          onTap:
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AccommodationDetailPage(accommodation: item),
+                ),
               ),
-            );
-          },
         );
       },
     );
   }
 
-  // ── ERROR STATE ──────────────────────────────────────────────────────────
+  // ✅ ── PACKAGE LIST
+  Widget _buildPackageList(
+    BuildContext context,
+    PackageProvider packageProvider,
+  ) {
+    if (packageProvider.isLoading) return const ExploreLoadingState();
+    if (packageProvider.errorMessage != null) {
+      return _buildError(onRetry: () => _packageProvider.clearError());
+    }
+
+    final packages = packageProvider.filteredPackages;
+    if (packages.isEmpty) {
+      return ExploreEmptyState(
+        message: "Tidak ada paket wisata ditemukan",
+        icon: Icons.card_travel_rounded,
+        onReset:
+            packageProvider.hasFilter
+                ? () {
+                  _searchController.clear();
+                  _packageProvider.clearFilter();
+                }
+                : null,
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      physics: const BouncingScrollPhysics(),
+      itemCount: packages.length,
+      itemBuilder: (context, index) {
+        final item = packages[index];
+        return ExplorePackageCard(
+          item: item,
+          onTap:
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PackageDetailPage(package: item),
+                ),
+              ),
+        );
+      },
+    );
+  }
+
+  // ── ERROR STATE
   Widget _buildError({required VoidCallback onRetry}) => Center(
     child: Column(
       mainAxisSize: MainAxisSize.min,

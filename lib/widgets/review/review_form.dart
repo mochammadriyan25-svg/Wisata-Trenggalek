@@ -1,14 +1,23 @@
 // lib/widgets/review/review_form.dart
 import 'package:flutter/material.dart';
-import 'package:aplikasi_wisata/providers/review_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:aplikasi_wisata/providers/review_provider.dart';
+import 'package:aplikasi_wisata/data/services/firestore/review_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_spacing.dart';
 
 class ReviewForm extends StatefulWidget {
-  final String destinationId;
-  const ReviewForm({super.key, required this.destinationId});
+  final ReviewTarget target;
+  final String targetId;
+  final VoidCallback onClose;
+
+  const ReviewForm({
+    super.key,
+    required this.target,
+    required this.targetId,
+    required this.onClose,
+  });
 
   @override
   State<ReviewForm> createState() => _ReviewFormState();
@@ -25,7 +34,8 @@ class _ReviewFormState extends State<ReviewForm> {
 
   Future<void> _handleSubmit(ReviewProvider provider) async {
     await provider.submitReview(
-      destinationId: widget.destinationId,
+      target: widget.target,
+      targetId: widget.targetId,
       comment: _commentController.text,
     );
 
@@ -35,12 +45,16 @@ class _ReviewFormState extends State<ReviewForm> {
 
     if (state == ReviewSubmitState.success) {
       _commentController.clear();
+      widget.onClose();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.check_circle_outline_rounded,
-                  color: AppColors.textOnDark, size: 18),
+              const Icon(
+                Icons.check_circle_outline_rounded,
+                color: AppColors.textOnDark,
+                size: 18,
+              ),
               const SizedBox(width: AppSpacing.sm),
               Text(
                 'Ulasan berhasil ditambahkan!',
@@ -63,8 +77,9 @@ class _ReviewFormState extends State<ReviewForm> {
         SnackBar(
           content: Text(
             'Anda sudah memberikan ulasan sebelumnya.',
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.textOnDark),
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textOnDark,
+            ),
           ),
           backgroundColor: AppColors.textSecondary,
           behavior: SnackBarBehavior.floating,
@@ -106,7 +121,7 @@ class _ReviewFormState extends State<ReviewForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
+              // ── Header
               Row(
                 children: [
                   Container(
@@ -114,8 +129,9 @@ class _ReviewFormState extends State<ReviewForm> {
                     height: 16,
                     decoration: BoxDecoration(
                       gradient: AppColors.primaryGradient,
-                      borderRadius:
-                          BorderRadius.circular(AppSpacing.radiusFull),
+                      borderRadius: BorderRadius.circular(
+                        AppSpacing.radiusFull,
+                      ),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
@@ -158,12 +174,8 @@ class _ReviewFormState extends State<ReviewForm> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 1),
                 child: Icon(
-                  filled
-                      ? Icons.star_rounded
-                      : Icons.star_outline_rounded,
-                  color: filled
-                      ? const Color(0xFFE8A020)
-                      : AppColors.divider,
+                  filled ? Icons.star_rounded : Icons.star_outline_rounded,
+                  color: filled ? const Color(0xFFE8A020) : AppColors.divider,
                   size: 28,
                 ),
               ),
@@ -191,7 +203,7 @@ class _ReviewFormState extends State<ReviewForm> {
         fontSize: 14,
       ),
       decoration: InputDecoration(
-        hintText: 'Ceritakan pengalaman Anda di tempat ini...',
+        hintText: 'Ceritakan pengalaman Anda...',
         hintStyle: AppTextStyles.bodyMedium.copyWith(
           color: AppColors.textHint,
           fontSize: 13,
@@ -200,17 +212,11 @@ class _ReviewFormState extends State<ReviewForm> {
         fillColor: AppColors.surface,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          borderSide: const BorderSide(
-            color: AppColors.divider,
-            width: 1.2,
-          ),
+          borderSide: const BorderSide(color: AppColors.divider, width: 1.2),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          borderSide: const BorderSide(
-            color: AppColors.primary,
-            width: 1.8,
-          ),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.8),
         ),
         contentPadding: const EdgeInsets.all(AppSpacing.md),
       ),
@@ -222,15 +228,14 @@ class _ReviewFormState extends State<ReviewForm> {
       children: [
         Expanded(
           child: OutlinedButton(
-            onPressed: provider.isLoading ? null : provider.hideForm,
+            onPressed: provider.isLoading ? null : widget.onClose,
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.textSecondary,
               side: const BorderSide(color: AppColors.divider, width: 1.2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               ),
-              padding: const EdgeInsets.symmetric(
-                  vertical: AppSpacing.sm + 2),
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm + 2),
             ),
             child: Text(
               'Batal',
@@ -246,24 +251,25 @@ class _ReviewFormState extends State<ReviewForm> {
           child: DecoratedBox(
             decoration: BoxDecoration(
               gradient: provider.isLoading ? null : AppColors.primaryGradient,
-              color: provider.isLoading
-                  ? AppColors.primaryLight.withOpacity(0.3)
-                  : null,
+              color:
+                  provider.isLoading
+                      ? AppColors.primaryLight.withOpacity(0.3)
+                      : null,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-              boxShadow: provider.isLoading
-                  ? []
-                  : [
-                      BoxShadow(
-                        color: AppColors.primary.withOpacity(0.3),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+              boxShadow:
+                  provider.isLoading
+                      ? []
+                      : [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(0.3),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
             ),
             child: ElevatedButton(
-              onPressed: provider.isLoading
-                  ? null
-                  : () => _handleSubmit(provider),
+              onPressed:
+                  provider.isLoading ? null : () => _handleSubmit(provider),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 shadowColor: Colors.transparent,
@@ -271,24 +277,26 @@ class _ReviewFormState extends State<ReviewForm> {
                   borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                 ),
                 padding: const EdgeInsets.symmetric(
-                    vertical: AppSpacing.sm + 2),
+                  vertical: AppSpacing.sm + 2,
+                ),
               ),
-              child: provider.isLoading
-                  ? const SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.textOnDark,
+              child:
+                  provider.isLoading
+                      ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.textOnDark,
+                        ),
+                      )
+                      : Text(
+                        'Kirim',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.textOnDark,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                    )
-                  : Text(
-                      'Kirim',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textOnDark,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
             ),
           ),
         ),

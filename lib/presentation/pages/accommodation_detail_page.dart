@@ -11,10 +11,13 @@ import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/utils/auth_guard.dart';
 import '../../data/models/accommodation_model.dart';
+import '../../data/models/favorite_model.dart'; // ✅ PERBAIKAN: tambah import FavoriteItemType
 import '../../data/services/firestore/accommodation_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/favorite_provider.dart';
 import '../../widgets/review/review_section.dart';
+import '../../widgets/detail/detail_recommendation_section.dart';
+import 'package:aplikasi_wisata/data/services/firestore/review_service.dart';
 
 class AccommodationDetailPage extends StatefulWidget {
   final AccommodationModel accommodation;
@@ -72,16 +75,20 @@ class _AccommodationDetailPageState extends State<AccommodationDetailPage> {
 
     if (_isTogglingFavorite) return;
 
+    // ✅ PERBAIKAN: tambah FavoriteItemType.accommodation sebagai argument ke-2
     final wasFavorite = context.read<FavoriteProvider>().isFavorite(
       widget.accommodation.id,
+      FavoriteItemType.accommodation,
     );
 
     setState(() => _isTogglingFavorite = true);
 
     try {
+      // ✅ PERBAIKAN: tambah FavoriteItemType.accommodation sebagai argument ke-3
       await context.read<FavoriteProvider>().toggleFavorite(
         userId,
         widget.accommodation.id,
+        FavoriteItemType.accommodation,
       );
 
       if (mounted) {
@@ -140,7 +147,12 @@ class _AccommodationDetailPageState extends State<AccommodationDetailPage> {
   @override
   Widget build(BuildContext context) {
     final item = widget.accommodation;
-    final isFavorite = context.watch<FavoriteProvider>().isFavorite(item.id);
+
+    // ✅ PERBAIKAN: tambah FavoriteItemType.accommodation sebagai argument ke-2
+    final isFavorite = context.watch<FavoriteProvider>().isFavorite(
+      item.id,
+      FavoriteItemType.accommodation,
+    );
 
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -281,7 +293,7 @@ class _HeroSection extends StatelessWidget {
             child: _PriceBadge(item: item),
           ),
 
-          // ── Virtual Tour Button (jika ada) — di bawah badge harga
+          // ── Virtual Tour Button (jika ada)
           if (item.hasVirtualTour && item.maps360Url != null)
             Positioned(
               top: MediaQuery.of(context).padding.top + AppSpacing.sm + 44,
@@ -385,7 +397,6 @@ class _HeroInfoOverlay extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Badge kategori
           Container(
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -414,8 +425,6 @@ class _HeroInfoOverlay extends StatelessWidget {
               ],
             ),
           ),
-
-          // Nama akomodasi
           Text(
             item.name,
             style: AppTextStyles.headlineLarge.copyWith(
@@ -433,8 +442,6 @@ class _HeroInfoOverlay extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-
-          // Lokasi + rating
           Row(
             children: [
               Expanded(
@@ -460,8 +467,6 @@ class _HeroInfoOverlay extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-
-              // Rating badge (realtime)
               StreamBuilder<AccommodationModel?>(
                 stream: AccommodationService().streamById(item.id),
                 builder: (context, snapshot) {
@@ -597,7 +602,6 @@ class _ContentCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Drag handle
             Center(
               child: Container(
                 margin: const EdgeInsets.only(top: 14, bottom: 10),
@@ -609,7 +613,6 @@ class _ContentCard extends StatelessWidget {
                 ),
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.lg,
@@ -620,7 +623,6 @@ class _ContentCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── Deskripsi
                   const _SectionLabel(label: "Tentang Akomodasi"),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
@@ -632,31 +634,27 @@ class _ContentCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-
-                  // ── Info harga per malam
-                  _PriceInfoCard(item: item),
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // ── Galeri foto (jika ada)
-                  if (item.hasGallery) ...[
-                    _GallerySection(images: item.images),
-                    const SizedBox(height: AppSpacing.lg),
-                  ],
-
-                  // ── Peta lokasi
                   _MapSection(item: item, onOpenUrl: onOpenUrl),
                   const SizedBox(height: AppSpacing.lg),
-
+                  _PriceInfoCard(item: item),
+                  const SizedBox(height: AppSpacing.lg),
                   Divider(color: AppColors.divider, thickness: 1),
                   const SizedBox(height: AppSpacing.lg),
-
-                  // ── Reviews
-                  ReviewSection(destinationId: item.id),
-
+                  ReviewSection(
+                    target: ReviewTarget.destination,
+                    targetId: item.id,
+                  ),
                   Divider(color: AppColors.divider, thickness: 1),
                   const SizedBox(height: AppSpacing.lg),
-
-                  // ── Action buttons
+                  RecommendationSection(
+                    currentDestinationId: item.id,
+                    currentCategoryId: '',
+                    currentLatitude: item.latitude,
+                    currentLongitude: item.longitude,
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Divider(color: AppColors.divider, thickness: 1),
+                  const SizedBox(height: AppSpacing.lg),
                   _ActionButtons(
                     isFavorite: isFavorite,
                     isLoading: isTogglingFavorite,
@@ -782,52 +780,6 @@ class _PriceInfoCard extends StatelessWidget {
   }
 }
 
-class _GallerySection extends StatelessWidget {
-  final List<String> images;
-  const _GallerySection({required this.images});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const _SectionLabel(label: "Galeri Foto"),
-        const SizedBox(height: AppSpacing.sm),
-        SizedBox(
-          height: 110,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            itemCount: images.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 10),
-            itemBuilder: (context, index) {
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                child: Image.network(
-                  images[index],
-                  width: 140,
-                  height: 110,
-                  fit: BoxFit.cover,
-                  errorBuilder:
-                      (_, __, ___) => Container(
-                        width: 140,
-                        height: 110,
-                        color: AppColors.primarySurface,
-                        child: const Icon(
-                          Icons.image_not_supported_rounded,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _MapSection extends StatelessWidget {
   final AccommodationModel item;
   final Future<void> Function(String) onOpenUrl;
@@ -939,7 +891,6 @@ class _ActionButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // ── Favorite button
         Expanded(
           child: GestureDetector(
             onTap: isLoading ? null : onFavorite,
@@ -1009,10 +960,7 @@ class _ActionButtons extends StatelessWidget {
             ),
           ),
         ),
-
         const SizedBox(width: AppSpacing.sm),
-
-        // ── Maps button
         GestureDetector(
           onTap: () => onOpenUrl(mapsUrl),
           child: Container(

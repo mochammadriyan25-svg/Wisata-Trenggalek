@@ -16,6 +16,8 @@ import '../../widgets/detail/accommodation_recommendation_section.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_spacing.dart';
+import 'package:aplikasi_wisata/data/services/firestore/review_service.dart';
+import '../../data/models/favorite_model.dart'; // ✅
 
 class DetailPage extends StatefulWidget {
   final DestinationModel destination;
@@ -73,6 +75,7 @@ class _DetailPageState extends State<DetailPage> {
 
     final wasFavorite = context.read<FavoriteProvider>().isFavorite(
       widget.destination.id,
+      FavoriteItemType.destination,
     );
 
     setState(() => _isTogglingFavorite = true);
@@ -81,6 +84,7 @@ class _DetailPageState extends State<DetailPage> {
       await context.read<FavoriteProvider>().toggleFavorite(
         userId,
         widget.destination.id,
+        FavoriteItemType.destination,
       );
 
       if (mounted) {
@@ -139,7 +143,10 @@ class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     final item = widget.destination;
-    final isFavorite = context.watch<FavoriteProvider>().isFavorite(item.id);
+    final isFavorite = context.watch<FavoriteProvider>().isFavorite(
+      item.id,
+      FavoriteItemType.destination,
+    );
 
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -583,7 +590,10 @@ class _ContentCard extends StatelessWidget {
                   const SizedBox(height: AppSpacing.lg),
 
                   // ── Reviews
-                  ReviewSection(destinationId: item.id),
+                  ReviewSection(
+                    target: ReviewTarget.destination,
+                    targetId: item.id,
+                  ),
 
                   Divider(color: AppColors.divider, thickness: 1),
                   const SizedBox(height: AppSpacing.lg),
@@ -812,7 +822,7 @@ class _FeeRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final formatted =
         amount == 0
-            ? 'Gratis'
+            ? '0'
             : 'IDR ${amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}';
 
     return Row(

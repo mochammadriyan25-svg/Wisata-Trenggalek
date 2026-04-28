@@ -21,7 +21,7 @@ class DestinationProvider extends ChangeNotifier {
   String _selectedCategoryId = '';
   String _searchKeyword = '';
 
-  // ── CONSTRUCTOR — ✅ init otomatis, tidak perlu panggil init() manual
+  // ── CONSTRUCTOR ───────────────────────────────────────────────────────────
   DestinationProvider() {
     _listenAllDestinations();
     _listenRecommendedDestinations();
@@ -45,11 +45,12 @@ class DestinationProvider extends ChangeNotifier {
     _allDestSub = _service.getAllDestinations().listen(
       (list) {
         _allDestinations = list;
+        _errorMessage = null; // clear error saat data berhasil masuk
         _applyFilter();
         _setLoading(false);
       },
       onError: (e) {
-        _errorMessage = e.toString();
+        _errorMessage = e.toString(); // di-set sebelum notifyListeners
         _setLoading(false);
       },
     );
@@ -63,7 +64,9 @@ class DestinationProvider extends ChangeNotifier {
         notifyListeners();
       },
       onError: (e) {
-        _errorMessage = e.toString();
+        // Error recommended tidak masuk _errorMessage utama
+        // agar tidak merusak tampilan ExplorePage
+        debugPrint('Recommended stream error: $e');
         notifyListeners();
       },
     );
@@ -105,6 +108,13 @@ class DestinationProvider extends ChangeNotifier {
     _applyFilter();
   }
 
+  // ── CLEAR ERROR + RESTART STREAM ──────────────────────────────────────────
+  void clearError() {
+    _errorMessage = null;
+    notifyListeners();
+    _listenAllDestinations(); // restart stream yang mungkin sudah mati
+  }
+
   // ── GET SINGLE DESTINATION ────────────────────────────────────────────────
   Future<DestinationModel?> getById(String id) async {
     final cached = _allDestinations.where((d) => d.id == id).firstOrNull;
@@ -118,11 +128,6 @@ class DestinationProvider extends ChangeNotifier {
   }
 
   // ── UTILITY ───────────────────────────────────────────────────────────────
-  void clearError() {
-    _errorMessage = null;
-    notifyListeners();
-  }
-
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();

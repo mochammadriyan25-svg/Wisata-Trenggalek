@@ -2,88 +2,139 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:aplikasi_wisata/data/models/review_model.dart';
 
+enum ReviewTarget { destination, package, accommodation }
+
 class ReviewService {
   final FirebaseFirestore _firestore;
-  static const String _collection = 'reviews';
 
   ReviewService({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
+
+  // ─── Helper: ambil subcollection ref ─────────────────────
+  CollectionReference _reviewsRef(ReviewTarget target, String targetId) {
+    final parent = switch (target) {
+      ReviewTarget.destination => 'destinations',
+      ReviewTarget.package => 'packages',
+      ReviewTarget.accommodation => 'accommodations',
+    };
+    return _firestore.collection(parent).doc(targetId).collection('reviews');
+  }
 
   // =====================================================
   // GET REVIEWS (Realtime stream)
   // =====================================================
-  Stream<List<ReviewModel>> getReviews(String destinationId) {
-    return _firestore
-        .collection(_collection)
-        .where('destinationId', isEqualTo: destinationId)
+  Stream<List<ReviewModel>> getReviews(ReviewTarget target, String targetId) {
+    return _reviewsRef(target, targetId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => ReviewModel.fromFirestore(doc)).toList());
+        .map(
+          (snapshot) =>
+              snapshot.docs
+                  .map((doc) => ReviewModel.fromFirestore(doc))
+                  .toList(),
+        );
   }
 
   // =====================================================
-  // ADD REVIEW + update rating destinasi
+  // ADD REVIEW
   // =====================================================
-  Future<void> addReview(ReviewModel review) async {
-    await _firestore.collection(_collection).add({
-      ...review.toMap(),
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+  Future<void> addReview(
+    ReviewTarget target,
+    String targetId,
+    ReviewModel review,
+  ) async {
+    await _reviewsRef(target, targetId).add(review.toMap());
 
-    // ✅ Hitung ulang & update rating di dokumen destinasi
-    await _updateDestinationRating(review.destinationId);
+    if (target == ReviewTarget.destination) {
+      await _updateDestinationRating(targetId);
+    } else if (target == ReviewTarget.package) {
+      await _updatePackageRating(targetId);
+    }
   }
 
   // =====================================================
   // CHECK USER ALREADY REVIEWED
   // =====================================================
-  Future<bool> hasUserReviewed(String userId, String destinationId) async {
-    final snapshot = await _firestore
-        .collection(_collection)
-        .where('userId', isEqualTo: userId)
-        .where('destinationId', isEqualTo: destinationId)
-        .limit(1)
-        .get();
+  Future<bool> hasUserReviewed(
+    ReviewTarget target,
+    String targetId,
+    String userId,
+  ) async {
+    final snapshot =
+        await _reviewsRef(
+          target,
+          targetId,
+        ).where('userId', isEqualTo: userId).limit(1).get();
     return snapshot.docs.isNotEmpty;
   }
 
   // =====================================================
-  // DELETE REVIEW + update rating destinasi
-  // ✅ Tambah parameter destinationId
+  // DELETE REVIEW
   // =====================================================
-  Future<void> deleteReview(String reviewId, String destinationId) async {
-    await _firestore.collection(_collection).doc(reviewId).delete();
+  Future<void> deleteReview(
+    ReviewTarget target,
+    String targetId,
+    String reviewId,
+  ) async {
+    await _reviewsRef(target, targetId).doc(reviewId).delete();
 
-    // ✅ Hitung ulang & update rating di dokumen destinasi
-    await _updateDestinationRating(destinationId);
+    if (target == ReviewTarget.destination) {
+      await _updateDestinationRating(targetId);
+    } else if (target == ReviewTarget.package) {
+      await _updatePackageRating(targetId);
+    }
   }
 
   // =====================================================
-  // PRIVATE: Hitung rata-rata rating & update Firestore
+  // PRIVATE: Hitung rata-rata rating destinasi
   // =====================================================
   Future<void> _updateDestinationRating(String destinationId) async {
-    final snapshot = await _firestore
-        .collection(_collection)
-        .where('destinationId', isEqualTo: destinationId)
-        .get();
+    final snapshot =
+        await _reviewsRef(ReviewTarget.destination, destinationId).get();
 
     double avgRating = 0.0;
 
     if (snapshot.docs.isNotEmpty) {
       final totalRating = snapshot.docs.fold<double>(
-        0,
-        (sum, doc) => sum + (doc.data()['rating'] ?? 0).toDouble(),
+        0.0,
+        (acc, doc) =>
+            acc +
+            ((doc.data() as Map<String, dynamic>)['rating'] as num? ?? 0)
+                .toDouble(),
       );
-      avgRating = totalRating / snapshot.docs.length;
-
-      // Bulatkan ke 1 desimal, contoh: 4.3
-      avgRating = double.parse(avgRating.toStringAsFixed(1));
+      avgRating = double.parse(
+        (totalRating / snapshot.docs.length).toStringAsFixed(1),
+      );
     }
 
-    await _firestore
-        .collection('destinations')
-        .doc(destinationId)
-        .update({'rating': avgRating});
+    await _firestore.collection('destinations').doc(destinationId).update({
+      'rating': avgRating,
+    });
+  }
+
+  // =====================================================
+  // PRIVATE: Hitung rata-rata rating paket
+  // =====================================================
+  Future<void> _updatePackageRating(String packageId) async {
+    final snapshot = await _reviewsRef(ReviewTarget.package, packageId).get();
+
+    double avgRating = 0.0;
+
+    if (snapshot.docs.isNotEmpty) {
+      final totalRating = snapshot.docs.fold<double>(
+        0.0,
+        (acc, doc) =>
+            acc +
+            ((doc.data() as Map<String, dynamic>)['rating'] as num? ?? 0)
+                .toDouble(),
+      );
+      avgRating = double.parse(
+        (totalRating / snapshot.docs.length).toStringAsFixed(1),
+      );
+    }
+
+    await _firestore.collection('packages').doc(packageId).update({
+      'rating': avgRating,
+    });
   }
 }
