@@ -576,7 +576,7 @@ class ExplorePackageCard extends StatelessWidget {
                       const SizedBox(width: 3),
                       Expanded(
                         child: Text(
-                          item.location,
+                          item.durationLabel,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTextStyles.bodyMedium.copyWith(
@@ -607,15 +607,7 @@ class ExplorePackageCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: AppSpacing.sm),
-                  Row(
-                    children: [
-                      ExploreRatingBadge(rating: item.rating),
-                      if (item.hasVirtualTour) ...[
-                        const SizedBox(width: AppSpacing.sm),
-                        const ExploreVirtualTourBadge(),
-                      ],
-                    ],
-                  ),
+                  Row(children: [ExploreRatingBadge(rating: item.rating)]),
                 ],
               ),
             ),

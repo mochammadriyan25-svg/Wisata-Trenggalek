@@ -1,0 +1,25 @@
+[33mca54ad8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeat/final-touch[m[33m, [m[1;31morigin/feat/final-touch[m[33m)[m feat: branch Selesai
+.gitignore
+lib/data/models/accommodation_model.dart
+lib/data/models/destination_model.dart
+lib/data/models/favorite_model.dart
+lib/data/models/package_model.dart
+lib/data/models/review_model.dart
+lib/data/services/firestore/favorite_service.dart
+lib/data/services/firestore/package_service.dart
+lib/data/services/firestore/review_service.dart
+lib/presentation/pages/accommodation_detail_page.dart
+lib/presentation/pages/detail_page.dart
+lib/presentation/pages/explore_page.dart
+lib/presentation/pages/favorite_page.dart
+lib/presentation/pages/package_detail_page.dart
+lib/providers/destination_provider.dart
+lib/providers/favorite_provider.dart
+lib/providers/package_provider.dart
+lib/providers/review_provider.dart
+lib/widgets/detail/accommodation_recommendation_section.dart
+lib/widgets/explore/explore_widget.dart
+lib/widgets/favorite.dart
+lib/widgets/home/home_package_section.dart
+lib/widgets/review/review_form.dart
+lib/widgets/review/review_section.dart

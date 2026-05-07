@@ -1,4 +1,4 @@
-// lib/data/models/favorite_model.dart
+// lib/data/models/favorite_model.dart .
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum FavoriteItemType { destination, accommodation, package }

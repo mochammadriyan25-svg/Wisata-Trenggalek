@@ -1,0 +1,90 @@
+{
+"packages": [
+    {
+      "id": "pkg_pantai_2d1n",
+      "categoryId": "cat_paket_wisata",
+      "name": "Paket Pantai 2 Hari 1 Malam",
+      "description": "Nikmati keindahan pantai Trenggalek selama 2 hari 1 malam. Rasakan deburan ombak Pantai Prigi dan pesona sunset Pantai Damas dalam satu perjalanan tak terlupakan.",
+      "imageUrl": "https://picsum.photos/seed/pkg1/800/600",
+      "images": [
+        "https://picsum.photos/seed/pkg1a/800/600",
+        "https://picsum.photos/seed/pkg1b/800/600"
+      ],
+      "price": 350000,
+      "durationDays": 2,
+      "durationNights": 1,
+      "includes": ["Pemandu wisata", "Tiket masuk destinasi"],
+      "destinationIds": ["dest_pantai_prigi", "dest_pantai_damas"],
+      "isActive": true,
+      "tiers": [
+        {
+          "name": "Hemat",
+          "price": 350000,
+          "description": "Cocok untuk solo traveler atau pasangan yang ingin menikmati pantai dengan budget terjangkau.",
+          "includes": ["Tiket masuk 2 destinasi", "Pemandu wisata lokal", "Air mineral"],
+          "maxPerson": 2,
+          "isPopular": false
+        },
+        {
+          "name": "Standar",
+          "price": 550000,
+          "description": "Paket terlengkap untuk keluarga kecil. Sudah termasuk penginapan 1 malam dan makan pagi.",
+          "includes": ["Tiket masuk 2 destinasi", "Pemandu wisata lokal", "Penginapan 1 malam", "Makan pagi 2x", "Air mineral"],
+          "maxPerson": 4,
+          "isPopular": true
+        },
+        {
+          "name": "Premium",
+          "price": 850000,
+          "description": "Pengalaman wisata pantai terbaik dengan fasilitas lengkap.",
+          "includes": ["Tiket masuk 2 destinasi", "Pemandu wisata profesional", "Penginapan 1 malam bintang 3", "Makan 3x sehari", "Transport antar destinasi", "Antar-jemput dari kota", "Asuransi perjalanan"],
+          "maxPerson": 8,
+          "isPopular": false
+        }
+      ]
+    },
+    {
+      "id": "pkg_lengkap_3d2n",
+      "categoryId": "cat_paket_wisata",
+      "name": "Paket Lengkap Trenggalek 3 Hari 2 Malam",
+      "description": "Jelajahi keindahan alam, pantai, dan kuliner khas Trenggalek dalam satu paket lengkap 3 hari 2 malam.",
+      "imageUrl": "https://picsum.photos/seed/pkg2/800/600",
+      "images": [
+        "https://picsum.photos/seed/pkg2a/800/600",
+        "https://picsum.photos/seed/pkg2b/800/600"
+      ],
+      "price": 650000,
+      "durationDays": 3,
+      "durationNights": 2,
+      "includes": ["Pemandu wisata", "Tiket masuk destinasi"],
+      "destinationIds": ["dest_pantai_prigi", "dest_pantai_damas", "dest_goa_lowo"],
+      "isActive": true,
+      "tiers": [
+        {
+          "name": "Hemat",
+          "price": 650000,
+          "description": "Paket backpacker untuk kamu yang ingin menjelajah Trenggalek dengan budget minimal.",
+          "includes": ["Tiket masuk 3 destinasi", "Pemandu wisata lokal", "Air mineral"],
+          "maxPerson": 2,
+          "isPopular": false
+        },
+        {
+          "name": "Standar",
+          "price": 950000,
+          "description": "Pilihan terbaik untuk keluarga. Sudah termasuk penginapan 2 malam dan makan lengkap.",
+          "includes": ["Tiket masuk 3 destinasi", "Pemandu wisata lokal", "Penginapan 2 malam", "Makan 3x sehari", "Transport antar destinasi", "Air mineral"],
+          "maxPerson": 4,
+          "isPopular": true
+        },
+        {
+          "name": "Premium",
+          "price": 1500000,
+          "description": "Liburan all-inclusive tanpa khawatir. Semua sudah diurus dari akomodasi hingga dokumentasi.",
+          "includes": ["Tiket masuk 3 destinasi", "Pemandu wisata profesional", "Penginapan 2 malam bintang 3", "Makan 3x sehari", "Transport antar destinasi", "Antar-jemput dari kota", "Asuransi perjalanan", "Dokumentasi foto", "Oleh-oleh khas Trenggalek"],
+          "maxPerson": 8,
+          "isPopular": false
+        }
+      ]
+    }
+  ]
+} 

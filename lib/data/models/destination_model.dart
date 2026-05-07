@@ -1,4 +1,4 @@
-// lib/data/models/destination_model.dart
+// lib/data/models/destination_model.dart.
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 

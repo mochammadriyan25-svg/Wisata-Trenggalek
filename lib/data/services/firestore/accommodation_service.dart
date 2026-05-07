@@ -1,4 +1,4 @@
-// lib/data/services/firestore/accommodation_service.dart
+// lib/data/services/firestore/accommodation_service.dart.
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:aplikasi_wisata/data/models/accommodation_model.dart';
 

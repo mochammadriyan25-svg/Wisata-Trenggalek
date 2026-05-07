@@ -384,7 +384,7 @@ class _SectionLabel extends StatelessWidget {
 class _BaseCard extends StatelessWidget {
   final String imageUrl;
   final String name;
-  final String location;
+  final String subtitle; // lokasi untuk destinasi/akomodasi, durasi untuk paket
   final double rating;
   final String categoryId;
   final String badgeLabel; // "Destinasi" / "Akomodasi" / "Paket"
@@ -395,7 +395,7 @@ class _BaseCard extends StatelessWidget {
   const _BaseCard({
     required this.imageUrl,
     required this.name,
-    required this.location,
+    required this.subtitle,
     required this.rating,
     required this.categoryId,
     required this.badgeLabel,
@@ -510,7 +510,7 @@ class _BaseCard extends StatelessWidget {
                       const SizedBox(width: 3),
                       Expanded(
                         child: Text(
-                          location,
+                          subtitle,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTextStyles.bodyMedium.copyWith(
@@ -624,7 +624,7 @@ class _DestinationCard extends StatelessWidget {
     return _BaseCard(
       imageUrl: item.imageUrl,
       name: item.name,
-      location: item.location,
+      subtitle: item.location,
       rating: item.rating,
       categoryId: item.categoryId,
       badgeLabel: 'Destinasi',
@@ -655,7 +655,7 @@ class _AccommodationCard extends StatelessWidget {
     return _BaseCard(
       imageUrl: item.imageUrl,
       name: item.name,
-      location: item.location,
+      subtitle: item.location,
       rating: item.rating,
       categoryId: item.categoryId,
       badgeLabel: 'Akomodasi',
@@ -688,7 +688,7 @@ class _PackageCard extends StatelessWidget {
     return _BaseCard(
       imageUrl: item.imageUrl,
       name: item.name,
-      location: item.location,
+      subtitle: item.durationLabel,
       rating: item.rating,
       categoryId: item.categoryId,
       badgeLabel: 'Paket Wisata',

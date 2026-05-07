@@ -254,7 +254,7 @@ class _PackageCard extends StatelessWidget {
                       style: AppTextStyles.headlineSmall.copyWith(
                         fontSize: 13,
                         color:
-                            package.isFree
+                            package.price == 0
                                 ? AppColors.success
                                 : AppColors.primary,
                       ),

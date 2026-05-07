@@ -2,72 +2,116 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-class PackageModel {
-  final String id;
-  final String categoryId;
+// ── PACKAGE TIER MODEL ─────────────────────────────────────────────────────
+
+class PackageTier {
   final String name;
-  final String location;
-  final String description;
-  final String imageUrl;
-  final List<String> images;
   final int price;
-  final double rating;
-  final bool isActive;
-  final Timestamp? createdAt;
+  final String description;
+  final List<String> includes;
+  final int maxPerson;
+  final bool isPopular;
 
-  // Maps
-  final double latitude;
-  final double longitude;
-  final String mapsUrl;
-
-  // 360 Virtual Tour
-  final bool hasVirtualTour;
-  final String? maps360Url;
-
-  const PackageModel({
-    required this.id,
-    required this.categoryId,
+  PackageTier({
     required this.name,
-    required this.location,
-    required this.description,
-    required this.imageUrl,
-    this.images = const [],
     required this.price,
-    required double rating,
-    required this.isActive,
-    this.createdAt,
-    // Maps
-    required this.latitude,
-    required this.longitude,
-    required this.mapsUrl,
-    // Virtual Tour
-    required this.hasVirtualTour,
-    this.maps360Url,
-  }) : rating =
-           rating < 0.0
-               ? 0.0
-               : rating > 5.0
-               ? 5.0
-               : rating,
-       assert(
-         !hasVirtualTour || maps360Url != null,
-         'maps360Url wajib diisi jika hasVirtualTour = true',
-       );
-
-  // ── GETTERS
-  bool get hasGallery => images.isNotEmpty;
-  bool get isFree => price == 0;
+    required this.description,
+    required this.includes,
+    required this.maxPerson,
+    this.isPopular = false,
+  });
 
   String get formattedPrice {
-    if (isFree) return 'Gratis';
     final formatter = NumberFormat('#,###', 'id_ID');
     return 'IDR ${formatter.format(price)}';
   }
 
-  // ── FACTORY
+  factory PackageTier.fromMap(Map<String, dynamic> map) {
+    return PackageTier(
+      name: map['name'] ?? '',
+      price: (map['price'] as num?)?.toInt() ?? 0,
+      description: map['description'] ?? '',
+      includes: List<String>.from(map['includes'] ?? []),
+      maxPerson: (map['maxPerson'] as num?)?.toInt() ?? 1,
+      isPopular: map['isPopular'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'price': price,
+      'description': description,
+      'includes': includes,
+      'maxPerson': maxPerson,
+      'isPopular': isPopular,
+    };
+  }
+}
+
+// ── PACKAGE MODEL ──────────────────────────────────────────────────────────
+
+class PackageModel {
+  final String id;
+  final String categoryId;
+  final String name;
+  final String description;
+  final String imageUrl;
+  final List<String> images;
+  final int price;
+  final int durationDays;
+  final int durationNights;
+  final List<String> includes;
+  final List<String> destinationIds;
+  final List<PackageTier> tiers;
+  final bool isActive;
+  final Timestamp? createdAt;
+
+  // ── RATING
+  final double rating;
+
+  PackageModel({
+    required this.id,
+    required this.categoryId,
+    required this.name,
+    required this.description,
+    required this.imageUrl,
+    this.images = const [],
+    required this.price,
+    required this.durationDays,
+    required this.durationNights,
+    required this.includes,
+    required this.destinationIds,
+    this.tiers = const [],
+    required this.isActive,
+    this.createdAt,
+    required double rating,
+  }) : rating = rating.clamp(0.0, 5.0);
+
+  // ── GETTERS ───────────────────────────────────────────────────────────────
+
+  String get durationLabel => '$durationDays Hari $durationNights Malam';
+
+  String get formattedPrice {
+    final formatter = NumberFormat('#,###', 'id_ID');
+    return 'IDR ${formatter.format(price)}';
+  }
+
+  bool get isDurationValid => durationNights == durationDays - 1;
+  bool get hasGallery => images.isNotEmpty;
+  bool get hasDestinations => destinationIds.isNotEmpty;
+  bool get hasTiers => tiers.isNotEmpty;
+
+  /// Tier yang paling populer (badge "Terlaris")
+  PackageTier? get popularTier => tiers.where((t) => t.isPopular).firstOrNull;
+
+  /// Rating
+  String get ratingLabel => rating.toStringAsFixed(1); // "4.7"
+
+  // ── FACTORY ───────────────────────────────────────────────────────────────
+
   factory PackageModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    final hasVirtualTour = data['hasVirtualTour'] ?? false;
 
     double toDouble(dynamic val) {
       if (val == null) return 0.0;
@@ -75,51 +119,54 @@ class PackageModel {
       return double.tryParse(val.toString()) ?? 0.0;
     }
 
+    int toInt(dynamic val) {
+      if (val == null) return 0;
+      if (val is num) return val.toInt();
+      return int.tryParse(val.toString()) ?? 0;
+    }
+
     return PackageModel(
       id: doc.id,
       categoryId: data['categoryId'] ?? '',
       name: data['name'] ?? '',
-      location: data['location'] ?? '',
       description: data['description'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
       images: List<String>.from(data['images'] ?? []),
-      price: (data['price'] as num?)?.toInt() ?? 0,
-      rating: (data['rating'] as num?)?.toDouble() ?? 0.0,
+      price: toInt(data['price']),
+      durationDays: toInt(data['durationDays']),
+      durationNights: toInt(data['durationNights']),
+      includes: List<String>.from(data['includes'] ?? []),
+      destinationIds: List<String>.from(data['destinationIds'] ?? []),
+      tiers:
+          (data['tiers'] as List<dynamic>?)
+              ?.map((t) => PackageTier.fromMap(t as Map<String, dynamic>))
+              .toList() ??
+          [],
       isActive: data['isActive'] ?? true,
       createdAt: data['createdAt'],
-      // Maps
-      latitude: toDouble(data['latitude']),
-      longitude: toDouble(data['longitude']),
-      mapsUrl: data['mapsUrl'] ?? '',
-      // Virtual Tour
-      hasVirtualTour: hasVirtualTour,
-      maps360Url: hasVirtualTour == true ? data['maps360Url'] : null,
+      rating: toDouble(data['rating']),
     );
   }
 
-  // ── SERIALIZATION
+  // ── SERIALIZATION ─────────────────────────────────────────────────────────
+
   Map<String, dynamic> toCreateMap() {
     return {
       'categoryId': categoryId,
       'name': name,
-      'location': location,
       'description': description,
       'imageUrl': imageUrl,
       'images': images,
       'price': price,
-      'rating': rating,
+      'durationDays': durationDays,
+      'durationNights': durationNights,
+      'includes': includes,
+      'destinationIds': destinationIds,
+      'tiers': tiers.map((t) => t.toMap()).toList(),
       'isActive': isActive,
       'createdAt': FieldValue.serverTimestamp(),
-      // Maps
-      'latitude': latitude,
-      'longitude': longitude,
-      'mapsUrl': mapsUrl,
-      // Virtual Tour
-      'hasVirtualTour': hasVirtualTour,
-      if (hasVirtualTour && maps360Url != null)
-        'maps360Url': maps360Url
-      else
-        'maps360Url': null,
+      // Rating di-init 0.0 saat package pertama dibuat
+      'rating': 0.0,
     };
   }
 
@@ -127,66 +174,56 @@ class PackageModel {
     return {
       'categoryId': categoryId,
       'name': name,
-      'location': location,
       'description': description,
       'imageUrl': imageUrl,
       'images': images,
       'price': price,
-      'rating': rating,
+      'durationDays': durationDays,
+      'durationNights': durationNights,
+      'includes': includes,
+      'destinationIds': destinationIds,
+      'tiers': tiers.map((t) => t.toMap()).toList(),
       'isActive': isActive,
-      // Maps
-      'latitude': latitude,
-      'longitude': longitude,
-      'mapsUrl': mapsUrl,
-      // Virtual Tour
-      'hasVirtualTour': hasVirtualTour,
-      if (hasVirtualTour && maps360Url != null)
-        'maps360Url': maps360Url
-      else
-        'maps360Url': FieldValue.delete(),
+      // rating TIDAK di-update dari sini,
+      // dikelola oleh repository saat ada review baru masuk
     };
   }
 
-  // ── UTILITY
+  // ── UTILITY ───────────────────────────────────────────────────────────────
+
   PackageModel copyWith({
     String? id,
     String? categoryId,
     String? name,
-    String? location,
     String? description,
     String? imageUrl,
     List<String>? images,
     int? price,
-    double? rating,
+    int? durationDays,
+    int? durationNights,
+    List<String>? includes,
+    List<String>? destinationIds,
+    List<PackageTier>? tiers,
     bool? isActive,
     Timestamp? createdAt,
-    // Maps
-    double? latitude,
-    double? longitude,
-    String? mapsUrl,
-    // Virtual Tour
-    bool? hasVirtualTour,
-    String? maps360Url,
+    double? rating,
   }) {
     return PackageModel(
       id: id ?? this.id,
       categoryId: categoryId ?? this.categoryId,
       name: name ?? this.name,
-      location: location ?? this.location,
       description: description ?? this.description,
       imageUrl: imageUrl ?? this.imageUrl,
       images: images ?? this.images,
       price: price ?? this.price,
-      rating: rating ?? this.rating,
+      durationDays: durationDays ?? this.durationDays,
+      durationNights: durationNights ?? this.durationNights,
+      includes: includes ?? this.includes,
+      destinationIds: destinationIds ?? this.destinationIds,
+      tiers: tiers ?? this.tiers,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
-      // Maps
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
-      mapsUrl: mapsUrl ?? this.mapsUrl,
-      // Virtual Tour
-      hasVirtualTour: hasVirtualTour ?? this.hasVirtualTour,
-      maps360Url: maps360Url ?? this.maps360Url,
+      rating: rating ?? this.rating,
     );
   }
 
@@ -201,6 +238,7 @@ class PackageModel {
   int get hashCode => id.hashCode;
 
   @override
-  String toString() =>
-      'PackageModel{id: $id, name: $name, location: $location, price: $formattedPrice, rating: $rating}';
+  String toString() {
+    return 'PackageModel{id: $id, name: $name, price: $formattedPrice, duration: $durationLabel, rating: $ratingLabel}';
+  }
 }
