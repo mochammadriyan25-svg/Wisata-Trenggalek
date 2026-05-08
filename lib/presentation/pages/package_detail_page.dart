@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:aplikasi_wisata/data/models/package_model.dart';
+import 'package:aplikasi_wisata/providers/auth_provider.dart'; // ← TAMBAH
 import 'package:aplikasi_wisata/providers/review_provider.dart';
 import 'package:aplikasi_wisata/widgets/review/review_section.dart';
 import '../../core/theme/app_colors.dart';
@@ -39,7 +40,12 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
   @override
   void initState() {
     super.initState();
-    _reviewProvider = ReviewProvider();
+
+    // Ambil user dari AuthProvider dan pass ke ReviewProvider
+    final authProvider = context.read<AuthProvider>();
+    _reviewProvider = ReviewProvider(
+      currentUser: authProvider.user, // ← TAMBAH
+    );
 
     if (widget.package.hasTiers) {
       final popularIndex = widget.package.tiers.indexWhere((t) => t.isPopular);
@@ -96,7 +102,6 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Drag handle
                           Center(
                             child: Container(
                               margin: const EdgeInsets.only(
@@ -122,7 +127,6 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Tentang Paket
                                 const PackageSectionLabel(
                                   label: 'Tentang Paket',
                                 ),
@@ -137,7 +141,6 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
                                 ),
                                 const SizedBox(height: AppSpacing.lg),
 
-                                // Tier
                                 if (pkg.hasTiers) ...[
                                   const PackageSectionLabel(
                                     label: 'Pilih Paket',
@@ -158,7 +161,6 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
                                   ],
                                 ],
 
-                                // Fasilitas
                                 if (pkg.includes.isNotEmpty) ...[
                                   const PackageSectionLabel(
                                     label: 'Fasilitas Umum',
@@ -168,7 +170,6 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
                                   const SizedBox(height: AppSpacing.lg),
                                 ],
 
-                                // Destinasi
                                 if (pkg.hasDestinations) ...[
                                   const PackageSectionLabel(
                                     label: 'Destinasi dalam Paket',
@@ -180,14 +181,13 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
                                   const SizedBox(height: AppSpacing.lg),
                                 ],
 
-                                // Ulasan
                                 ReviewSection(
                                   target: ReviewTarget.package,
                                   targetId: pkg.id,
                                 ),
                                 const SizedBox(height: AppSpacing.md),
 
-                                const SizedBox(height: 80),
+                                const SizedBox(height: 130),
                               ],
                             ),
                           ),
@@ -199,14 +199,12 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
               ),
             ),
 
-            // Back button
             Positioned(
               top: MediaQuery.of(context).padding.top + AppSpacing.sm,
               left: AppSpacing.md,
               child: PackageBackButton(scrollOffset: _scrollOffset),
             ),
 
-            // Bottom bar
             Positioned(
               left: 0,
               right: 0,
@@ -214,6 +212,8 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
               child: PackageBottomBar(
                 tier: _selectedTier,
                 fallbackPrice: pkg.formattedPrice,
+                packageId: pkg.id,
+                userId: context.read<AuthProvider>().user!.id,
               ),
             ),
           ],
