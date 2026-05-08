@@ -1,6 +1,7 @@
 // lib/widgets/home/home_package_section.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:aplikasi_wisata/core/utils/auth_guard.dart';
 import 'package:aplikasi_wisata/data/models/package_model.dart';
 import 'package:aplikasi_wisata/providers/package_provider.dart';
 import 'package:aplikasi_wisata/presentation/pages/package_detail_page.dart';
@@ -125,9 +126,18 @@ class _PackageCard extends StatelessWidget {
   const _PackageCard({required this.package});
 
   void _goToDetail(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => PackageDetailPage(package: package)),
+    // ── AUTH GUARD: Cek login sebelum navigasi ──
+    AuthGuard.checkAndRun(
+      context: context,
+      action: () {
+        // Hanya dijalankan jika user SUDAH login
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PackageDetailPage(package: package),
+          ),
+        );
+      },
     );
   }
 

@@ -1,11 +1,11 @@
 // lib/widgets/home/home_recommendation_section.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:aplikasi_wisata/core/utils/auth_guard.dart';
 import 'package:aplikasi_wisata/data/models/destination_model.dart';
 import 'package:aplikasi_wisata/presentation/pages/detail_page.dart';
 import 'package:aplikasi_wisata/providers/destination_provider.dart';
 import '../../core/theme/app_colors.dart';
-
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_spacing.dart';
 
@@ -14,7 +14,6 @@ class HomeRecommendationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ Gunakan provider — tidak buat instance service baru di widget
     final provider = context.watch<DestinationProvider>();
 
     return Column(
@@ -44,7 +43,6 @@ class HomeRecommendationSection extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.md),
 
-        // ✅ Gunakan state dari provider — isLoading, errorMessage, recommendedDestinations
         if (provider.isLoading)
           const SizedBox(
             height: 260,
@@ -107,9 +105,18 @@ class _RecommendationCard extends StatelessWidget {
   final DestinationModel destination;
 
   void _navigateToDetail(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => DetailPage(destination: destination)),
+    // ── AUTH GUARD: Cek login sebelum navigasi ──
+    AuthGuard.checkAndRun(
+      context: context,
+      action: () {
+        // Hanya dijalankan jika user SUDAH login
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DetailPage(destination: destination),
+          ),
+        );
+      },
     );
   }
 
@@ -297,7 +304,6 @@ class _CardInfo extends StatelessWidget {
                   ],
                 ),
               ),
-              // ✅ Gunakan getter formattedPriceAdult dari model
               Text(
                 destination.formattedPriceAdult,
                 style: AppTextStyles.headlineSmall.copyWith(

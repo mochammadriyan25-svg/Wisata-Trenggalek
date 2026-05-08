@@ -3,10 +3,7 @@
 import 'package:flutter/material.dart';
 
 class LoginPromptSheet extends StatelessWidget {
-  const LoginPromptSheet({
-    super.key,
-    required this.redirectBackRoute,
-  });
+  const LoginPromptSheet({super.key, required this.redirectBackRoute});
 
   final String redirectBackRoute;
 

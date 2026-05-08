@@ -1,3 +1,4 @@
+// lib/providers/auth_provider.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../data/models/user_model.dart';
@@ -58,6 +59,7 @@ class AuthProvider extends ChangeNotifier {
           name: effectiveName,
           phone: firebaseUser.phoneNumber ?? '',
           email: firebaseUser.email ?? '',
+          photoUrl: firebaseUser.photoURL ?? '', // ← TAMBAH
         );
       }
     }
@@ -95,6 +97,7 @@ class AuthProvider extends ChangeNotifier {
           name: name,
           phone: phone,
           email: email,
+          // photoUrl tidak perlu karena register email/password tanpa foto
         );
       }
       return true;
@@ -123,6 +126,7 @@ class AuthProvider extends ChangeNotifier {
             name: firebaseUser.displayName ?? 'User',
             phone: firebaseUser.phoneNumber ?? '',
             email: firebaseUser.email ?? '',
+            photoUrl: firebaseUser.photoURL ?? '', // ← TAMBAH
           );
         }
       }

@@ -1,4 +1,4 @@
-// lib/data/services/user_service.dart
+// lib/data/services/firestore/user_service.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:aplikasi_wisata/data/models/user_model.dart';
 
@@ -13,18 +13,25 @@ class UserService {
   }
 
   // ── SAVE / UPDATE PARTIAL DATA ─────────────────
-  // Dipakai saat register email/password
+  // Dipakai saat register email/password & login sosial
   Future<void> saveUserData({
     required String userId,
     required String name,
     required String phone,
     required String email,
+    String? photoUrl, // ← TAMBAH
   }) async {
-    await _collection.doc(userId).set({
+    final data = <String, dynamic>{
       'name': name,
       'phone': phone,
       'email': email,
-    }, SetOptions(merge: true));
+    };
+
+    if (photoUrl != null && photoUrl.isNotEmpty) {
+      data['photoUrl'] = photoUrl;
+    }
+
+    await _collection.doc(userId).set(data, SetOptions(merge: true));
   }
 
   // ── GET (one-time fetch) ───────────────────────

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/utils/auth_guard.dart';
 import '../../providers/destination_provider.dart';
 import '../../providers/accommodation_provider.dart';
 import '../../providers/category_provider.dart';
@@ -12,7 +13,7 @@ import '../../widgets/explore/explore_widget.dart';
 import 'detail_page.dart';
 import 'package:aplikasi_wisata/presentation/pages/accommodation_detail_page.dart';
 import 'package:aplikasi_wisata/presentation/pages/package_detail_page.dart';
-import '../../providers/package_provider.dart'; // ✅
+import '../../providers/package_provider.dart';
 
 // ── ENUM tetap ada agar tidak merusak navigasi dari halaman lain
 enum ExploreMode { destination, accommodation, package }
@@ -457,13 +458,19 @@ class _ExplorePageState extends State<ExplorePage>
         final item = destinations[index];
         return ExploreDestinationCard(
           item: item,
-          onTap:
-              () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => DetailPage(destination: item),
-                ),
-              ),
+          onTap: () {
+            // ── AUTH GUARD ──
+            AuthGuard.checkAndRun(
+              context: context,
+              action:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DetailPage(destination: item),
+                    ),
+                  ),
+            );
+          },
         );
       },
     );
@@ -505,19 +512,26 @@ class _ExplorePageState extends State<ExplorePage>
         final item = accommodations[index];
         return ExploreAccommodationCard(
           item: item,
-          onTap:
-              () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AccommodationDetailPage(accommodation: item),
-                ),
-              ),
+          onTap: () {
+            // ── AUTH GUARD ──
+            AuthGuard.checkAndRun(
+              context: context,
+              action:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => AccommodationDetailPage(accommodation: item),
+                    ),
+                  ),
+            );
+          },
         );
       },
     );
   }
 
-  // ✅ ── PACKAGE LIST
+  // ── PACKAGE LIST
   Widget _buildPackageList(
     BuildContext context,
     PackageProvider packageProvider,
@@ -553,13 +567,19 @@ class _ExplorePageState extends State<ExplorePage>
         final item = packages[index];
         return ExplorePackageCard(
           item: item,
-          onTap:
-              () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PackageDetailPage(package: item),
-                ),
-              ),
+          onTap: () {
+            // ── AUTH GUARD ──
+            AuthGuard.checkAndRun(
+              context: context,
+              action:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PackageDetailPage(package: item),
+                    ),
+                  ),
+            );
+          },
         );
       },
     );
