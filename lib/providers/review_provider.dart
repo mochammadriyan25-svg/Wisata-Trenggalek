@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../data/models/review_model.dart';
+import '../data/models/user_model.dart';
 import '../data/services/firestore/review_service.dart';
 
 export '../data/services/firestore/review_service.dart' show ReviewTarget;
@@ -11,15 +12,32 @@ enum ReviewSubmitState { idle, loading, success, error, alreadyReviewed }
 
 class ReviewProvider extends ChangeNotifier {
   final ReviewService _reviewService;
+  final FirebaseFirestore _firestore;
 
-  ReviewProvider({ReviewService? reviewService})
-    : _reviewService = reviewService ?? ReviewService();
+  ReviewProvider({
+    ReviewService? reviewService,
+    FirebaseFirestore? firestore,
+    UserModel? currentUser, // ← TAMBAH
+  }) : _reviewService = reviewService ?? ReviewService(),
+       _firestore = firestore ?? FirebaseFirestore.instance {
+    // Init langsung dari AuthProvider kalau tersedia
+    if (currentUser != null) {
+      _userName = currentUser.name.isNotEmpty ? currentUser.name : 'Anonymous';
+      _userAvatar = currentUser.photoUrl;
+      _userLoaded = true;
+    }
+  }
 
   // ─── State ───────────────────────────────────────────────
   ReviewSubmitState _submitState = ReviewSubmitState.idle;
   String _errorMessage = '';
   double _selectedRating = 5.0;
   bool _showForm = false;
+
+  // ─── User data ───────────────────────────────────────────
+  String _userName = 'Anonymous';
+  String _userAvatar = '';
+  bool _userLoaded = false;
 
   // ─── Getters ─────────────────────────────────────────────
   ReviewSubmitState get submitState => _submitState;
@@ -28,11 +46,29 @@ class ReviewProvider extends ChangeNotifier {
   bool get showForm => _showForm;
   bool get isLoading => _submitState == ReviewSubmitState.loading;
 
-  // ─── User info dari FirebaseAuth ──────────────────────────
   String get _userId => FirebaseAuth.instance.currentUser?.uid ?? '';
-  String get _userName =>
-      FirebaseAuth.instance.currentUser?.displayName ?? 'Anonymous';
-  String get _userAvatar => FirebaseAuth.instance.currentUser?.photoURL ?? '';
+
+  // ─── Fallback: load dari Firestore kalau constructor tidak dikasih UserModel ──
+  Future<void> init() async {
+    if (_userLoaded) return;
+
+    final uid = _userId;
+    if (uid.isEmpty) return;
+
+    try {
+      final doc = await _firestore.collection('users').doc(uid).get();
+      if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        _userName = data['name'] ?? 'Anonymous';
+        _userAvatar = data['photoUrl'] ?? '';
+        _userLoaded = true;
+        notifyListeners();
+      }
+    } catch (e) {
+      _userName = 'Anonymous';
+      _userAvatar = '';
+    }
+  }
 
   // ─── Stream reviews ───────────────────────────────────────
   Stream<List<ReviewModel>> getReviews(ReviewTarget target, String targetId) {
@@ -65,6 +101,8 @@ class ReviewProvider extends ChangeNotifier {
     required String comment,
   }) async {
     if (comment.trim().isEmpty) return;
+
+    if (!_userLoaded) await init();
 
     _submitState = ReviewSubmitState.loading;
     _errorMessage = '';
