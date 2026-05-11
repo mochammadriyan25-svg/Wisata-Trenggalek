@@ -256,8 +256,8 @@ class _ActionButtons extends StatelessWidget {
                             const SizedBox(width: AppSpacing.sm),
                             Text(
                               isFavorite
-                                  ? 'Saved to Favorites'
-                                  : 'Add to Favorites',
+                                  ? 'Hapus Dari Favorites'
+                                  : 'Tambahkan ke Favorites',
                               style: AppTextStyles.buttonLabel.copyWith(
                                 fontSize: 14,
                                 color:
@@ -274,22 +274,6 @@ class _ActionButtons extends StatelessWidget {
         ),
 
         const SizedBox(width: AppSpacing.sm),
-
-        // Tombol Share
-        Container(
-          height: 52,
-          width: 52,
-          decoration: BoxDecoration(
-            color: AppColors.earthSurface,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            border: Border.all(color: AppColors.earthLight, width: 1.2),
-          ),
-          child: const Icon(
-            Icons.share_rounded,
-            color: AppColors.bark,
-            size: 20,
-          ),
-        ),
       ],
     );
   }
