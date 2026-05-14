@@ -1,13 +1,13 @@
 // lib/widgets/home/home_package_section.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aplikasi_wisata/core/utils/auth_guard.dart';
 import 'package:aplikasi_wisata/data/models/package_model.dart';
 import 'package:aplikasi_wisata/providers/package_provider.dart';
 import 'package:aplikasi_wisata/presentation/pages/package_detail_page.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_spacing.dart';
+import 'package:aplikasi_wisata/presentation/pages/explore_page.dart';
 
 class HomePackageSection extends StatelessWidget {
   const HomePackageSection({super.key});
@@ -43,7 +43,7 @@ class HomePackageSection extends StatelessWidget {
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Text(
-                    'Paket Wisata',
+                    'Rekomendasi Paket ',
                     style: AppTextStyles.headlineSmall.copyWith(
                       color: AppColors.textPrimary,
                     ),
@@ -52,7 +52,16 @@ class HomePackageSection extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  // TODO: navigasi ke halaman semua paket
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => const ExplorePage(
+                            initialMode: ExploreMode.package,
+                            showBackButton: true,
+                          ),
+                    ),
+                  );
                 },
                 child: Text(
                   'Lihat Semua',
@@ -126,18 +135,9 @@ class _PackageCard extends StatelessWidget {
   const _PackageCard({required this.package});
 
   void _goToDetail(BuildContext context) {
-    // ── AUTH GUARD: Cek login sebelum navigasi ──
-    AuthGuard.checkAndRun(
-      context: context,
-      action: () {
-        // Hanya dijalankan jika user SUDAH login
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => PackageDetailPage(package: package),
-          ),
-        );
-      },
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => PackageDetailPage(package: package)),
     );
   }
 

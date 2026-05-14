@@ -17,13 +17,13 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
-  final _emailController    = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscure = true;
 
   late final AnimationController _animCtrl;
-  late final Animation<double>   _fadeIn;
-  late final Animation<Offset>   _slideUp;
+  late final Animation<double> _fadeIn;
+  late final Animation<Offset> _slideUp;
 
   @override
   void initState() {
@@ -39,10 +39,12 @@ class _LoginScreenState extends State<LoginScreen>
     _slideUp = Tween<Offset>(
       begin: const Offset(0, 0.08),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animCtrl,
-      curve: const Interval(0.1, 1.0, curve: Curves.easeOutCubic),
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _animCtrl,
+        curve: const Interval(0.1, 1.0, curve: Curves.easeOutCubic),
+      ),
+    );
     _animCtrl.forward();
   }
 
@@ -104,13 +106,17 @@ class _LoginScreenState extends State<LoginScreen>
     final isLoading = context.watch<AuthProvider>().isLoading;
 
     return Scaffold(
-      resizeToAvoidBottomInset: true,  // ✅ Baris 1: Pastikan scaffold resize
+      resizeToAvoidBottomInset: true, // ✅ Baris 1: Pastikan scaffold resize
       backgroundColor: AppColors.background,
-      body: GestureDetector(           // ✅ Baris 2: Dismiss keyboard saat tap di luar
+      body: GestureDetector(
+        // ✅ Baris 2: Dismiss keyboard saat tap di luar
         onTap: () => FocusScope.of(context).unfocus(),
-        child: SafeArea(               // ✅ Baris 3: Hindari notch/status bar
-          child: SingleChildScrollView( // ✅ Baris 4: Bisa scroll saat keyboard muncul
-            child: Center(             // ✅ Baris 5: Center dipindah ke dalam scroll
+        child: SafeArea(
+          // ✅ Baris 3: Hindari notch/status bar
+          child: SingleChildScrollView(
+            // ✅ Baris 4: Bisa scroll saat keyboard muncul
+            child: Center(
+              // ✅ Baris 5: Center dipindah ke dalam scroll
               child: SlideTransition(
                 position: _slideUp,
                 child: FadeTransition(
@@ -156,8 +162,8 @@ class _LoginScreenState extends State<LoginScreen>
                           passwordController: _passwordController,
                           obscure: _obscure,
                           isLoading: isLoading,
-                          onToggleObscure: () =>
-                              setState(() => _obscure = !_obscure),
+                          onToggleObscure:
+                              () => setState(() => _obscure = !_obscure),
                           onLogin: _login,
                           onGoogle: _loginWithGoogle,
                           onGuest: _continueAsGuest,
@@ -185,7 +191,10 @@ class _LoginHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-        AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.sm,
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.sm,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -248,27 +257,26 @@ class _HeroImage extends StatelessWidget {
               height: 160,
               width: double.infinity,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                height: 160,
-                decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.landscape_rounded,
-                    size: 48,
-                    color: AppColors.textOnDark,
+              errorBuilder:
+                  (_, __, ___) => Container(
+                    height: 160,
+                    decoration: BoxDecoration(
+                      gradient: AppColors.primaryGradient,
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.landscape_rounded,
+                        size: 48,
+                        color: AppColors.textOnDark,
+                      ),
+                    ),
                   ),
-                ),
-              ),
             ),
 
             // Deep teal gradient overlay
             Positioned.fill(
               child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: AppColors.authHeroOverlay,
-                ),
+                decoration: BoxDecoration(gradient: AppColors.authHeroOverlay),
               ),
             ),
 
@@ -312,7 +320,7 @@ class _HeroImage extends StatelessWidget {
               bottom: AppSpacing.sm,
               left: AppSpacing.sm,
               child: Text(
-                "EXPLORE · DISCOVER · WONDER",
+                "JELAJAHI · TEMUKAN · KAGUMKAN",
                 style: AppTextStyles.overline.copyWith(
                   color: AppColors.textOnDark.withOpacity(0.85),
                   letterSpacing: 2.0,
@@ -333,22 +341,23 @@ class _LoginTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.fromLTRB(
-        AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.xs,
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.xs,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Overline — tren 2026
-          Text(
-            "SELAMAT DATANG KEMBALI",
-            style: AppTextStyles.overline,
-          ),
+          Text("HALO PENJELAJAH", style: AppTextStyles.overline),
           SizedBox(height: 6),
-          Text("Welcome Back", style: AppTextStyles.headlineLarge),
+          Text("Selamat Datang", style: AppTextStyles.headlineLarge),
           SizedBox(height: 6),
           Text(
-            "Explore the hidden gems of Trenggalek from your screen.",
+            "Jelajahi permata tersembunyi Trenggalek dari layar Anda.",
             style: AppTextStyles.bodyMedium,
+            textAlign: TextAlign.center
           ),
         ],
       ),
@@ -385,7 +394,7 @@ class _LoginForm extends StatelessWidget {
         children: [
           AuthTextField(
             controller: emailController,
-            label: "Email Address",
+            label: "Alamat Email",
             prefixIcon: Icons.mail_outline_rounded,
             keyboardType: TextInputType.emailAddress,
           ),
@@ -394,7 +403,7 @@ class _LoginForm extends StatelessWidget {
 
           AuthTextField(
             controller: passwordController,
-            label: "Password",
+            label: "Kata Sandi",
             prefixIcon: Icons.lock_outline_rounded,
             obscureText: obscure,
             suffixIcon: IconButton(
@@ -412,7 +421,7 @@ class _LoginForm extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
 
           AuthPrimaryButton(
-            label: "Login",
+            label: "Masuk",
             isLoading: isLoading,
             onPressed: onLogin,
           ),
@@ -430,7 +439,7 @@ class _LoginForm extends StatelessWidget {
                   horizontal: AppSpacing.sm + AppSpacing.xs,
                 ),
                 child: Text(
-                  "Or continue with",
+                  "Atau lanjutkan dengan",
                   style: AppTextStyles.bodyMedium.copyWith(fontSize: 11),
                 ),
               ),
@@ -458,13 +467,9 @@ class _LoginForm extends StatelessWidget {
               ).copyWith(
                 overlayColor: WidgetStateProperty.all(AppColors.primarySurface),
               ),
-              icon: Icon(
-                Icons.g_mobiledata,
-                size: 24,
-                color: AppColors.accent,
-              ),
+              icon: Icon(Icons.g_mobiledata, size: 24, color: AppColors.accent),
               label: Text(
-                "Continue with Google",
+                "Masuk dengan Google",
                 style: AppTextStyles.bodyLarge.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -496,7 +501,7 @@ class _LoginForm extends StatelessWidget {
                 color: AppColors.bark,
               ),
               label: Text(
-                "Continue as Guest",
+                "Masuk sebagai Tamu",
                 style: AppTextStyles.bodyLarge.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.textEarth,
@@ -524,17 +529,14 @@ class _LoginFooter extends StatelessWidget {
           bottom: Radius.circular(AppSpacing.radiusLg),
         ),
         border: Border(
-          top: BorderSide(
-            color: AppColors.divider.withOpacity(0.5),
-            width: 1,
-          ),
+          top: BorderSide(color: AppColors.divider.withOpacity(0.5), width: 1),
         ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            "Don't have an account? ",
+            "Belum punya akun? ",
             style: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.textSecondary,
             ),
@@ -542,7 +544,7 @@ class _LoginFooter extends StatelessWidget {
           GestureDetector(
             onTap: () => Navigator.pushNamed(context, '/register'),
             child: Text(
-              "Register",
+              "Daftar",
               style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w700,

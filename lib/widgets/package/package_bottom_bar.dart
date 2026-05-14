@@ -13,7 +13,7 @@ class PackageBottomBar extends StatefulWidget {
   final PackageTier? tier;
   final String fallbackPrice;
   final String packageId;
-  final String userId;
+  final String? userId; // ← nullable: Guest = null
 
   const PackageBottomBar({
     super.key,
@@ -41,14 +41,34 @@ class _PackageBottomBarState extends State<PackageBottomBar> {
     return 'IDR ${formatter.format(_totalPrice)}';
   }
 
-  int get _totalPerson {
-    final maxPerson = widget.tier?.maxPerson ?? 1;
-    return maxPerson * _quantity;
+  String get _personLabel {
+    return _quantity == 1
+        ? 'Paket untuk 1 orang'
+        : 'Paket untuk $_quantity orang';
   }
 
   void _increment() => setState(() => _quantity++);
   void _decrement() {
     if (_quantity > 1) setState(() => _quantity--);
+  }
+
+  void _handleFavorite(BuildContext context) {
+    if (widget.userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Silakan login terlebih dahulu untuk menambahkan favorit.',
+          ),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+    context.read<FavoriteProvider>().toggleFavorite(
+      widget.userId!,
+      widget.packageId,
+      FavoriteItemType.package,
+    );
   }
 
   @override
@@ -64,7 +84,6 @@ class _PackageBottomBarState extends State<PackageBottomBar> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ── GRADIENT FADE: transparan → surface ──
         Container(
           height: 32,
           decoration: BoxDecoration(
@@ -79,7 +98,6 @@ class _PackageBottomBarState extends State<PackageBottomBar> {
           ),
         ),
 
-        // ── BODY BAR ──
         Container(
           color: AppColors.surface,
           padding: EdgeInsets.fromLTRB(
@@ -91,7 +109,6 @@ class _PackageBottomBarState extends State<PackageBottomBar> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // ROW ATAS: Harga + Qty
               Row(
                 children: [
                   Column(
@@ -114,7 +131,7 @@ class _PackageBottomBarState extends State<PackageBottomBar> {
                       ),
                       if (widget.tier != null)
                         Text(
-                          '${widget.tier!.name} · $_totalPerson orang',
+                          _personLabel,
                           style: AppTextStyles.caption.copyWith(
                             fontSize: 10,
                             color: AppColors.textHint,
@@ -129,16 +146,10 @@ class _PackageBottomBarState extends State<PackageBottomBar> {
 
               const SizedBox(height: AppSpacing.md),
 
-              // ROW BAWAH: Favorit + Share
               _ActionButtons(
                 isFavorite: isFavorite,
                 isLoading: isLoading,
-                onFavorite:
-                    () => favoriteProvider.toggleFavorite(
-                      widget.userId,
-                      widget.packageId,
-                      FavoriteItemType.package,
-                    ),
+                onFavorite: () => _handleFavorite(context),
               ),
             ],
           ),
@@ -185,7 +196,6 @@ class _PackageBottomBarState extends State<PackageBottomBar> {
   }
 }
 
-// ── TOMBOL AKSI: Favorit (expanded) + Share ──
 class _ActionButtons extends StatelessWidget {
   final bool isFavorite;
   final bool isLoading;
@@ -272,14 +282,12 @@ class _ActionButtons extends StatelessWidget {
             ),
           ),
         ),
-
         const SizedBox(width: AppSpacing.sm),
       ],
     );
   }
 }
 
-/// Tombol qty (+/-)
 class _QtyButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;

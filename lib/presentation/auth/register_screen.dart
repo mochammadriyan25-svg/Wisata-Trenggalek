@@ -17,15 +17,15 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen>
     with SingleTickerProviderStateMixin {
-  final _nameController     = TextEditingController();
-  final _emailController    = TextEditingController();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmController  = TextEditingController();
+  final _confirmController = TextEditingController();
   bool _agree = false;
 
   late final AnimationController _animCtrl;
-  late final Animation<double>   _fadeIn;
-  late final Animation<Offset>   _slideUp;
+  late final Animation<double> _fadeIn;
+  late final Animation<Offset> _slideUp;
 
   @override
   void initState() {
@@ -41,10 +41,12 @@ class _RegisterScreenState extends State<RegisterScreen>
     _slideUp = Tween<Offset>(
       begin: const Offset(0, 0.08),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animCtrl,
-      curve: const Interval(0.1, 1.0, curve: Curves.easeOutCubic),
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _animCtrl,
+        curve: const Interval(0.1, 1.0, curve: Curves.easeOutCubic),
+      ),
+    );
     _animCtrl.forward();
   }
 
@@ -57,9 +59,9 @@ class _RegisterScreenState extends State<RegisterScreen>
       return;
     }
     if (_passwordController.text != _confirmController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Password tidak sama")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Password tidak sama")));
       return;
     }
     final auth = context.read<AuthProvider>();
@@ -126,19 +128,20 @@ class _RegisterScreenState extends State<RegisterScreen>
                             height: 180,
                             width: double.infinity,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
-                              height: 180,
-                              decoration: BoxDecoration(
-                                gradient: AppColors.primaryGradient,
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.forest_rounded,
-                                  size: 56,
-                                  color: AppColors.textOnDark,
+                            errorBuilder:
+                                (_, __, ___) => Container(
+                                  height: 180,
+                                  decoration: BoxDecoration(
+                                    gradient: AppColors.primaryGradient,
+                                  ),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.forest_rounded,
+                                      size: 56,
+                                      color: AppColors.textOnDark,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
                           ),
                           // Teal-deep overlay
                           Positioned.fill(
@@ -191,7 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                             bottom: AppSpacing.sm,
                             left: AppSpacing.sm,
                             child: Text(
-                              "JOIN · EXPLORE · EXPERIENCE",
+                              "Bergabung · Jelajahi · Rasakan",
                               style: AppTextStyles.overline.copyWith(
                                 color: AppColors.textOnDark.withOpacity(0.85),
                                 letterSpacing: 2.0,
@@ -219,27 +222,27 @@ class _RegisterScreenState extends State<RegisterScreen>
                       children: [
                         AuthTextField(
                           controller: _nameController,
-                          label: "Full Name",
+                          label: "Nama Lengkap",
                           prefixIcon: Icons.person_outline_rounded,
                         ),
                         const SizedBox(height: AppSpacing.md),
                         AuthTextField(
                           controller: _emailController,
-                          label: "Email Address",
+                          label: "Alamat Email",
                           prefixIcon: Icons.mail_outline_rounded,
                           keyboardType: TextInputType.emailAddress,
                         ),
                         const SizedBox(height: AppSpacing.md),
                         AuthTextField(
                           controller: _passwordController,
-                          label: "Password",
+                          label: "Kata Sandi",
                           prefixIcon: Icons.lock_outline_rounded,
                           obscureText: true,
                         ),
                         const SizedBox(height: AppSpacing.md),
                         AuthTextField(
                           controller: _confirmController,
-                          label: "Confirm Password",
+                          label: "Konfirmasi Kata Sandi",
                           prefixIcon: Icons.shield_outlined,
                           obscureText: true,
                         ),
@@ -254,7 +257,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         const SizedBox(height: AppSpacing.sm),
 
                         AuthPrimaryButton(
-                          label: "Sign Up",
+                          label: "Daftar",
                           isLoading: isLoading,
                           onPressed: _register,
                         ),
@@ -275,7 +278,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                 horizontal: AppSpacing.sm + AppSpacing.xs,
                               ),
                               child: Text(
-                                "OR",
+                                "ATAU",
                                 style: AppTextStyles.labelSpaced.copyWith(
                                   color: AppColors.textHint,
                                 ),
@@ -317,7 +320,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                               size: 18,
                             ),
                             label: Text(
-                              "Continue as Guest",
+                              "Masuk sebagai Tamu",
                               style: AppTextStyles.bodyLarge.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.textEarth,
@@ -334,7 +337,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Already have an account? ",
+                              "Sudah punya akun? ",
                               style: AppTextStyles.bodyMedium.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -443,16 +446,14 @@ class _RegisterTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
-          "MULAI PERJALANANMU",
-          style: AppTextStyles.overline,
-        ),
+        Text("MULAI PERJALANANMU", style: AppTextStyles.overline),
         const SizedBox(height: 6),
-        const Text("Create Account", style: AppTextStyles.headlineLarge),
+        const Text("Daftar Akun", style: AppTextStyles.headlineLarge),
         const SizedBox(height: 6),
         Text(
-          "Join us to explore the hidden gems of Trenggalek",
+          "Bergabunglah dengan kami untuk menjelajahi permata\ntersembunyi di Trenggalek",
           style: AppTextStyles.bodyMedium,
+          textAlign: TextAlign.center,
         ),
       ],
     );
@@ -499,7 +500,7 @@ class _TermsCheckbox extends StatelessWidget {
           ),
           const SizedBox(width: AppSpacing.sm),
           Text(
-            "I agree to the Terms and Conditions",
+            "Saya setuju dengan Syarat dan Ketentuan",
             style: AppTextStyles.bodyMedium.copyWith(
               fontSize: 13,
               color: value ? AppColors.textPrimary : AppColors.textSecondary,

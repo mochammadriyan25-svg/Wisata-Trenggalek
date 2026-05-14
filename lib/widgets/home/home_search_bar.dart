@@ -71,7 +71,7 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
               color: AppColors.textPrimary,
             ),
             decoration: InputDecoration(
-              hintText: "Search destinations...",
+              hintText: "Cari destinasi...",
               hintStyle: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.textHint,
                 fontSize: 14,

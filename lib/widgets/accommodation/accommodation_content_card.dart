@@ -107,7 +107,7 @@ class AccommodationContentCard extends StatelessWidget {
                   // ── Rekomendasi
                   RecommendationSection(
                     currentDestinationId: item.id,
-                    currentCategoryId: '',
+
                     currentLatitude: item.latitude,
                     currentLongitude: item.longitude,
                   ),

@@ -1,3 +1,4 @@
+// lib/app.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aplikasi_wisata/core/constants/app_route.dart';
@@ -11,6 +12,14 @@ import 'package:aplikasi_wisata/providers/package_provider.dart';
 import 'package:aplikasi_wisata/providers/accommodation_provider.dart';
 import 'screens/splash_screen.dart';
 
+// ✅ Custom ScrollBehavior yang lebih reliable
+class AppScrollBehavior extends MaterialScrollBehavior {
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) {
+    return const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics());
+  }
+}
+
 class TrenggalekTourismApp extends StatelessWidget {
   const TrenggalekTourismApp({super.key});
 
@@ -22,12 +31,8 @@ class TrenggalekTourismApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(create: (_) => DestinationProvider()),
         ChangeNotifierProvider(create: (_) => AccommodationProvider()),
-
-        ChangeNotifierProvider(
-          create: (_) => PackageProvider()..init(), // ✅ tambah
-        ),
+        ChangeNotifierProvider(create: (_) => PackageProvider()..init()),
         ChangeNotifierProvider(create: (_) => ReviewProvider()),
-
         ChangeNotifierProxyProvider<AuthProvider, FavoriteProvider>(
           create: (_) => FavoriteProvider(),
           update: (_, authProvider, favoriteProvider) {
@@ -48,6 +53,7 @@ class TrenggalekTourismApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
+        scrollBehavior: AppScrollBehavior(), // ✅ Gunakan custom scroll behavior
         home: const SplashScreen(),
         routes: AppRoutes.routes,
       ),

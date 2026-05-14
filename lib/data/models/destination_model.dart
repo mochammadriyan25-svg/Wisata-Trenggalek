@@ -1,6 +1,11 @@
-// lib/data/models/destination_model.dart.
+// lib/data/models/destination_model.dart
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'menu_item_model.dart';
+
+/// ID kategori kuliner — sesuaikan jika berbeda di Firestore-mu
+const String kCategoryKuliner = 'cat_kuliner';
 
 class DestinationModel {
   final String id;
@@ -21,9 +26,13 @@ class DestinationModel {
   final bool hasVirtualTour;
   final String? maps360Url;
 
-  // Ticket
+  // Ticket — hanya relevan untuk NON-kuliner
   final int priceAdult;
   final int priceChild;
+
+  // Menu — hanya relevan untuk kuliner
+  final List<MenuItemModel> menus;
+
   final bool isRecommended;
   final Timestamp? createdAt;
 
@@ -41,8 +50,9 @@ class DestinationModel {
     required this.mapsUrl,
     required this.hasVirtualTour,
     this.maps360Url,
-    required this.priceAdult,
-    required this.priceChild,
+    this.priceAdult = 0,
+    this.priceChild = 0,
+    this.menus = const [],
     required this.isRecommended,
     this.createdAt,
   }) : rating = rating.clamp(0.0, 5.0),
@@ -53,8 +63,39 @@ class DestinationModel {
 
   // ── GETTERS ───────────────────────────────────────────────────────────────
 
+  /// Apakah destinasi ini kategori kuliner
+  bool get isKuliner => categoryId == kCategoryKuliner;
+
+  /// Apakah gratis masuk (hanya berlaku untuk non-kuliner)
   bool get isFree => priceAdult == 0;
+
   bool get hasGallery => images.isNotEmpty;
+
+  /// Apakah punya daftar menu (hanya kuliner)
+  bool get hasMenus => menus.isNotEmpty;
+
+  /// Harga terendah dari daftar menu kuliner
+  int? get lowestMenuPrice {
+    if (!hasMenus) return null;
+    return menus.map((m) => m.price).reduce((a, b) => a < b ? a : b);
+  }
+
+  /// Harga tertinggi dari daftar menu kuliner
+  int? get highestMenuPrice {
+    if (!hasMenus) return null;
+    return menus.map((m) => m.price).reduce((a, b) => a > b ? a : b);
+  }
+
+  /// Range harga untuk ditampilkan di UI, contoh: "IDR 5.000 – IDR 50.000"
+  String get priceRangeFormatted {
+    if (!isKuliner) return formattedPriceAdult;
+    if (!hasMenus) return 'Lihat menu';
+    final formatter = NumberFormat('#,###', 'id_ID');
+    if (lowestMenuPrice == highestMenuPrice) {
+      return 'IDR ${formatter.format(lowestMenuPrice)}';
+    }
+    return 'IDR ${formatter.format(lowestMenuPrice)} – IDR ${formatter.format(highestMenuPrice)}';
+  }
 
   String get formattedPriceAdult {
     if (isFree) return 'Gratis';
@@ -69,11 +110,12 @@ class DestinationModel {
   }
 
   // ── FACTORY ───────────────────────────────────────────────────────────────
+
   factory DestinationModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     final hasVirtualTour = data['hasVirtualTour'] ?? false;
+    final categoryId = data['categoryId'] ?? '';
 
-    // Helper: aman parse angka dari String maupun num
     double toDouble(dynamic val) {
       if (val == null) return 0.0;
       if (val is num) return val.toDouble();
@@ -86,12 +128,23 @@ class DestinationModel {
       return int.tryParse(val.toString()) ?? 0;
     }
 
+    // Parse menus hanya jika kategori kuliner
+    List<MenuItemModel> parseMenus() {
+      if (categoryId != kCategoryKuliner) return [];
+      final raw = data['menus'];
+      if (raw == null || raw is! List) return [];
+      return raw
+          .whereType<Map<String, dynamic>>()
+          .map(MenuItemModel.fromMap)
+          .toList();
+    }
+
     return DestinationModel(
       id: doc.id,
       name: data['name'] ?? '',
       location: data['location'] ?? '',
       description: data['description'] ?? '',
-      categoryId: data['categoryId'] ?? '',
+      categoryId: categoryId,
       rating: toDouble(data['rating']),
       imageUrl: data['imageUrl'] ?? '',
       images: List<String>.from(data['images'] ?? []),
@@ -100,14 +153,19 @@ class DestinationModel {
       mapsUrl: data['mapsUrl'] ?? '',
       hasVirtualTour: hasVirtualTour,
       maps360Url: hasVirtualTour == true ? data['maps360Url'] : null,
-      priceAdult: toInt(data['priceAdult']),
-      priceChild: toInt(data['priceChild']),
+      // priceAdult & priceChild diabaikan untuk kuliner
+      priceAdult:
+          categoryId == kCategoryKuliner ? 0 : toInt(data['priceAdult']),
+      priceChild:
+          categoryId == kCategoryKuliner ? 0 : toInt(data['priceChild']),
+      menus: parseMenus(),
       isRecommended: data['isRecommended'] ?? false,
       createdAt: data['createdAt'],
     );
   }
 
   // ── SERIALIZATION ─────────────────────────────────────────────────────────
+
   Map<String, dynamic> toCreateMap() {
     return {
       'name': name,
@@ -125,8 +183,17 @@ class DestinationModel {
         'maps360Url': maps360Url
       else
         'maps360Url': null,
-      'priceAdult': priceAdult,
-      'priceChild': priceChild,
+      // Kuliner: simpan menus, hapus ticket fields
+      // Non-kuliner: simpan ticket, hapus menus
+      if (isKuliner) ...{
+        'menus': menus.map((m) => m.toMap()).toList(),
+        'priceAdult': FieldValue.delete(),
+        'priceChild': FieldValue.delete(),
+      } else ...{
+        'priceAdult': priceAdult,
+        'priceChild': priceChild,
+        'menus': FieldValue.delete(),
+      },
       'isRecommended': isRecommended,
       'createdAt': FieldValue.serverTimestamp(),
     };
@@ -149,13 +216,21 @@ class DestinationModel {
         'maps360Url': maps360Url
       else
         'maps360Url': FieldValue.delete(),
-      'priceAdult': priceAdult,
-      'priceChild': priceChild,
+      if (isKuliner) ...{
+        'menus': menus.map((m) => m.toMap()).toList(),
+        'priceAdult': FieldValue.delete(),
+        'priceChild': FieldValue.delete(),
+      } else ...{
+        'priceAdult': priceAdult,
+        'priceChild': priceChild,
+        'menus': FieldValue.delete(),
+      },
       'isRecommended': isRecommended,
     };
   }
 
   // ── UTILITY ───────────────────────────────────────────────────────────────
+
   DestinationModel copyWith({
     String? id,
     String? name,
@@ -172,6 +247,7 @@ class DestinationModel {
     String? maps360Url,
     int? priceAdult,
     int? priceChild,
+    List<MenuItemModel>? menus,
     bool? isRecommended,
     Timestamp? createdAt,
   }) {
@@ -191,6 +267,7 @@ class DestinationModel {
       maps360Url: maps360Url ?? this.maps360Url,
       priceAdult: priceAdult ?? this.priceAdult,
       priceChild: priceChild ?? this.priceChild,
+      menus: menus ?? this.menus,
       isRecommended: isRecommended ?? this.isRecommended,
       createdAt: createdAt ?? this.createdAt,
     );

@@ -1,7 +1,6 @@
 // lib/widgets/home/home_recommendation_section.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aplikasi_wisata/core/utils/auth_guard.dart';
 import 'package:aplikasi_wisata/data/models/destination_model.dart';
 import 'package:aplikasi_wisata/presentation/pages/detail_page.dart';
 import 'package:aplikasi_wisata/providers/destination_provider.dart';
@@ -33,7 +32,7 @@ class HomeRecommendationSection extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Text(
-                'Recommended',
+                'Rekomendasi ',
                 style: AppTextStyles.headlineSmall.copyWith(
                   color: AppColors.textPrimary,
                 ),
@@ -105,18 +104,9 @@ class _RecommendationCard extends StatelessWidget {
   final DestinationModel destination;
 
   void _navigateToDetail(BuildContext context) {
-    // ── AUTH GUARD: Cek login sebelum navigasi ──
-    AuthGuard.checkAndRun(
-      context: context,
-      action: () {
-        // Hanya dijalankan jika user SUDAH login
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => DetailPage(destination: destination),
-          ),
-        );
-      },
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => DetailPage(destination: destination)),
     );
   }
 

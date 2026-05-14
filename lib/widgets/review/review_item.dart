@@ -5,8 +5,12 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_spacing.dart';
 
+// ReviewItem adalah StatelessWidget murni tanpa state apapun.
+// Dengan constructor const dan penggunaan ValueKey(r.id) dari parent,
+// Flutter dapat skip rebuild item yang datanya tidak berubah saat scroll.
 class ReviewItem extends StatelessWidget {
   final ReviewModel review;
+
   const ReviewItem({super.key, required this.review});
 
   @override
@@ -17,10 +21,7 @@ class ReviewItem extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        border: Border.all(
-          color: AppColors.divider.withOpacity(0.7),
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.divider.withOpacity(0.7), width: 1),
         boxShadow: [
           BoxShadow(
             color: AppColors.shadowNeutral.withOpacity(0.05),
@@ -73,26 +74,28 @@ class ReviewItem extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: review.userAvatar.isEmpty ? AppColors.primaryGradient : null,
         borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-        image: review.userAvatar.isNotEmpty
-            ? DecorationImage(
-                image: NetworkImage(review.userAvatar),
-                fit: BoxFit.cover,
-              )
-            : null,
+        image:
+            review.userAvatar.isNotEmpty
+                ? DecorationImage(
+                  image: NetworkImage(review.userAvatar),
+                  fit: BoxFit.cover,
+                )
+                : null,
       ),
-      child: review.userAvatar.isEmpty
-          ? Center(
-              child: Text(
-                review.userName.isNotEmpty
-                    ? review.userName[0].toUpperCase()
-                    : 'A',
-                style: AppTextStyles.headlineSmall.copyWith(
-                  color: AppColors.textOnDark,
-                  fontSize: 16,
+      child:
+          review.userAvatar.isEmpty
+              ? Center(
+                child: Text(
+                  review.userName.isNotEmpty
+                      ? review.userName[0].toUpperCase()
+                      : 'A',
+                  style: AppTextStyles.headlineSmall.copyWith(
+                    color: AppColors.textOnDark,
+                    fontSize: 16,
+                  ),
                 ),
-              ),
-            )
-          : null,
+              )
+              : null,
     );
   }
 

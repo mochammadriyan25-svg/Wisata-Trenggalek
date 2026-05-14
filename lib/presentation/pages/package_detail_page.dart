@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:aplikasi_wisata/data/models/package_model.dart';
-import 'package:aplikasi_wisata/providers/auth_provider.dart'; // ← TAMBAH
+import 'package:aplikasi_wisata/providers/auth_provider.dart';
 import 'package:aplikasi_wisata/providers/review_provider.dart';
 import 'package:aplikasi_wisata/widgets/review/review_section.dart';
 import '../../core/theme/app_colors.dart';
@@ -18,7 +18,6 @@ import '../../widgets/package/package_includes_list.dart';
 import '../../widgets/package/package_destination_list.dart';
 import '../../widgets/package/package_bottom_bar.dart';
 
-/// Halaman detail paket wisata — Skenario A + Review.
 class PackageDetailPage extends StatefulWidget {
   final PackageModel package;
   const PackageDetailPage({super.key, required this.package});
@@ -41,11 +40,8 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
   void initState() {
     super.initState();
 
-    // Ambil user dari AuthProvider dan pass ke ReviewProvider
     final authProvider = context.read<AuthProvider>();
-    _reviewProvider = ReviewProvider(
-      currentUser: authProvider.user, // ← TAMBAH
-    );
+    _reviewProvider = ReviewProvider(currentUser: authProvider.user);
 
     if (widget.package.hasTiers) {
       final popularIndex = widget.package.tiers.indexWhere((t) => t.isPopular);
@@ -76,6 +72,8 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
         statusBarIconBrightness: Brightness.light,
       ),
     );
+
+    final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 100;
 
     return ChangeNotifierProvider<ReviewProvider>.value(
       value: _reviewProvider,
@@ -205,15 +203,18 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
               child: PackageBackButton(scrollOffset: _scrollOffset),
             ),
 
-            Positioned(
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 280),
+              curve: Curves.easeInOut,
               left: 0,
               right: 0,
-              bottom: 0,
+              bottom: keyboardVisible ? -200 : 0,
               child: PackageBottomBar(
                 tier: _selectedTier,
                 fallbackPrice: pkg.formattedPrice,
                 packageId: pkg.id,
-                userId: context.read<AuthProvider>().user!.id,
+                // FIX: Guest = null → PackageBottomBar handle sendiri
+                userId: context.read<AuthProvider>().user?.id,
               ),
             ),
           ],

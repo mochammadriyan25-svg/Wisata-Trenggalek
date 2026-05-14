@@ -9,7 +9,7 @@ class PackageTier {
   final int price;
   final String description;
   final List<String> includes;
-  final int maxPerson;
+  final int minPerson;
   final bool isPopular;
 
   PackageTier({
@@ -17,7 +17,7 @@ class PackageTier {
     required this.price,
     required this.description,
     required this.includes,
-    required this.maxPerson,
+    required this.minPerson,
     this.isPopular = false,
   });
 
@@ -32,7 +32,7 @@ class PackageTier {
       price: (map['price'] as num?)?.toInt() ?? 0,
       description: map['description'] ?? '',
       includes: List<String>.from(map['includes'] ?? []),
-      maxPerson: (map['maxPerson'] as num?)?.toInt() ?? 1,
+      minPerson: (map['minPerson'] as num?)?.toInt() ?? 1,
       isPopular: map['isPopular'] ?? false,
     );
   }
@@ -43,7 +43,7 @@ class PackageTier {
       'price': price,
       'description': description,
       'includes': includes,
-      'maxPerson': maxPerson,
+      'minPerson': minPerson,
       'isPopular': isPopular,
     };
   }

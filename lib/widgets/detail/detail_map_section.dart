@@ -1,17 +1,17 @@
-// lib/widgets/accommodation/accommodation_map_section.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text_styles.dart';
-import '../../data/models/accommodation_model.dart';
+import 'package:aplikasi_wisata/core/theme/app_colors.dart';
+import 'package:aplikasi_wisata/core/theme/app_text_styles.dart';
+import 'package:aplikasi_wisata/core/theme/app_spacing.dart';
+import 'package:aplikasi_wisata/data/models/destination_model.dart';
+import 'package:aplikasi_wisata/widgets/detail/detail_section_label.dart';
 
-class AccommodationMapSection extends StatelessWidget {
-  final AccommodationModel item;
+class DetailMapSection extends StatelessWidget {
+  final DestinationModel item;
   final Future<void> Function(String) onOpenUrl;
 
-  const AccommodationMapSection({
+  const DetailMapSection({
     super.key,
     required this.item,
     required this.onOpenUrl,
@@ -25,35 +25,16 @@ class AccommodationMapSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Header lokasi + tombol directions
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 3,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Text(
-                  'Lokasi',
-                  style: AppTextStyles.headlineSmall.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ],
-            ),
+            const DetailSectionLabel(label: "Lokasi"),
             GestureDetector(
               onTap: () => onOpenUrl(item.mapsUrl),
               child: Row(
                 children: [
                   Text(
-                    'Dapatkan Arah',
+                    "Dapatkan Arah",
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w600,
@@ -72,8 +53,6 @@ class AccommodationMapSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.sm),
-
-        // ── Peta interaktif
         ClipRRect(
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           child: SizedBox(
@@ -85,8 +64,7 @@ class AccommodationMapSection extends StatelessWidget {
               ),
               children: [
                 TileLayer(
-                  urlTemplate:
-                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                   userAgentPackageName: 'com.aplikasi_wisata.app',
                 ),
                 MarkerLayer(
@@ -108,9 +86,9 @@ class AccommodationMapSection extends StatelessWidget {
                           ],
                         ),
                         child: const Icon(
-                          Icons.hotel_rounded,
+                          Icons.location_on_rounded,
                           color: AppColors.textOnDark,
-                          size: 20,
+                          size: 22,
                         ),
                       ),
                     ),

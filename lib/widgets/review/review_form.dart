@@ -31,7 +31,10 @@ class _ReviewFormState extends State<ReviewForm> {
     super.dispose();
   }
 
-  Future<void> _handleSubmit(ReviewProvider provider) async {
+  Future<void> _handleSubmit() async {
+    // Ambil provider via read — tidak perlu listen/rebuild untuk action
+    final provider = context.read<ReviewProvider>();
+
     await provider.submitReview(
       target: widget.target,
       targetId: widget.targetId,
@@ -105,57 +108,83 @@ class _ReviewFormState extends State<ReviewForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ReviewProvider>(
-      builder: (context, provider, _) {
-        return Container(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            color: AppColors.primarySurface,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-            border: Border.all(
-              color: AppColors.primary.withOpacity(0.15),
-              width: 1,
-            ),
+    // ── Container utama TIDAK lagi dibungkus Consumer.
+    // Consumer hanya diletakkan pada bagian kecil yang benar-benar
+    // perlu re-render: rating picker dan tombol kirim.
+    // TextField sama sekali tidak tersentuh saat provider berubah.
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.primarySurface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.15),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Header — tidak perlu rebuild, tidak ada state di sini
+          _buildHeader(),
+          const SizedBox(height: AppSpacing.md),
+
+          // ── Rating picker: Selector hanya rebuild saat selectedRating berubah
+          Selector<ReviewProvider, double>(
+            selector: (_, p) => p.selectedRating,
+            builder: (context, selectedRating, _) {
+              return _buildRatingPicker(context, selectedRating);
+            },
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Header
-              Row(
-                children: [
-                  Container(
-                    width: 3,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(
-                        AppSpacing.radiusFull,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    'Tulis Ulasan',
-                    style: AppTextStyles.headlineSmall.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.md),
-              _buildRatingPicker(provider),
-              const SizedBox(height: AppSpacing.sm + 4),
-              _buildCommentField(),
-              const SizedBox(height: AppSpacing.sm + 4),
-              _buildActionButtons(provider),
-            ],
+
+          const SizedBox(height: AppSpacing.sm + 4),
+
+          // ── TextField: TIDAK di dalam Consumer/Selector
+          // sehingga tidak pernah di-rebuild oleh provider
+          _buildCommentField(),
+
+          const SizedBox(height: AppSpacing.sm + 4),
+
+          // ── Tombol: Selector hanya rebuild saat isLoading berubah
+          Selector<ReviewProvider, bool>(
+            selector: (_, p) => p.isLoading,
+            builder: (context, isLoading, _) {
+              return _buildActionButtons(context, isLoading);
+            },
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
-  Widget _buildRatingPicker(ReviewProvider provider) {
+  // ── Header statis, tidak perlu parameter provider
+  Widget _buildHeader() {
+    return Row(
+      children: [
+        Container(
+          width: 3,
+          height: 16,
+          decoration: BoxDecoration(
+            gradient: AppColors.primaryGradient,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Text(
+          'Tulis Ulasan',
+          style: AppTextStyles.headlineSmall.copyWith(
+            color: AppColors.textPrimary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Rating picker menerima nilai dari Selector, bukan dari Consumer penuh
+  Widget _buildRatingPicker(BuildContext context, double selectedRating) {
+    // Gunakan read() untuk action — tidak menyebabkan widget ini listen lagi
+    final provider = context.read<ReviewProvider>();
+
     return Row(
       children: [
         Text(
@@ -167,7 +196,7 @@ class _ReviewFormState extends State<ReviewForm> {
         ),
         Row(
           children: List.generate(5, (i) {
-            final filled = i < provider.selectedRating;
+            final filled = i < selectedRating;
             return GestureDetector(
               onTap: () => provider.setRating((i + 1).toDouble()),
               child: Padding(
@@ -183,7 +212,7 @@ class _ReviewFormState extends State<ReviewForm> {
         ),
         const SizedBox(width: AppSpacing.sm),
         Text(
-          '${provider.selectedRating.toInt()}/5',
+          '${selectedRating.toInt()}/5',
           style: AppTextStyles.caption.copyWith(
             color: AppColors.textHint,
             fontWeight: FontWeight.w600,
@@ -193,6 +222,7 @@ class _ReviewFormState extends State<ReviewForm> {
     );
   }
 
+  // ── TextField murni — tidak ada provider di sini
   Widget _buildCommentField() {
     return TextField(
       controller: _commentController,
@@ -222,12 +252,13 @@ class _ReviewFormState extends State<ReviewForm> {
     );
   }
 
-  Widget _buildActionButtons(ReviewProvider provider) {
+  // ── Tombol menerima isLoading dari Selector
+  Widget _buildActionButtons(BuildContext context, bool isLoading) {
     return Row(
       children: [
         Expanded(
           child: OutlinedButton(
-            onPressed: provider.isLoading ? null : widget.onClose,
+            onPressed: isLoading ? null : widget.onClose,
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.textSecondary,
               side: const BorderSide(color: AppColors.divider, width: 1.2),
@@ -249,14 +280,11 @@ class _ReviewFormState extends State<ReviewForm> {
         Expanded(
           child: DecoratedBox(
             decoration: BoxDecoration(
-              gradient: provider.isLoading ? null : AppColors.primaryGradient,
-              color:
-                  provider.isLoading
-                      ? AppColors.primaryLight.withOpacity(0.3)
-                      : null,
+              gradient: isLoading ? null : AppColors.primaryGradient,
+              color: isLoading ? AppColors.primaryLight.withOpacity(0.3) : null,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               boxShadow:
-                  provider.isLoading
+                  isLoading
                       ? []
                       : [
                         BoxShadow(
@@ -267,8 +295,7 @@ class _ReviewFormState extends State<ReviewForm> {
                       ],
             ),
             child: ElevatedButton(
-              onPressed:
-                  provider.isLoading ? null : () => _handleSubmit(provider),
+              onPressed: isLoading ? null : _handleSubmit,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 shadowColor: Colors.transparent,
@@ -280,7 +307,7 @@ class _ReviewFormState extends State<ReviewForm> {
                 ),
               ),
               child:
-                  provider.isLoading
+                  isLoading
                       ? const SizedBox(
                         height: 18,
                         width: 18,

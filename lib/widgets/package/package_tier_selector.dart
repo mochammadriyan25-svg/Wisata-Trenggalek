@@ -113,7 +113,7 @@ class PackageTierSelector extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Maks. ${tier.maxPerson} orang',
+                    'Min. ${tier.minPerson} orang',
                     style: AppTextStyles.caption.copyWith(
                       fontSize: 9,
                       color:

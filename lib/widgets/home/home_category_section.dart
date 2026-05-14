@@ -12,14 +12,13 @@ import '../../../core/theme/app_spacing.dart';
 class HomeCategorySection extends StatelessWidget {
   const HomeCategorySection({super.key});
 
-  // Palet kategori — harmonis dengan teal+earth sistem
   static const List<List<Color>> _categoryGradients = [
-    [Color(0xFF0A6E6E), Color(0xFF064E4E)], // Teal primary
-    [Color(0xFFB8845A), Color(0xFF7A5438)], // Earth clay
-    [Color(0xFF2A9D8F), Color(0xFF1A7068)], // Teal muda
-    [Color(0xFF5E8C61), Color(0xFF3D6B40)], // Forest sage
-    [Color(0xFFC8965A), Color(0xFF9A6E3A)], // Warm sand
-    [Color(0xFF4A8FA8), Color(0xFF2E6B85)], // Ocean blue
+    [Color(0xFF0A6E6E), Color(0xFF064E4E)],
+    [Color(0xFFB8845A), Color(0xFF7A5438)],
+    [Color(0xFF2A9D8F), Color(0xFF1A7068)],
+    [Color(0xFF5E8C61), Color(0xFF3D6B40)],
+    [Color(0xFFC8965A), Color(0xFF9A6E3A)],
+    [Color(0xFF4A8FA8), Color(0xFF2E6B85)],
   ];
 
   List<Color> _gradientForIndex(int index) =>
@@ -27,13 +26,11 @@ class HomeCategorySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ Gunakan CategoryProvider — konsisten dengan arsitektur
     final provider = context.watch<CategoryProvider>();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Row(
@@ -48,7 +45,7 @@ class HomeCategorySection extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Text(
-                "Categories",
+                "Kategori",
                 style: AppTextStyles.headlineSmall.copyWith(
                   color: AppColors.textPrimary,
                 ),
@@ -58,7 +55,6 @@ class HomeCategorySection extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.sm + 4),
 
-        // ✅ Gunakan state dari provider
         if (provider.isLoading)
           const SizedBox(
             height: 95,
@@ -141,7 +137,6 @@ class _CategoryList extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
-          // Scroll indicator
           Container(
             height: 4,
             width: 36,
@@ -162,14 +157,32 @@ class _CategoryItem extends StatelessWidget {
   final CategoryModel category;
   final List<Color> gradient;
 
+  /// ✅ Tentukan ExploreMode berdasarkan category.type
+  ExploreMode _resolveMode() {
+    switch (category.type) {
+      case CategoryType.accommodation:
+        return ExploreMode.accommodation;
+      case CategoryType.package:
+        return ExploreMode.package;
+      default:
+        return ExploreMode.destination;
+    }
+  }
+
   void _navigateToExplore(BuildContext context) {
+    final mode = _resolveMode();
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder:
             (_) => ExplorePage(
-              initialCategoryId: category.id,
+              // ✅ Hanya kirim initialCategoryId untuk destination
+              // Accommodation & Package tidak pakai sub-kategori filter
+              initialCategoryId:
+                  mode == ExploreMode.destination ? category.id : '',
               showBackButton: true,
+              initialMode: mode,
             ),
       ),
     );
@@ -184,7 +197,6 @@ class _CategoryItem extends StatelessWidget {
         margin: const EdgeInsets.only(right: 14),
         child: Column(
           children: [
-            // Icon badge — gradient
             Container(
               height: 60,
               width: 60,

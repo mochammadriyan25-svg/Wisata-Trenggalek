@@ -118,7 +118,7 @@ class _HomeHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Tempek Trenggalek",
+                  "V-Trenggalek",
                   style: AppTextStyles.headlineSmall.copyWith(
                     color: AppColors.textPrimary,
                     letterSpacing: 0.2,
