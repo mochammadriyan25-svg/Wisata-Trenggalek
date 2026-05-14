@@ -12,13 +12,11 @@ import 'package:aplikasi_wisata/presentation/pages/accommodation_detail_page.dar
 class AccommodationRecommendationSection extends StatefulWidget {
   final double currentLatitude;
   final double currentLongitude;
-  final String currentDestinationId;
 
   const AccommodationRecommendationSection({
     super.key,
     required this.currentLatitude,
     required this.currentLongitude,
-    required this.currentDestinationId,
   });
 
   @override
@@ -30,6 +28,18 @@ class _AccommodationRecommendationSectionState
     extends State<AccommodationRecommendationSection> {
   bool _isExpanded = false;
   static const int _initialCount = 4;
+
+  // ── Validasi Koordinat ───────────────────────────────────────────────────
+  bool get _hasValidCoordinates {
+    final lat = widget.currentLatitude;
+    final lon = widget.currentLongitude;
+
+    final isLatValid = lat >= -90.0 && lat <= 90.0;
+    final isLonValid = lon >= -180.0 && lon <= 180.0;
+    final isNotNullIsland = !(lat == 0.0 && lon == 0.0);
+
+    return isLatValid && isLonValid && isNotNullIsland;
+  }
 
   // ── Haversine ─────────────────────────────────────────────────────────────
   double _haversineDistance(
@@ -55,10 +65,11 @@ class _AccommodationRecommendationSectionState
     return '${km.toStringAsFixed(1)} km';
   }
 
-  // ── Bangun daftar rekomendasi ─────────────────────────────────────────────
-  // Sort berdasarkan jarak terdekat dalam radius 5 km
+  // ── Build Rekomendasi: HANYA dalam 5 km, sort jarak ───────────────────────
   List<({AccommodationModel accommodation, double distance})>
   _buildRecommendations(List<AccommodationModel> allAccommodations) {
+    if (!_hasValidCoordinates) return [];
+
     final nearby =
         allAccommodations
             .map((a) {
@@ -70,7 +81,7 @@ class _AccommodationRecommendationSectionState
               );
               return (accommodation: a, distance: dist);
             })
-            .where((e) => e.distance <= 5)
+            .where((e) => e.distance <= 5.0)
             .toList()
           ..sort((a, b) => a.distance.compareTo(b.distance));
 
@@ -97,7 +108,6 @@ class _AccommodationRecommendationSectionState
     final recommendations = _buildRecommendations(provider.allAccommodations);
     final total = recommendations.length;
 
-    // Beri index global pada setiap item
     final indexed =
         recommendations
             .asMap()
@@ -138,7 +148,7 @@ class _AccommodationRecommendationSectionState
             ),
             const SizedBox(width: AppSpacing.sm),
             Text(
-              'Akomodasi Terdekat',
+              'Rekomendasi Akomodasi Terdekat',
               style: AppTextStyles.headlineSmall.copyWith(
                 color: AppColors.textPrimary,
               ),
@@ -164,11 +174,15 @@ class _AccommodationRecommendationSectionState
               children: [
                 Icon(Icons.hotel_outlined, color: AppColors.earth, size: 18),
                 const SizedBox(width: AppSpacing.sm),
-                Text(
-                  'Tidak ada akomodasi dalam radius 5 km.',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textSecondary,
-                    fontSize: 13,
+                Expanded(
+                  child: Text(
+                    !_hasValidCoordinates
+                        ? 'Lokasi tidak tersedia untuk pencarian sekitar.'
+                        : 'Tidak ada akomodasi dalam radius 5 km.',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
               ],

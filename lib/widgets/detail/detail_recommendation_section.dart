@@ -11,14 +11,12 @@ import '../../core/theme/app_spacing.dart';
 
 class RecommendationSection extends StatefulWidget {
   final String currentDestinationId;
-  final String currentCategoryId;
   final double currentLatitude;
   final double currentLongitude;
 
   const RecommendationSection({
     super.key,
     required this.currentDestinationId,
-    required this.currentCategoryId,
     required this.currentLatitude,
     required this.currentLongitude,
   });
@@ -30,6 +28,18 @@ class RecommendationSection extends StatefulWidget {
 class _RecommendationSectionState extends State<RecommendationSection> {
   bool _isExpanded = false;
   static const int _initialCount = 4;
+
+  // ── Validasi Koordinat ───────────────────────────────────────────────────
+  bool get _hasValidCoordinates {
+    final lat = widget.currentLatitude;
+    final lon = widget.currentLongitude;
+
+    final isLatValid = lat >= -90.0 && lat <= 90.0;
+    final isLonValid = lon >= -180.0 && lon <= 180.0;
+    final isNotNullIsland = !(lat == 0.0 && lon == 0.0);
+
+    return isLatValid && isLonValid && isNotNullIsland;
+  }
 
   // ── Haversine ─────────────────────────────────────────────────────────────
   double _haversineDistance(
@@ -55,17 +65,17 @@ class _RecommendationSectionState extends State<RecommendationSection> {
     return '${km.toStringAsFixed(1)} km';
   }
 
-  // ── Bangun daftar rekomendasi ─────────────────────────────────────────────
-  // Prioritas 1 : dalam radius 5 km, sort jarak terdekat
-  // Prioritas 2 : jika < 4, isi dari kategori sama sort rating tertinggi
-  List<({DestinationModel destination, double distance, bool isNearby})>
-  _buildRecommendations(List<DestinationModel> allDestinations) {
+  // ── Build Rekomendasi: HANYA dalam 5 km, sort jarak ───────────────────────
+  List<({DestinationModel destination, double distance})> _buildRecommendations(
+    List<DestinationModel> allDestinations,
+  ) {
+    if (!_hasValidCoordinates) return [];
+
     final others =
         allDestinations
             .where((d) => d.id != widget.currentDestinationId)
             .toList();
 
-    // Grup 1 — nearby ≤ 5 km
     final nearbyList =
         others
             .map((d) {
@@ -75,46 +85,19 @@ class _RecommendationSectionState extends State<RecommendationSection> {
                 d.latitude,
                 d.longitude,
               );
-              return (destination: d, distance: dist, isNearby: true);
+              return (destination: d, distance: dist);
             })
-            .where((e) => e.distance <= 5)
+            .where((e) => e.distance <= 5.0)
             .toList()
           ..sort((a, b) => a.distance.compareTo(b.distance));
 
-    // Sudah cukup — tidak perlu filler
-    if (nearbyList.length >= _initialCount) return nearbyList;
-
-    // Grup 2 — filler: kategori sama, di luar radius, sort rating tertinggi
-    final nearbyIds = nearbyList.map((e) => e.destination.id).toSet();
-    final fillerList =
-        others
-            .where(
-              (d) =>
-                  d.categoryId == widget.currentCategoryId &&
-                  !nearbyIds.contains(d.id),
-            )
-            .map((d) {
-              final dist = _haversineDistance(
-                widget.currentLatitude,
-                widget.currentLongitude,
-                d.latitude,
-                d.longitude,
-              );
-              return (destination: d, distance: dist, isNearby: false);
-            })
-            .toList()
-          ..sort(
-            (a, b) => b.destination.rating.compareTo(a.destination.rating),
-          );
-
-    return [...nearbyList, ...fillerList];
+    return nearbyList;
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DestinationProvider>();
 
-    // Loading
     if (provider.isLoading) {
       return const SizedBox(
         height: 80,
@@ -130,7 +113,6 @@ class _RecommendationSectionState extends State<RecommendationSection> {
     final recommendations = _buildRecommendations(provider.allDestinations);
     final total = recommendations.length;
 
-    // Beri index global pada setiap item
     final indexed =
         recommendations
             .asMap()
@@ -139,7 +121,6 @@ class _RecommendationSectionState extends State<RecommendationSection> {
               (e) => (
                 destination: e.value.destination,
                 distance: e.value.distance,
-                isNearby: e.value.isNearby,
                 index: e.key,
               ),
             )
@@ -165,7 +146,7 @@ class _RecommendationSectionState extends State<RecommendationSection> {
             ),
             const SizedBox(width: AppSpacing.sm),
             Text(
-              'Wisata Terdekat',
+              'Rekomendasi Wisata Terdekat',
               style: AppTextStyles.headlineSmall.copyWith(
                 color: AppColors.textPrimary,
               ),
@@ -195,21 +176,23 @@ class _RecommendationSectionState extends State<RecommendationSection> {
                   size: 18,
                 ),
                 const SizedBox(width: AppSpacing.sm),
-                Text(
-                  'Tidak ada wisata lain dalam radius 5 km.',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textSecondary,
-                    fontSize: 13,
+                Expanded(
+                  child: Text(
+                    !_hasValidCoordinates
+                        ? 'Lokasi tidak tersedia untuk pencarian sekitar.'
+                        : 'Tidak ada wisata lain dalam radius 5 km.',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
               ],
             ),
           )
-        // ── List destinasi
         else
           Column(
             children: [
-              // 4 card pertama — selalu tampil
               ...initialItems.map(
                 (item) => Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.sm + 2),
@@ -217,13 +200,11 @@ class _RecommendationSectionState extends State<RecommendationSection> {
                     item: item.destination,
                     distance: item.distance,
                     formatDistance: _formatDistance,
-                    isClosest: item.index == 0 && item.isNearby,
-                    isNearby: item.isNearby,
+                    isClosest: item.index == 0,
                   ),
                 ),
               ),
 
-              // ── Card tambahan dengan animasi expand/collapse
               AnimatedSize(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
@@ -242,7 +223,6 @@ class _RecommendationSectionState extends State<RecommendationSection> {
                                         distance: item.distance,
                                         formatDistance: _formatDistance,
                                         isClosest: false,
-                                        isNearby: item.isNearby,
                                       ),
                                     ),
                                   )
@@ -251,7 +231,6 @@ class _RecommendationSectionState extends State<RecommendationSection> {
                         : const SizedBox.shrink(),
               ),
 
-              // ── Tombol expand / collapse
               if (hasMore)
                 GestureDetector(
                   onTap: () => setState(() => _isExpanded = !_isExpanded),
@@ -300,20 +279,18 @@ class _RecommendationSectionState extends State<RecommendationSection> {
   }
 }
 
-// ── RECOMMENDATION CARD — horizontal (gambar kiri, info kanan) ────────────
+// ── RECOMMENDATION CARD ───────────────────────────────────────────────────
 class _RecommendationCard extends StatelessWidget {
   final DestinationModel item;
   final double distance;
   final String Function(double) formatDistance;
-  final bool isClosest; // badge "Terdekat" — hanya index 0 dari nearby
-  final bool isNearby; // border berbeda untuk filler kategori
+  final bool isClosest;
 
   const _RecommendationCard({
     required this.item,
     required this.distance,
     required this.formatDistance,
     required this.isClosest,
-    required this.isNearby,
   });
 
   @override
@@ -331,11 +308,8 @@ class _RecommendationCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           color: AppColors.surface,
           border: Border.all(
-            color:
-                isNearby
-                    ? AppColors.primary.withOpacity(0.35)
-                    : AppColors.divider.withOpacity(0.7),
-            width: isNearby ? 1.5 : 1,
+            color: AppColors.primary.withOpacity(0.35),
+            width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
@@ -347,7 +321,6 @@ class _RecommendationCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // ── Gambar kiri
             ClipRRect(
               borderRadius: const BorderRadius.horizontal(
                 left: Radius.circular(AppSpacing.radiusLg),
@@ -376,7 +349,6 @@ class _RecommendationCard extends StatelessWidget {
                         ),
                   ),
 
-                  // Badge "Terdekat" — hanya card index 0 dari nearby
                   if (isClosest)
                     Positioned(
                       top: AppSpacing.xs,
@@ -402,38 +374,10 @@ class _RecommendationCard extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                  // Badge "Rekomendasi" — filler kategori sama
-                  if (!isNearby)
-                    Positioned(
-                      top: AppSpacing.xs,
-                      left: AppSpacing.xs,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.xs + 2,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.earth.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(
-                            AppSpacing.radiusSm,
-                          ),
-                        ),
-                        child: Text(
-                          'Rekomendasi',
-                          style: AppTextStyles.caption.copyWith(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textOnDark,
-                          ),
-                        ),
-                      ),
-                    ),
                 ],
               ),
             ),
 
-            // ── Info kanan
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -443,7 +387,6 @@ class _RecommendationCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Nama
                     Text(
                       item.name,
                       maxLines: 2,
@@ -455,7 +398,6 @@ class _RecommendationCard extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.xs),
 
-                    // Lokasi
                     Row(
                       children: [
                         Icon(
@@ -479,10 +421,8 @@ class _RecommendationCard extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.xs + 2),
 
-                    // Rating + Jarak
                     Row(
                       children: [
-                        // Rating
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.xs + 2,
@@ -516,7 +456,6 @@ class _RecommendationCard extends StatelessWidget {
                         ),
                         const SizedBox(width: AppSpacing.xs + 2),
 
-                        // Jarak
                         Row(
                           children: [
                             Icon(
@@ -539,7 +478,6 @@ class _RecommendationCard extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.xs),
 
-                    // Harga
                     Text(
                       item.formattedPriceAdult,
                       style: AppTextStyles.headlineSmall.copyWith(
@@ -552,7 +490,6 @@ class _RecommendationCard extends StatelessWidget {
               ),
             ),
 
-            // ── Chevron
             Padding(
               padding: const EdgeInsets.only(right: AppSpacing.sm),
               child: Icon(
