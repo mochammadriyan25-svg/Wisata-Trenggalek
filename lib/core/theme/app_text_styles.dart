@@ -132,4 +132,25 @@ abstract final class AppTextStyles {
     letterSpacing: 0.4,
     color: AppColors.textOnDark,
   );
+
+  // ── Virtual Tour overlay ─────────────────────────────────────────────────────
+
+/// Label di dalam badge mode (StreetView / PhotoSphere / Image360)
+static const TextStyle vtBadgeLabel = TextStyle(
+  fontSize: 9,
+  fontWeight: FontWeight.w700,
+  letterSpacing: 0.3,
+  color: AppColors.textOnDark,
+  height: 1.4,
+);
+
+/// Label teks di tombol switch mode
+static const TextStyle vtSwitchLabel = TextStyle(
+  fontSize: 12,
+  fontWeight: FontWeight.w600,
+  letterSpacing: 0.2,
+  color: AppColors.textOnDark,
+);
+
+
 }
