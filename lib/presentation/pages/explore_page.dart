@@ -145,9 +145,22 @@ class _ExplorePageState extends State<ExplorePage>
 
   @override
   void dispose() {
-    _destProvider.clearFilter();
-    _accomProvider.clearFilter();
-    _packageProvider.clearFilter();
+    // ── FIX: simpan referensi lokal sebelum dispose ──────────────────────────
+    // clearFilter() memanggil notifyListeners() yang memicu markNeedsBuild().
+    // Memanggil ini langsung di dispose() menyebabkan exception karena
+    // widget tree sedang di-lock oleh Flutter saat phase unmounting.
+    // Solusi: tunda ke frame berikutnya via addPostFrameCallback.
+    final dest = _destProvider;
+    final accom = _accomProvider;
+    final pkg = _packageProvider;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      dest.clearFilter();
+      accom.clearFilter();
+      pkg.clearFilter();
+    });
+    // ─────────────────────────────────────────────────────────────────────────
+
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     _chipScrollController.dispose();
@@ -266,7 +279,7 @@ class _ExplorePageState extends State<ExplorePage>
     );
   }
 
-  // ── HEADER
+  // ── HEADER ──────────────────────────────────────────────────────────────────
   Widget _buildHeader(
     BuildContext context,
     DestinationProvider destProvider,
@@ -445,7 +458,7 @@ class _ExplorePageState extends State<ExplorePage>
                 catProvider.isLoading
                     ? const SizedBox()
                     : ListView(
-                      controller: _chipScrollController, // ✅
+                      controller: _chipScrollController,
                       scrollDirection: Axis.horizontal,
                       children: [
                         // Chip "Semua" — index 0
@@ -462,11 +475,11 @@ class _ExplorePageState extends State<ExplorePage>
                               ),
                         ),
 
-                        // ✅ Loop semua kategori, index mulai dari 1
+                        // Loop semua kategori, index mulai dari 1
                         ...catProvider.categories.asMap().entries.map((entry) {
                           final i = entry.key;
                           final cat = entry.value;
-                          final chipIndex = i + 1; // +1 karena "Semua" di 0
+                          final chipIndex = i + 1;
 
                           final bool isSelected = switch (cat.type) {
                             CategoryType.accommodation =>
@@ -517,7 +530,7 @@ class _ExplorePageState extends State<ExplorePage>
     );
   }
 
-  // ── DESTINATION LIST
+  // ── DESTINATION LIST ─────────────────────────────────────────────────────────
   Widget _buildDestinationList(
     BuildContext context,
     DestinationProvider destProvider,
@@ -554,7 +567,6 @@ class _ExplorePageState extends State<ExplorePage>
         return ExploreDestinationCard(
           item: item,
           onTap: () {
-            // Guest & login sama-sama bisa lihat detail
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => DetailPage(destination: item)),
@@ -565,7 +577,7 @@ class _ExplorePageState extends State<ExplorePage>
     );
   }
 
-  // ── ACCOMMODATION LIST
+  // ── ACCOMMODATION LIST ───────────────────────────────────────────────────────
   Widget _buildAccommodationList(
     BuildContext context,
     AccommodationProvider accomProvider,
@@ -602,7 +614,6 @@ class _ExplorePageState extends State<ExplorePage>
         return ExploreAccommodationCard(
           item: item,
           onTap: () {
-            // Guest & login sama-sama bisa lihat detail
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -615,7 +626,7 @@ class _ExplorePageState extends State<ExplorePage>
     );
   }
 
-  // ── PACKAGE LIST
+  // ── PACKAGE LIST ─────────────────────────────────────────────────────────────
   Widget _buildPackageList(
     BuildContext context,
     PackageProvider packageProvider,
@@ -652,7 +663,6 @@ class _ExplorePageState extends State<ExplorePage>
         return ExplorePackageCard(
           item: item,
           onTap: () {
-            // Guest & login sama-sama bisa lihat detail
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -665,7 +675,7 @@ class _ExplorePageState extends State<ExplorePage>
     );
   }
 
-  // ── ERROR STATE
+  // ── ERROR STATE ──────────────────────────────────────────────────────────────
   Widget _buildError({required VoidCallback onRetry}) => Center(
     child: Column(
       mainAxisSize: MainAxisSize.min,

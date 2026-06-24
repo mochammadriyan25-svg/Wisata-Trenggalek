@@ -479,7 +479,7 @@ class _RecommendationCard extends StatelessWidget {
                     const SizedBox(height: AppSpacing.xs),
 
                     Text(
-                      item.formattedPriceAdult,
+                      item.priceRangeFormatted,
                       style: AppTextStyles.headlineSmall.copyWith(
                         fontSize: 12,
                         color: AppColors.primary,

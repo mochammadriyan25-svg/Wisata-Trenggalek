@@ -295,7 +295,7 @@ class _CardInfo extends StatelessWidget {
                 ),
               ),
               Text(
-                destination.formattedPriceAdult,
+                destination.priceRangeFormatted,
                 style: AppTextStyles.headlineSmall.copyWith(
                   fontSize: 13,
                   color: AppColors.primary,

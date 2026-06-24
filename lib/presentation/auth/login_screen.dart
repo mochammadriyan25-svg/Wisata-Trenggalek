@@ -225,7 +225,7 @@ class _LoginHeader extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Text(
-                "Trenggalek VR",
+                "Virtual Tourism Trenggalek",
                 style: AppTextStyles.headlineSmall.copyWith(
                   color: AppColors.textPrimary,
                 ),
