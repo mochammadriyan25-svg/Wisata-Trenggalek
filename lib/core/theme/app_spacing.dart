@@ -17,7 +17,8 @@ abstract final class AppSpacing {
   static const double radiusFull = 999.0;
 
   // ── Border Radius tambahan untuk auth widgets
-  static const double radiusXs   = 4.0;  // Checkbox corner
+  static const double radiusXs   = 4.0; 
+  static const double radiusBadge = 10.0;  // badge mode kompak (antara sm & md) // Checkbox corner
 
   // ── Icon & Logo sizing (existing)
   static const double iconSm     = 20.0;

@@ -145,7 +145,7 @@ class _MenuRow extends StatelessWidget {
           ),
         ),
 
-        // Harga
+        // Harga: null -> "-", 0 -> "Gratis", >0 -> "Rp X" (dari MenuItemModel)
         Text(
           menu.formattedPrice,
           style: AppTextStyles.headlineSmall.copyWith(
@@ -168,30 +168,55 @@ class _TicketPriceList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        DetailFeeRow(label: 'Dewasa', amount: item.priceAdult),
+        // ✅ Anak dulu
+        DetailFeeRow(
+          label: 'Anak',
+          formattedAmount: item.formattedPriceChild,
+          isFree: item.priceChild == 0,
+        ),
         const SizedBox(height: AppSpacing.sm),
         Divider(color: AppColors.earthLight.withOpacity(0.6), thickness: 1),
         const SizedBox(height: AppSpacing.sm),
-        DetailFeeRow(label: 'Anak', amount: item.priceChild),
+        // ✅ Baru Dewasa
+        DetailFeeRow(
+          label: 'Dewasa',
+          formattedAmount: item.formattedPriceAdult,
+          isFree: item.priceAdult == 0,
+        ),
       ],
     );
   }
 }
 
 // ── DETAIL FEE ROW (tetap publik, bisa dipakai di tempat lain) ────────────────
+//
+// PENTING — BREAKING CHANGE:
+// Sebelumnya widget ini menerima `amount: int` dan menghitung formatting
+// sendiri (manual regex), sehingga tidak sinkron dengan format di model
+// (misal tidak menampilkan "Gratis"/"-").
+//
+// Sekarang widget ini HANYA menampilkan string yang sudah diformat dari
+// model (`item.formattedPriceAdult` / `item.formattedPriceChild`), supaya
+// formatting harga punya 1 sumber kebenaran saja.
+//
+// Jika ada widget LAIN di luar file ini yang memanggil
+// `DetailFeeRow(amount: ...)`, harus diupdate ke
+// `DetailFeeRow(formattedAmount: ..., isFree: ...)`.
 
 class DetailFeeRow extends StatelessWidget {
   final String label;
-  final int amount;
-  const DetailFeeRow({super.key, required this.label, required this.amount});
+  final String formattedAmount;
+  final bool isFree;
+
+  const DetailFeeRow({
+    super.key,
+    required this.label,
+    required this.formattedAmount,
+    this.isFree = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final formatted =
-        amount == 0
-            ? '0'
-            : 'IDR ${amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}';
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -215,10 +240,10 @@ class DetailFeeRow extends StatelessWidget {
           ],
         ),
         Text(
-          formatted,
+          formattedAmount,
           style: AppTextStyles.headlineSmall.copyWith(
             fontSize: 14,
-            color: amount == 0 ? AppColors.success : AppColors.textPrimary,
+            color: isFree ? AppColors.success : AppColors.textPrimary,
           ),
         ),
       ],

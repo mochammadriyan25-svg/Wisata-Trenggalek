@@ -222,7 +222,7 @@ class ExploreDestinationCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 3),
                       Text(
-                        item.formattedPriceAdult,
+                        item.priceRangeFormatted,
                         style: AppTextStyles.bodyMedium.copyWith(
                           fontSize: 12,
                           color: AppColors.primary,

@@ -628,7 +628,7 @@ class _DestinationCard extends StatelessWidget {
       rating: item.rating,
       categoryId: item.categoryId,
       badgeLabel: 'Destinasi',
-      priceLabel: item.formattedPriceAdult,
+      priceLabel: item.priceRangeFormatted,
       onTap:
           () => Navigator.push(
             context,

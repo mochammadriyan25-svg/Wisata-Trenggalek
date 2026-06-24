@@ -4,37 +4,44 @@ import 'package:intl/intl.dart';
 
 class MenuItemModel {
   final String name;
-  final int price;
+
+  /// null = harga belum diinput/ditentukan
+  /// 0    = memang gratis
+  /// > 0  = harga normal
+  final int? price;
+
   final String? description; // opsional, misal: "pedas, berkuah"
 
-  const MenuItemModel({
-    required this.name,
-    required this.price,
-    this.description,
-  });
+  const MenuItemModel({required this.name, this.price, this.description});
 
   // ── GETTERS ───────────────────────────────────────────────────────────────
 
+  /// true hanya jika harga eksplisit diisi 0 (gratis), bukan saat belum diinput
   bool get isFree => price == 0;
 
+  /// true jika harga sudah diinput (baik gratis maupun berbayar)
+  bool get isPriceSet => price != null;
+
+  /// null -> "-", 0 -> "Gratis", >0 -> "Rp 15.000"
   String get formattedPrice {
-    if (isFree) return 'Gratis';
+    if (price == null) return '-';
+    if (price == 0) return 'Gratis';
     final formatter = NumberFormat('#,###', 'id_ID');
-    return 'IDR ${formatter.format(price)}';
+    return 'Rp ${formatter.format(price)}';
   }
 
   // ── FACTORY ───────────────────────────────────────────────────────────────
 
   factory MenuItemModel.fromMap(Map<String, dynamic> map) {
-    int toInt(dynamic val) {
-      if (val == null) return 0;
+    int? toNullableInt(dynamic val) {
+      if (val == null) return null;
       if (val is num) return val.toInt();
-      return int.tryParse(val.toString()) ?? 0;
+      return int.tryParse(val.toString());
     }
 
     return MenuItemModel(
       name: map['name'] ?? '',
-      price: toInt(map['price']),
+      price: toNullableInt(map['price']),
       description: map['description'] as String?,
     );
   }
@@ -51,11 +58,7 @@ class MenuItemModel {
 
   // ── UTILITY ───────────────────────────────────────────────────────────────
 
-  MenuItemModel copyWith({
-    String? name,
-    int? price,
-    String? description,
-  }) {
+  MenuItemModel copyWith({String? name, int? price, String? description}) {
     return MenuItemModel(
       name: name ?? this.name,
       price: price ?? this.price,
