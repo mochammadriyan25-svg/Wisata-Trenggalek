@@ -40,6 +40,10 @@ class VtWebviewSection extends StatefulWidget {
   final void Function(double heading)? onHeadingChanged;
   final VoidCallback? onCoverageError;
 
+  /// Dipanggil setiap kali heading+pitch berubah (untuk live preview admin).
+  /// Tidak dipakai di VirtualTourPage (halaman user) — opsional & additif.
+  final void Function(double heading, double pitch)? onPovChanged; // ✅ TAMBAH
+
   const VtWebviewSection({
     super.key,
     required this.latitude,
@@ -52,6 +56,7 @@ class VtWebviewSection extends StatefulWidget {
     this.onPanoramaNavigated,
     this.onHeadingChanged,
     this.onCoverageError,
+    this.onPovChanged, // ✅ TAMBAH
   });
 
   @override
@@ -92,6 +97,17 @@ class _VtWebviewSectionState extends State<VtWebviewSection> {
               if (msg.message == 'no_coverage') {
                 if (mounted) setState(() => _isLoading = false);
                 widget.onCoverageError?.call();
+              }
+            },
+          )
+          ..addJavaScriptChannel(
+            'PovChannel', // ✅ TAMBAH — khusus untuk preview admin
+            onMessageReceived: (msg) {
+              final parts = msg.message.split(',');
+              if (parts.length == 2) {
+                final h = double.tryParse(parts[0]);
+                final p = double.tryParse(parts[1]);
+                if (h != null && p != null) widget.onPovChanged?.call(h, p);
               }
             },
           )
@@ -188,11 +204,15 @@ class _VtWebviewSectionState extends State<VtWebviewSection> {
       setInterval(function() {
         if (!viewer) return;
         var yaw = Math.round(viewer.getYaw());
+        var pitch = Math.round(viewer.getPitch());
         if (Math.abs(yaw - lastHeading) >= 5) {
           lastHeading = yaw;
           if (typeof CompassChannel !== 'undefined') {
             CompassChannel.postMessage(yaw.toString());
           }
+        }
+        if (typeof PovChannel !== 'undefined') {
+          PovChannel.postMessage(yaw + ',' + pitch); // ✅ TAMBAH
         }
       }, 200);
 
@@ -285,6 +305,7 @@ class _VtWebviewSectionState extends State<VtWebviewSection> {
           lastHeading = h;
           if (typeof CompassChannel !== 'undefined') CompassChannel.postMessage(h.toString());
         }
+        if (typeof PovChannel !== 'undefined') PovChannel.postMessage(h + ',' + Math.round(pov.pitch)); // ✅ TAMBAH
       });
     }
 
