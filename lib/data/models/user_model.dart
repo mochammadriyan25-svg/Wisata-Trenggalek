@@ -6,6 +6,7 @@ class UserModel {
   final String name;
   final String email;
   final String photoUrl;
+  final bool isAdmin;
   final Timestamp? createdAt;
 
   UserModel({
@@ -13,19 +14,19 @@ class UserModel {
     required this.name,
     required this.email,
     required this.photoUrl,
+    this.isAdmin = false,
     this.createdAt,
   });
 
-  factory UserModel.fromFirestore(
-      DocumentSnapshot doc) {
-    final data =
-        doc.data() as Map<String, dynamic>;
+  factory UserModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
 
     return UserModel(
       id: doc.id,
       name: data['name'] ?? '',
       email: data['email'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
+      isAdmin: data['isAdmin'] ?? false, // ✅ TAMBAH
       createdAt: data['createdAt'],
     );
   }
@@ -35,9 +36,7 @@ class UserModel {
       'name': name,
       'email': email,
       'photoUrl': photoUrl,
-      'createdAt':
-          createdAt ??
-              FieldValue.serverTimestamp(),
+      'createdAt': createdAt ?? FieldValue.serverTimestamp(),
     };
   }
 }

@@ -7,6 +7,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../widgets/auth/auth_text_field.dart';
 import '../../widgets/auth/auth_primary_button.dart';
+import '../../core/constants/app_route.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -65,7 +66,12 @@ class _LoginScreenState extends State<LoginScreen>
     );
     if (!mounted) return;
     if (success) {
-      Navigator.pushReplacementNamed(context, _getRedirectRoute());
+      final isAdmin = await auth.isCurrentUserAdmin(); // ✅ TAMBAH
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(
+        context,
+        isAdmin ? AppRoutes.adminDashboard : _getRedirectRoute(), // ✅ UBAH
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(auth.errorMessage ?? 'Login gagal')),
@@ -79,7 +85,12 @@ class _LoginScreenState extends State<LoginScreen>
     final success = await auth.signInWithGoogle();
     if (!mounted) return;
     if (success) {
-      Navigator.pushReplacementNamed(context, _getRedirectRoute());
+      final isAdmin = await auth.isCurrentUserAdmin(); // ✅ TAMBAH
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(
+        context,
+        isAdmin ? AppRoutes.adminDashboard : _getRedirectRoute(), // ✅ UBAH
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(auth.errorMessage ?? 'Login Google gagal')),
@@ -357,7 +368,7 @@ class _LoginTitle extends StatelessWidget {
           Text(
             "Jelajahi permata tersembunyi Trenggalek dari layar Anda.",
             style: AppTextStyles.bodyMedium,
-            textAlign: TextAlign.center
+            textAlign: TextAlign.center,
           ),
         ],
       ),

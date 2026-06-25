@@ -21,6 +21,8 @@ class AuthProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
   bool get isGuest => _status == AuthStatus.unauthenticated;
+  bool get isAdmin =>
+      _user?.isAdmin ?? false; // untuk pengecekan saat sudah di dalam app
 
   //Ambil UID langsung dari Firebase Auth sebagai fallback
   String? get userId => FirebaseAuth.instance.currentUser?.uid ?? _user?.id;
@@ -139,6 +141,16 @@ class AuthProvider extends ChangeNotifier {
     } finally {
       _setLoading(false);
     }
+  }
+
+  /// Fetch langsung dari Firestore (bypass stream) — dipanggil khusus
+  /// tepat setelah login()/signInWithGoogle() sukses, untuk hindari race
+  /// condition dengan _onAuthStateChanged yang masih proses di background.
+  Future<bool> isCurrentUserAdmin() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return false;
+    final freshUser = await _userService.getUser(uid);
+    return freshUser?.isAdmin ?? false;
   }
 
   // ── LOGOUT ─────────────────────────────────────
