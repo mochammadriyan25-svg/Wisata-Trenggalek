@@ -1,6 +1,27 @@
 // lib/core/utils/icon_mapper.dart
 import 'package:flutter/material.dart';
 
+const List<String> kValidCategoryIconKeys = [
+  'park',
+  'beach_access',
+  'water',
+  'mountain',
+  'waterfall',
+  'temple_hindu',
+  'temple_buddhist',
+  'mosque',
+  'museum',
+  'restaurant',
+  'food',
+  'cafe',
+  'hotel',
+  'villa',
+  'camping',
+  'card_travel',
+  'tour',
+  'map',
+];
+
 IconData getCategoryIcon(String iconName) {
   switch (iconName.toLowerCase()) {
     // ── Alam & Wisata
