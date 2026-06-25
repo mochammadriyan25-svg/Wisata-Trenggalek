@@ -21,9 +21,6 @@ class DestinationService {
   }
 
   // ── GET RECOMMENDED DESTINATIONS ─────────────────────────────────────────
-  /// Sort & limit langsung di Firestore — hemat bandwidth
-  /// Catatan: butuh composite index di Firestore untuk
-  /// isRecommended + rating
   Stream<List<DestinationModel>> getRecommendedDestinations() {
     return _collection
         .where('isRecommended', isEqualTo: true)
@@ -39,13 +36,9 @@ class DestinationService {
   }
 
   // ── GET DESTINATIONS BY CATEGORY ──────────────────────────────────────────
-  /// ✅ Gunakan field 'categoryId' — konsisten dengan DestinationModel
   Stream<List<DestinationModel>> getByCategory(String categoryId) {
     return _collection
-        .where(
-          'categoryId',
-          isEqualTo: categoryId,
-        ) // ✅ fix: 'category' → 'categoryId'
+        .where('categoryId', isEqualTo: categoryId)
         .orderBy('name')
         .snapshots()
         .map(
@@ -57,8 +50,6 @@ class DestinationService {
   }
 
   // ── SEARCH BY NAME ────────────────────────────────────────────────────────
-  /// Firestore prefix search — case sensitive
-  /// Untuk case-insensitive, pertimbangkan Algolia/Typesense
   Stream<List<DestinationModel>> searchByName(String keyword) {
     final lower = keyword.toLowerCase();
     return _collection
@@ -81,11 +72,58 @@ class DestinationService {
   }
 
   // ── STREAM SINGLE BY ID (Realtime) ────────────────────────────────────────
-  /// Digunakan agar rating di detail page update otomatis
   Stream<DestinationModel?> streamById(String id) {
     return _collection.doc(id).snapshots().map((doc) {
       if (!doc.exists) return null;
       return DestinationModel.fromFirestore(doc);
     });
+  }
+
+  // ── CREATE ──────────────────────────────────────────────────────────────
+  Future<void> createDestination(DestinationModel destination) async {
+    // Pakai doc().set(..., merge:true) BUKAN .add() — karena toCreateMap()
+    // mengandung FieldValue.delete() (utk priceAdult/priceChild/menus
+    // tergantung kategori). FieldValue.delete() HANYA valid di update() atau
+    // set() dengan SetOptions(merge:true). .add() = set() TANPA merge,
+    // akan throw runtime error kalau dipanggil langsung.
+    final docRef = _collection.doc();
+    await docRef.set(destination.toCreateMap(), SetOptions(merge: true));
+  }
+
+  // ── UPDATE ──────────────────────────────────────────────────────────────
+  Future<void> updateDestination(
+    String id,
+    DestinationModel destination,
+  ) async {
+    await _collection.doc(id).update(destination.toUpdateMap());
+  }
+
+  // ── CHECK USAGE BEFORE DELETE ───────────────────────────────────────────
+  /// Cek apakah destinasi ini termasuk dalam destinationIds salah satu Paket —
+  /// mencegah Paket "kehilangan" destinasi secara tidak sengaja.
+  Future<bool> isDestinationInAnyPackage(String destinationId) async {
+    final snapshot =
+        await _firestore
+            .collection('packages')
+            .where('destinationIds', arrayContains: destinationId)
+            .limit(1)
+            .get();
+    return snapshot.docs.isNotEmpty;
+  }
+
+  // ── DELETE (+ CASCADE SUBCOLLECTION) ────────────────────────────────────
+  /// Hapus destinasi BESERTA subcollection reviews-nya. Firestore tidak
+  /// cascade-delete subcollection otomatis — kalau cuma hapus dokumen induk,
+  /// reviews-nya jadi data yatim yang nggak akan pernah terhapus. Pakai
+  /// batch agar atomic (semua berhasil atau semua gagal, tidak setengah-setengah).
+  Future<void> deleteDestination(String id) async {
+    final reviewsSnapshot =
+        await _collection.doc(id).collection('reviews').get();
+    final batch = _firestore.batch();
+    for (final doc in reviewsSnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+    batch.delete(_collection.doc(id));
+    await batch.commit();
   }
 }

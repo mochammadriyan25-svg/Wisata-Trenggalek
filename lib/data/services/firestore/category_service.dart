@@ -50,4 +50,32 @@ class CategoryService {
     if (!doc.exists) return null;
     return CategoryModel.fromFirestore(doc);
   }
+
+  // ── CREATE ──────────────────────────────────────────────────────────────
+  Future<void> createCategory(CategoryModel category) async {
+    await _collection.add(category.toCreateMap());
+  }
+
+  // ── UPDATE ──────────────────────────────────────────────────────────────
+  Future<void> updateCategory(String id, CategoryModel category) async {
+    await _collection.doc(id).update(category.toUpdateMap());
+  }
+
+  // ── CHECK USAGE BEFORE DELETE ───────────────────────────────────────────
+  /// Cek apakah kategori ini masih dipakai destinasi/paket/akomodasi —
+  /// mencegah data yatim (kehilangan kategori) saat dihapus.
+  Future<bool> isCategoryInUse(CategoryModel category) async {
+    final snapshot =
+        await _firestore
+            .collection(category.collectionName)
+            .where('categoryId', isEqualTo: category.id)
+            .limit(1)
+            .get();
+    return snapshot.docs.isNotEmpty;
+  }
+
+  // ── DELETE ──────────────────────────────────────────────────────────────
+  Future<void> deleteCategory(String id) async {
+    await _collection.doc(id).delete();
+  }
 }

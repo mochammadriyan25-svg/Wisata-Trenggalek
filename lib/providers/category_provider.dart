@@ -1,5 +1,6 @@
 // lib/providers/category_provider.dart
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import '../data/models/category_model.dart';
 import '../data/services/firestore/category_service.dart';
@@ -24,6 +25,14 @@ class CategoryProvider extends ChangeNotifier {
   List<CategoryModel> get categories => _categories;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  Future<void> createCategory(CategoryModel category) =>
+      _service.createCategory(category);
+  Future<void> updateCategory(String id, CategoryModel category) =>
+      _service.updateCategory(id, category);
+  Future<bool> isCategoryInUse(CategoryModel category) =>
+      _service.isCategoryInUse(category);
+  Future<void> deleteCategory(CategoryModel category) =>
+      _service.deleteCategory(category.id);
 
   /// Hanya kategori untuk destinasi (Pantai, Kuliner, Alam, dll)
   List<CategoryModel> get destinationCategories =>

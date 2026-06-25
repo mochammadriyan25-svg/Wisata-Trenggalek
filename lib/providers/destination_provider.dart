@@ -1,5 +1,6 @@
 // lib/providers/destination_provider.dart
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import '../data/models/destination_model.dart';
 import '../data/services/firestore/destination_service.dart';
@@ -45,12 +46,12 @@ class DestinationProvider extends ChangeNotifier {
     _allDestSub = _service.getAllDestinations().listen(
       (list) {
         _allDestinations = list;
-        _errorMessage = null; // clear error saat data berhasil masuk
+        _errorMessage = null;
         _applyFilter();
         _setLoading(false);
       },
       onError: (e) {
-        _errorMessage = e.toString(); // di-set sebelum notifyListeners
+        _errorMessage = e.toString();
         _setLoading(false);
       },
     );
@@ -64,8 +65,6 @@ class DestinationProvider extends ChangeNotifier {
         notifyListeners();
       },
       onError: (e) {
-        // Error recommended tidak masuk _errorMessage utama
-        // agar tidak merusak tampilan ExplorePage
         debugPrint('Recommended stream error: $e');
         notifyListeners();
       },
@@ -112,7 +111,7 @@ class DestinationProvider extends ChangeNotifier {
   void clearError() {
     _errorMessage = null;
     notifyListeners();
-    _listenAllDestinations(); // restart stream yang mungkin sudah mati
+    _listenAllDestinations();
   }
 
   // ── GET SINGLE DESTINATION ────────────────────────────────────────────────
@@ -126,6 +125,19 @@ class DestinationProvider extends ChangeNotifier {
   Stream<DestinationModel?> streamById(String id) {
     return _service.streamById(id);
   }
+
+  // ── CREATE / UPDATE / DELETE ──────────────────────────────────────────────
+  Future<void> createDestination(DestinationModel destination) =>
+      _service.createDestination(destination);
+
+  Future<void> updateDestination(String id, DestinationModel destination) =>
+      _service.updateDestination(id, destination);
+
+  /// Cek apakah destinasi ini masih dipakai di salah satu Paket sebelum dihapus
+  Future<bool> isDestinationInAnyPackage(String id) =>
+      _service.isDestinationInAnyPackage(id);
+
+  Future<void> deleteDestination(String id) => _service.deleteDestination(id);
 
   // ── UTILITY ───────────────────────────────────────────────────────────────
   void _setLoading(bool value) {
