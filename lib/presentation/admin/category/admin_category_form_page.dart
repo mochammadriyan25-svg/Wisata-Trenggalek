@@ -10,7 +10,7 @@ import 'package:aplikasi_wisata/providers/category_provider.dart';
 import 'package:aplikasi_wisata/widgets/admin/admin_image_picker_field.dart';
 
 class AdminCategoryFormPage extends StatefulWidget {
-  final CategoryModel? existing; // null = mode tambah baru
+  final CategoryModel? existing;
   const AdminCategoryFormPage({super.key, this.existing});
 
   bool get isEditMode => existing != null;
@@ -33,9 +33,10 @@ class _AdminCategoryFormPageState extends State<AdminCategoryFormPage> {
     final e = widget.existing;
     _nameController = TextEditingController(text: e?.name ?? '');
     _selectedType = e?.type ?? CategoryType.destination;
-    _selectedIcon = (e != null && kValidCategoryIconKeys.contains(e.icon))
-        ? e.icon
-        : kValidCategoryIconKeys.first;
+    _selectedIcon =
+        (e != null && kValidCategoryIconKeys.contains(e.icon))
+            ? e.icon
+            : kValidCategoryIconKeys.first;
     _imageUrl = e?.imageUrl ?? '';
   }
 
@@ -67,14 +68,23 @@ class _AdminCategoryFormPageState extends State<AdminCategoryFormPage> {
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(widget.isEditMode ? 'Kategori diperbarui' : 'Kategori ditambahkan')),
+          SnackBar(
+            content: Text(
+              widget.isEditMode
+                  ? 'Kategori diperbarui'
+                  : 'Kategori ditambahkan',
+            ),
+          ),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Gagal menyimpan: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -86,16 +96,39 @@ class _AdminCategoryFormPageState extends State<AdminCategoryFormPage> {
     CategoryType.destination => 'Destinasi',
     CategoryType.package => 'Paket',
     CategoryType.accommodation => 'Akomodasi',
+    CategoryType.placeWorship => 'Tempat Ibadah', // ✅ NEW
+    CategoryType.placeHealth => 'Fasilitas Kesehatan', // ✅ NEW
     _ => type,
   };
+
+  Widget _sectionLabel(String text) => Padding(
+    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+    child: Row(
+      children: [
+        Container(
+          width: 3,
+          height: 16,
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.xs),
+        Text(
+          text,
+          style: AppTextStyles.headlineSmall.copyWith(color: AppColors.primary),
+        ),
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(widget.isEditMode ? 'Edit Kategori' : 'Tambah Kategori')),
-      // Responsif: scroll + constraint lebar maksimal, supaya nyaman
-      // dipakai baik di HP kecil portrait maupun landscape/tablet.
+      appBar: AppBar(
+        title: Text(widget.isEditMode ? 'Edit Kategori' : 'Tambah Kategori'),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.md),
@@ -107,70 +140,151 @@ class _AdminCategoryFormPageState extends State<AdminCategoryFormPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // ── GAMBAR ──
+                    _sectionLabel('Gambar Kategori'),
                     AdminImagePickerField(
                       label: 'Gambar Kategori',
                       initialUrl: _imageUrl.isNotEmpty ? _imageUrl : null,
                       onUploaded: (url) => setState(() => _imageUrl = url),
                     ),
+
                     const SizedBox(height: AppSpacing.lg),
+
+                    // ── INFORMASI ──
+                    _sectionLabel('Informasi'),
                     TextFormField(
                       controller: _nameController,
-                      decoration: const InputDecoration(labelText: 'Nama Kategori'),
-                      validator: (v) => (v == null || v.trim().isEmpty) ? 'Nama wajib diisi' : null,
+                      decoration: const InputDecoration(
+                        labelText: 'Nama Kategori',
+                      ),
+                      validator:
+                          (v) =>
+                              (v == null || v.trim().isEmpty)
+                                  ? 'Nama wajib diisi'
+                                  : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     DropdownButtonFormField<String>(
                       value: _selectedType,
-                      decoration: const InputDecoration(labelText: 'Jenis Kategori'),
-                      items: CategoryType.values
-                          .map((t) => DropdownMenuItem(value: t, child: Text(_typeLabel(t))))
-                          .toList(),
+                      decoration: const InputDecoration(
+                        labelText: 'Jenis Kategori',
+                      ),
+                      items:
+                          CategoryType.values
+                              .map(
+                                (t) => DropdownMenuItem(
+                                  value: t,
+                                  child: Text(_typeLabel(t)),
+                                ),
+                              )
+                              .toList(),
                       onChanged: (v) => setState(() => _selectedType = v!),
                     ),
-                    const SizedBox(height: AppSpacing.md),
-                    Text('Ikon', style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600)),
-                    const SizedBox(height: AppSpacing.sm),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final cols = (constraints.maxWidth / 64).floor().clamp(4, 10);
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: cols,
-                            crossAxisSpacing: AppSpacing.xs,
-                            mainAxisSpacing: AppSpacing.xs,
-                          ),
-                          itemCount: kValidCategoryIconKeys.length,
-                          itemBuilder: (context, i) {
-                            final key = kValidCategoryIconKeys[i];
-                            final selected = key == _selectedIcon;
-                            return InkWell(
-                              onTap: () => setState(() => _selectedIcon = key),
-                              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: selected ? AppColors.primary : AppColors.primarySurface,
-                                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+
+                    // ✅ TIDAK ADA LAGI FIELD GRUP — tipe langsung worship/health
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // ── PILIH IKON ──
+                    _sectionLabel('Pilih Ikon'),
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.radiusMd,
+                        ),
+                        border: Border.all(color: AppColors.divider),
+                      ),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final cols = (constraints.maxWidth / 56)
+                              .floor()
+                              .clamp(5, 10);
+                          return GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: cols,
+                                  crossAxisSpacing: AppSpacing.xs,
+                                  mainAxisSpacing: AppSpacing.xs,
                                 ),
-                                child: Icon(getCategoryIcon(key),
-                                    color: selected ? AppColors.textOnDark : AppColors.primary),
-                              ),
-                            );
-                          },
-                        );
-                      },
+                            itemCount: kValidCategoryIconKeys.length,
+                            itemBuilder: (context, i) {
+                              final key = kValidCategoryIconKeys[i];
+                              final selected = key == _selectedIcon;
+                              return Tooltip(
+                                message: key,
+                                child: InkWell(
+                                  onTap:
+                                      () => setState(() => _selectedIcon = key),
+                                  borderRadius: BorderRadius.circular(
+                                    AppSpacing.radiusSm,
+                                  ),
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 150),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          selected
+                                              ? AppColors.primary
+                                              : AppColors.primarySurface,
+                                      borderRadius: BorderRadius.circular(
+                                        AppSpacing.radiusSm,
+                                      ),
+                                      border:
+                                          selected
+                                              ? null
+                                              : Border.all(
+                                                color: AppColors.divider,
+                                                width: 0.5,
+                                              ),
+                                    ),
+                                    child: Icon(
+                                      getCategoryIcon(key),
+                                      color:
+                                          selected
+                                              ? AppColors.textOnDark
+                                              : AppColors.primary,
+                                      size: 22,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
                     ),
+                    if (_selectedIcon.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: AppSpacing.xs),
+                        child: Text(
+                          'Dipilih: $_selectedIcon',
+                          style: AppTextStyles.caption,
+                        ),
+                      ),
+
                     const SizedBox(height: AppSpacing.xl),
                     SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
                         onPressed: _isSaving ? null : _save,
-                        child: _isSaving
-                            ? const SizedBox(width: 20, height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.textOnDark))
-                            : Text(widget.isEditMode ? 'Simpan Perubahan' : 'Tambah Kategori'),
+                        child:
+                            _isSaving
+                                ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.textOnDark,
+                                  ),
+                                )
+                                : Text(
+                                  widget.isEditMode
+                                      ? 'Simpan Perubahan'
+                                      : 'Tambah Kategori',
+                                ),
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),

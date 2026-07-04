@@ -105,7 +105,7 @@ class _SplashScreenState extends State<SplashScreen>
             height: 6,
             decoration: BoxDecoration(
               color: Color.lerp(
-                AppColors.textOnDark.withOpacity(0.3),
+                AppColors.textOnDark.withValues(alpha: 0.3),
                 AppColors.accent,
                 progress,
               ),
@@ -138,7 +138,7 @@ class _SplashScreenState extends State<SplashScreen>
               right: -80,
               child: _DecorativeCircle(
                 size: 280,
-                color: AppColors.primaryLight.withOpacity(0.15),
+                color: AppColors.primaryLight.withValues(alpha: 0.15),
               ),
             ),
             Positioned(
@@ -146,7 +146,7 @@ class _SplashScreenState extends State<SplashScreen>
               left: -60,
               child: _DecorativeCircle(
                 size: 220,
-                color: AppColors.accent.withOpacity(0.10),
+                color: AppColors.accent.withValues(alpha: 0.10),
               ),
             ),
 
@@ -164,17 +164,19 @@ class _SplashScreenState extends State<SplashScreen>
                         width: AppSpacing.logoSize,
                         height: AppSpacing.logoSize,
                         decoration: BoxDecoration(
-                          color: AppColors.white.withOpacity(0.10),
+                          color: AppColors.white.withValues(alpha: 0.10),
                           borderRadius: BorderRadius.circular(
                             AppSpacing.radiusXl,
                           ),
                           border: Border.all(
-                            color: AppColors.white.withOpacity(0.20),
+                            color: AppColors.white.withValues(alpha: 0.20),
                             width: 1.5,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primaryDark.withOpacity(0.4),
+                              color: AppColors.primaryDark.withValues(
+                                alpha: 0.4,
+                              ),
                               blurRadius: 40,
                               offset: const Offset(0, 20),
                             ),
@@ -198,7 +200,7 @@ class _SplashScreenState extends State<SplashScreen>
                       Text(
                         "Tourism",
                         style: AppTextStyles.subtitleMedium.copyWith(
-                          color: AppColors.textOnDark.withOpacity(0.6),
+                          color: AppColors.textOnDark.withValues(alpha: 0.6),
                           letterSpacing: 4.0,
                         ),
                       ),
@@ -252,7 +254,7 @@ class _SplashScreenState extends State<SplashScreen>
                       Text(
                         "PREPARING YOUR JOURNEY",
                         style: AppTextStyles.labelSpacedOnDark.copyWith(
-                          color: AppColors.textOnDark.withOpacity(0.5),
+                          color: AppColors.textOnDark.withValues(alpha: 0.5),
                         ),
                       ),
                     ],
@@ -270,7 +272,7 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Text(
                   "TRENGGALEK TOURISM BOARD • v2.0.0",
                   style: AppTextStyles.labelSpacedSubtle.copyWith(
-                    color: AppColors.textOnDark.withOpacity(0.35),
+                    color: AppColors.textOnDark.withValues(alpha: 0.35),
                   ),
                 ),
               ),
@@ -309,8 +311,8 @@ class _DividerLine extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.textOnDark.withOpacity(0.0),
-            AppColors.textOnDark.withOpacity(0.4),
+            AppColors.textOnDark.withValues(alpha: 0.0),
+            AppColors.textOnDark.withValues(alpha: 0.4),
           ],
         ),
       ),

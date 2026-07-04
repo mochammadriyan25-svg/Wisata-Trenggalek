@@ -39,21 +39,22 @@ class _AuthTextFieldState extends State<AuthTextField>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           // Teal glow saat fokus
-          boxShadow: _isFocused
-              ? [
-                  BoxShadow(
-                    color: AppColors.primary.withOpacity(0.14),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : [
-                  BoxShadow(
-                    color: AppColors.shadowNeutral.withOpacity(0.06),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+          boxShadow:
+              _isFocused
+                  ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.14),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                  : [
+                    BoxShadow(
+                      color: AppColors.shadowNeutral.withValues(alpha: 0.06),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
         ),
         child: TextField(
           controller: widget.controller,
@@ -83,9 +84,8 @@ class _AuthTextFieldState extends State<AuthTextField>
             ),
             suffixIcon: widget.suffixIcon,
             filled: true,
-            fillColor: _isFocused
-                ? AppColors.primarySurface
-                : AppColors.surface,
+            fillColor:
+                _isFocused ? AppColors.primarySurface : AppColors.surface,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               borderSide: const BorderSide(

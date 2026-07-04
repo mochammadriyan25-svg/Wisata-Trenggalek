@@ -588,7 +588,7 @@ class _ModeBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(AppSpacing.radiusBadge),
-        border: Border.all(color: color.withOpacity(0.4)),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -656,7 +656,7 @@ class _SwitchModeButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.vtGlassFill,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-          border: Border.all(color: color.withOpacity(0.4), width: 1),
+          border: Border.all(color: color.withValues(alpha: 0.4), width: 1),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

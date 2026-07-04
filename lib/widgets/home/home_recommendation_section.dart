@@ -121,12 +121,12 @@ class _RecommendationCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           border: Border.all(
-            color: AppColors.divider.withOpacity(0.7),
+            color: AppColors.divider.withValues(alpha: 0.7),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadowNeutral.withOpacity(0.08),
+              color: AppColors.shadowNeutral.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -203,7 +203,7 @@ class _CardImage extends StatelessWidget {
                   stops: const [0.6, 1.0],
                   colors: [
                     Colors.transparent,
-                    AppColors.primaryDark.withOpacity(0.25),
+                    AppColors.primaryDark.withValues(alpha: 0.25),
                   ],
                 ),
               ),
@@ -270,7 +270,7 @@ class _CardInfo extends StatelessWidget {
                   color: AppColors.accentSurface,
                   borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
                   border: Border.all(
-                    color: AppColors.accentLight.withOpacity(0.5),
+                    color: AppColors.accentLight.withValues(alpha: 0.5),
                     width: 1,
                   ),
                 ),

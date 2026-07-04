@@ -1,3 +1,4 @@
+//lib/widgets/detail/detail_action_buttons.dart
 import 'package:flutter/material.dart';
 import 'package:aplikasi_wisata/core/theme/app_colors.dart';
 import 'package:aplikasi_wisata/core/theme/app_text_styles.dart';
@@ -29,57 +30,63 @@ class DetailActionButtons extends StatelessWidget {
                 gradient: isFavorite ? null : AppColors.primaryGradient,
                 color: isFavorite ? AppColors.primarySurface : null,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                border: isFavorite
-                    ? Border.all(color: AppColors.primary, width: 1.5)
-                    : null,
-                boxShadow: isFavorite
-                    ? []
-                    : [
-                        BoxShadow(
-                          color: AppColors.primary.withOpacity(0.3),
-                          blurRadius: 14,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-              ),
-              child: Center(
-                child: isLoading
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: isFavorite
-                              ? AppColors.primary
-                              : AppColors.textOnDark,
-                        ),
-                      )
-                    : Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            isFavorite
-                                ? Icons.favorite_rounded
-                                : Icons.favorite_border_rounded,
-                            color: isFavorite
-                                ? AppColors.primary
-                                : AppColors.textOnDark,
-                            size: 18,
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          Text(
-                            isFavorite
-                                ? "Hapus Dari Favorites"
-                                : "Tambahkan ke Favorites",
-                            style: AppTextStyles.buttonLabel.copyWith(
-                              fontSize: 14,
-                              color: isFavorite
-                                  ? AppColors.primary
-                                  : AppColors.textOnDark,
-                            ),
+                border:
+                    isFavorite
+                        ? Border.all(color: AppColors.primary, width: 1.5)
+                        : null,
+                boxShadow:
+                    isFavorite
+                        ? []
+                        : [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.3),
+                            blurRadius: 14,
+                            offset: const Offset(0, 5),
                           ),
                         ],
-                      ),
+              ),
+              child: Center(
+                child:
+                    isLoading
+                        ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color:
+                                isFavorite
+                                    ? AppColors.primary
+                                    : AppColors.textOnDark,
+                          ),
+                        )
+                        : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              isFavorite
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
+                              color:
+                                  isFavorite
+                                      ? AppColors.primary
+                                      : AppColors.textOnDark,
+                              size: 18,
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Text(
+                              isFavorite
+                                  ? "Hapus Dari Favorites"
+                                  : "Tambahkan ke Favorites",
+                              style: AppTextStyles.buttonLabel.copyWith(
+                                fontSize: 14,
+                                color:
+                                    isFavorite
+                                        ? AppColors.primary
+                                        : AppColors.textOnDark,
+                              ),
+                            ),
+                          ],
+                        ),
               ),
             ),
           ),

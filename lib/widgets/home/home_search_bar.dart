@@ -27,10 +27,9 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ExplorePage(
-          initialSearch: query.trim(),
-          showBackButton: true,
-        ),
+        builder:
+            (_) =>
+                ExplorePage(initialSearch: query.trim(), showBackButton: true),
       ),
     );
   }
@@ -47,21 +46,22 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            boxShadow: _isFocused
-                ? [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.14),
-                      blurRadius: 14,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : [
-                    BoxShadow(
-                      color: AppColors.shadowNeutral.withOpacity(0.07),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+            boxShadow:
+                _isFocused
+                    ? [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.14),
+                        blurRadius: 14,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                    : [
+                      BoxShadow(
+                        color: AppColors.shadowNeutral.withValues(alpha: 0.07),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
           ),
           child: TextField(
             controller: _controller,
@@ -81,18 +81,20 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
                 color: _isFocused ? AppColors.primary : AppColors.textHint,
                 size: AppSpacing.iconMd,
               ),
-              suffixIcon: _controller.text.isEmpty
-                  ? null
-                  : IconButton(
-                      icon: Icon(
-                        Icons.close_rounded,
-                        color: AppColors.textHint,
-                        size: AppSpacing.iconSm,
+              suffixIcon:
+                  _controller.text.isEmpty
+                      ? null
+                      : IconButton(
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: AppColors.textHint,
+                          size: AppSpacing.iconSm,
+                        ),
+                        onPressed: _clearSearch,
                       ),
-                      onPressed: _clearSearch,
-                    ),
               filled: true,
-              fillColor: _isFocused ? AppColors.primarySurface : AppColors.surface,
+              fillColor:
+                  _isFocused ? AppColors.primarySurface : AppColors.surface,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                 borderSide: const BorderSide(

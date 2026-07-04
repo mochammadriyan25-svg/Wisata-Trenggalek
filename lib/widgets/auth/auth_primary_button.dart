@@ -60,7 +60,7 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton>
               gradient: widget.isLoading ? null : AppColors.primaryGradient,
               color:
                   widget.isLoading
-                      ? AppColors.primaryLight.withOpacity(0.35)
+                      ? AppColors.primaryLight.withValues(alpha: 0.35)
                       : null,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               boxShadow:
@@ -68,12 +68,12 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton>
                       ? []
                       : [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.35),
+                          color: AppColors.primary.withValues(alpha: 0.35),
                           blurRadius: 16,
                           offset: const Offset(0, 6),
                         ),
                         BoxShadow(
-                          color: AppColors.primaryDark.withOpacity(0.15),
+                          color: AppColors.primaryDark.withValues(alpha: 0.15),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -84,7 +84,7 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton>
               child: InkWell(
                 onTap: widget.isLoading ? null : widget.onPressed,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                splashColor: AppColors.primaryLight.withOpacity(0.25),
+                splashColor: AppColors.primaryLight.withValues(alpha: 0.25),
                 highlightColor: Colors.transparent,
                 child: Center(
                   child:

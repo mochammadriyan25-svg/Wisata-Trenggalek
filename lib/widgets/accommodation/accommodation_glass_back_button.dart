@@ -19,28 +19,32 @@ class AccommodationGlassBackButton extends StatelessWidget {
         height: 38,
         decoration: BoxDecoration(
           color: Color.lerp(
-            Colors.white.withOpacity(0.18),
-            AppColors.surface.withOpacity(0.96),
+            Colors.white.withValues(alpha: 0.18),
+            AppColors.surface.withValues(alpha: 0.96),
             solidRatio,
           ),
           borderRadius: BorderRadius.circular(11),
           border: Border.all(
-            color: Color.lerp(
-              Colors.white.withOpacity(0.28),
-              AppColors.divider,
-              solidRatio,
-            )!,
+            color:
+                Color.lerp(
+                  Colors.white.withValues(alpha: 0.28),
+                  AppColors.divider,
+                  solidRatio,
+                )!,
             width: 1,
           ),
-          boxShadow: solidRatio > 0.5
-              ? [
-                  BoxShadow(
-                    color: AppColors.shadowDeep.withOpacity(0.12 * solidRatio),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
-                  ),
-                ]
-              : [],
+          boxShadow:
+              solidRatio > 0.5
+                  ? [
+                    BoxShadow(
+                      color: AppColors.shadowDeep.withValues(
+                        alpha: 0.12 * solidRatio,
+                      ),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ]
+                  : [],
         ),
         child: Icon(
           Icons.arrow_back_ios_new_rounded,

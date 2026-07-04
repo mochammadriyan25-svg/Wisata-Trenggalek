@@ -52,7 +52,7 @@ class PackageTierSelector extends StatelessWidget {
                     isSelected
                         ? [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.25),
+                            color: AppColors.primary.withValues(alpha: 0.25),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -71,7 +71,7 @@ class PackageTierSelector extends StatelessWidget {
                       decoration: BoxDecoration(
                         color:
                             isSelected
-                                ? AppColors.surface.withOpacity(0.25)
+                                ? AppColors.surface.withValues(alpha: 0.25)
                                 : AppColors.accentSurface,
                         borderRadius: BorderRadius.circular(
                           AppSpacing.radiusFull,
@@ -106,7 +106,7 @@ class PackageTierSelector extends StatelessWidget {
                       fontSize: 10,
                       color:
                           isSelected
-                              ? AppColors.textOnDark.withOpacity(0.85)
+                              ? AppColors.textOnDark.withValues(alpha: 0.85)
                               : AppColors.primary,
                       fontWeight: FontWeight.w600,
                     ),
@@ -118,7 +118,7 @@ class PackageTierSelector extends StatelessWidget {
                       fontSize: 9,
                       color:
                           isSelected
-                              ? AppColors.textOnDark.withOpacity(0.7)
+                              ? AppColors.textOnDark.withValues(alpha: 0.7)
                               : AppColors.textHint,
                     ),
                   ),

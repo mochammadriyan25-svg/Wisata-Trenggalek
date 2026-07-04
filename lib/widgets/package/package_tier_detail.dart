@@ -26,7 +26,7 @@ class PackageTierDetail extends StatelessWidget {
           color: AppColors.primarySurface,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           border: Border.all(
-            color: AppColors.primary.withOpacity(0.2),
+            color: AppColors.primary.withValues(alpha: 0.2),
             width: 1,
           ),
         ),
@@ -42,7 +42,10 @@ class PackageTierDetail extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            Divider(color: AppColors.primary.withOpacity(0.15), thickness: 1),
+            Divider(
+              color: AppColors.primary.withValues(alpha: 0.15),
+              thickness: 1,
+            ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               'Yang Sudah Termasuk:',
@@ -64,7 +67,7 @@ class PackageTierDetail extends StatelessWidget {
                       width: 16,
                       height: 16,
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.12),
+                        color: AppColors.primary.withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(

@@ -79,7 +79,7 @@ class DetailMapSection extends StatelessWidget {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withOpacity(0.4),
+                              color: AppColors.primary.withValues(alpha: 0.4),
                               blurRadius: 10,
                               offset: const Offset(0, 3),
                             ),

@@ -312,7 +312,7 @@ class DetailHeroInfoOverlay extends StatelessWidget {
                     size: 13,
                     color:
                         AppColors
-                            .vtTextStrong, // ← was Colors.white.withOpacity(0.8)
+                            .vtTextStrong, // ← was Colors.white.withValues(alpha: 0.8)
                   ),
                   const SizedBox(width: 4),
                   Flexible(
@@ -321,7 +321,7 @@ class DetailHeroInfoOverlay extends StatelessWidget {
                       style: AppTextStyles.bodyMedium.copyWith(
                         color:
                             AppColors
-                                .vtTextStrong, // ← was Colors.white.withOpacity(0.8)
+                                .vtTextStrong, // ← was Colors.white.withValues(alpha: 0.8)
                         fontSize: 12,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -343,12 +343,12 @@ class DetailHeroInfoOverlay extends StatelessWidget {
                   decoration: BoxDecoration(
                     color:
                         AppColors
-                            .vtDialogAction, // ← was Colors.white.withOpacity(0.15)
+                            .vtDialogAction, // ← was Colors.white.withValues(alpha: 0.15)
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color:
                           AppColors
-                              .vtDialogRim, // ← was Colors.white.withOpacity(0.3)
+                              .vtDialogRim, // ← was Colors.white.withValues(alpha: 0.3)
                       width: 1,
                     ),
                   ),

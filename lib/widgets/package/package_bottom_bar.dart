@@ -91,8 +91,8 @@ class _PackageBottomBarState extends State<PackageBottomBar> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                AppColors.surface.withOpacity(0.0),
-                AppColors.surface.withOpacity(1.0),
+                AppColors.surface.withValues(alpha: 0.0),
+                AppColors.surface.withValues(alpha: 1.0),
               ],
             ),
           ),
@@ -164,7 +164,10 @@ class _PackageBottomBarState extends State<PackageBottomBar> {
       decoration: BoxDecoration(
         color: AppColors.primarySurface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 1),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.2),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -230,7 +233,7 @@ class _ActionButtons extends StatelessWidget {
                         ? []
                         : [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
+                            color: AppColors.primary.withValues(alpha: 0.3),
                             blurRadius: 14,
                             offset: const Offset(0, 5),
                           ),

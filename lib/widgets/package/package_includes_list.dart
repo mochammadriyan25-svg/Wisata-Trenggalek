@@ -30,7 +30,7 @@ class PackageIncludesList extends StatelessWidget {
                     color: AppColors.earthSurface,
                     borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     border: Border.all(
-                      color: AppColors.earthLight.withOpacity(0.5),
+                      color: AppColors.earthLight.withValues(alpha: 0.5),
                       width: 1,
                     ),
                   ),

@@ -64,8 +64,7 @@ class VtRevisitScreen extends StatelessWidget {
             ), // ← 80% #F7F9F9, was vtDialogSurface 10%
             // borderRadius tidak di sini — ClipRRect sudah menanganinya
             border: Border.all(
-              color: AppColors.primary.withOpacity(
-                0.15,
+              color: AppColors.primary.withValues(alpha: 0.15,
               ), // ← was vtDialogBorder (20% white)
             ),
           ),
@@ -133,8 +132,7 @@ class VtRevisitScreen extends StatelessWidget {
                             AppSpacing.radiusMd,
                           ),
                           side: BorderSide(
-                            color: AppColors.primary.withOpacity(
-                              0.2,
+                            color: AppColors.primary.withValues(alpha: 0.2,
                             ), // ← was vtDialogBorder
                           ),
                         ),

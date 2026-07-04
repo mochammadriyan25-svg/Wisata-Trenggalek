@@ -61,7 +61,7 @@ class VtOverlayControls extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.55),
+                      Colors.black.withValues(alpha: 0.55),
                     ],
                   ),
                 ),
@@ -73,7 +73,7 @@ class VtOverlayControls extends StatelessWidget {
                   filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                   child: Container(
                     width: double.infinity,
-                    color: Colors.black.withOpacity(0.45),
+                    color: Colors.black.withValues(alpha: 0.45),
                     padding: EdgeInsets.fromLTRB(
                       w * 0.05,
                       14,
@@ -136,9 +136,9 @@ class _GlassIconButton extends StatelessWidget {
           width: size,
           height: size,
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.35),
+            color: Colors.black.withValues(alpha: 0.35),
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.white.withOpacity(0.25)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
           ),
           child: Icon(icon, color: Colors.white, size: size * 0.48),
         ),
@@ -174,14 +174,14 @@ class _GlassLabelButton extends StatelessWidget {
       decoration: BoxDecoration(
         color:
             isActive
-                ? Colors.white.withOpacity(0.22)
-                : Colors.white.withOpacity(0.10),
+                ? Colors.white.withValues(alpha: 0.22)
+                : Colors.white.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
           color:
               isActive
-                  ? Colors.white.withOpacity(0.65)
-                  : Colors.white.withOpacity(0.30),
+                  ? Colors.white.withValues(alpha: 0.65)
+                  : Colors.white.withValues(alpha: 0.30),
         ),
       ),
       child: Row(

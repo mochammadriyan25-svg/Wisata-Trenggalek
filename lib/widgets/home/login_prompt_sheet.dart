@@ -58,7 +58,7 @@ class LoginPromptSheet extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF13EC80).withOpacity(0.12),
+        color: const Color(0xFF13EC80).withValues(alpha: 0.12),
         shape: BoxShape.circle,
       ),
       child: const Icon(

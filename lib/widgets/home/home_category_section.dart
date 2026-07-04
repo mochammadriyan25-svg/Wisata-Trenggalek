@@ -112,10 +112,13 @@ class _CategoryList extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.divider.withOpacity(0.7), width: 1),
+        border: Border.all(
+          color: AppColors.divider.withValues(alpha: 0.7),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowNeutral.withOpacity(0.07),
+            color: AppColors.shadowNeutral.withValues(alpha: 0.07),
             blurRadius: 14,
             offset: const Offset(0, 4),
           ),
@@ -209,7 +212,7 @@ class _CategoryItem extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: gradient.first.withOpacity(0.3),
+                    color: gradient.first.withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),

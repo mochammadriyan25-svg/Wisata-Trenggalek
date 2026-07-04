@@ -17,7 +17,7 @@ class DetailEntranceFeeCard extends StatelessWidget {
         color: AppColors.earthSurface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         border: Border.all(
-          color: AppColors.earthLight.withOpacity(0.5),
+          color: AppColors.earthLight.withValues(alpha: 0.5),
           width: 1,
         ),
       ),
@@ -91,7 +91,7 @@ class _KulinerMenuList extends StatelessWidget {
             children: [
               const SizedBox(height: AppSpacing.sm),
               Divider(
-                color: AppColors.earthLight.withOpacity(0.6),
+                color: AppColors.earthLight.withValues(alpha: 0.6),
                 thickness: 1,
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -138,7 +138,7 @@ class _MenuRow extends StatelessWidget {
                 Text(
                   menu.description!,
                   style: AppTextStyles.caption.copyWith(
-                    color: AppColors.textSecondary.withOpacity(0.6),
+                    color: AppColors.textSecondary.withValues(alpha: 0.6),
                   ),
                 ),
             ],
@@ -175,7 +175,10 @@ class _TicketPriceList extends StatelessWidget {
           isFree: item.priceChild == 0,
         ),
         const SizedBox(height: AppSpacing.sm),
-        Divider(color: AppColors.earthLight.withOpacity(0.6), thickness: 1),
+        Divider(
+          color: AppColors.earthLight.withValues(alpha: 0.6),
+          thickness: 1,
+        ),
         const SizedBox(height: AppSpacing.sm),
         // ✅ Baru Dewasa
         DetailFeeRow(

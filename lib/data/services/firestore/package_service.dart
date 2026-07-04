@@ -7,7 +7,9 @@ class PackageService {
 
   CollectionReference get _collection => _firestore.collection('packages');
 
-  // GET ALL ACTIVE PACKAGES (Realtime)
+  // ── READ ─────────────────────────────────────────────────────────────────
+
+  /// Hanya paket aktif — untuk halaman user-facing.
   Stream<List<PackageModel>> getActivePackages() {
     return _collection
         .where('isActive', isEqualTo: true)
@@ -20,26 +22,47 @@ class PackageService {
         );
   }
 
-  // GET ALL PACKAGES (Realtime)
+  /// Semua paket termasuk nonaktif — untuk halaman admin.
   Stream<List<PackageModel>> getAllPackages() {
-    return _collection.snapshots().map(
-      (snapshot) =>
-          snapshot.docs.map((doc) => PackageModel.fromFirestore(doc)).toList(),
-    );
+    return _collection
+        .orderBy('name')
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs
+                  .map((doc) => PackageModel.fromFirestore(doc))
+                  .toList(),
+        );
   }
 
-  // GET SINGLE PACKAGE BY ID
   Future<PackageModel?> getById(String id) async {
     final doc = await _collection.doc(id).get();
     if (!doc.exists) return null;
     return PackageModel.fromFirestore(doc);
   }
 
-  // ✅ STREAM SINGLE PACKAGE BY ID (untuk rating realtime)
   Stream<PackageModel?> streamById(String id) {
     return _collection.doc(id).snapshots().map((doc) {
       if (!doc.exists) return null;
       return PackageModel.fromFirestore(doc);
     });
+  }
+
+  // ── WRITE (Admin) ─────────────────────────────────────────────────────────
+
+  /// Buat paket baru. Rating di-init 0.0 via toCreateMap(). Returns new ID.
+  Future<String> createPackage(PackageModel package) async {
+    final ref = await _collection.add(package.toCreateMap());
+    return ref.id;
+  }
+
+  /// Update paket. Rating TIDAK di-update dari sini (dikelola ReviewService).
+  Future<void> updatePackage(String id, PackageModel package) async {
+    await _collection.doc(id).update(package.toUpdateMap());
+  }
+
+  /// Hapus paket. Subcollection `reviews` tidak ikut terhapus di client.
+  Future<void> deletePackage(String id) async {
+    await _collection.doc(id).delete();
   }
 }

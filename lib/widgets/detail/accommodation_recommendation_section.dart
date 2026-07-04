@@ -168,7 +168,9 @@ class _AccommodationRecommendationSectionState
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-              border: Border.all(color: AppColors.earthLight.withOpacity(0.5)),
+              border: Border.all(
+                color: AppColors.earthLight.withValues(alpha: 0.5),
+              ),
             ),
             child: Row(
               children: [
@@ -242,10 +244,10 @@ class _AccommodationRecommendationSectionState
                       vertical: AppSpacing.sm + 2,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.earthLight.withOpacity(0.12),
+                      color: AppColors.earthLight.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                       border: Border.all(
-                        color: AppColors.earth.withOpacity(0.3),
+                        color: AppColors.earth.withValues(alpha: 0.3),
                         width: 1.2,
                       ),
                     ),
@@ -314,12 +316,12 @@ class _AccommodationCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           color: AppColors.surface,
           border: Border.all(
-            color: AppColors.earthLight.withOpacity(0.6),
+            color: AppColors.earthLight.withValues(alpha: 0.6),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadowNeutral.withOpacity(0.08),
+              color: AppColors.shadowNeutral.withValues(alpha: 0.08),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -515,7 +517,7 @@ class _AccommodationCard extends StatelessWidget {
               child: Icon(
                 Icons.chevron_right_rounded,
                 size: 20,
-                color: AppColors.textSecondary.withOpacity(0.5),
+                color: AppColors.textSecondary.withValues(alpha: 0.5),
               ),
             ),
           ],

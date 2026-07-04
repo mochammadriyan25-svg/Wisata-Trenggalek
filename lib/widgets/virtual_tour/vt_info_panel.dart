@@ -66,8 +66,7 @@ class VtInfoPanel extends StatelessWidget {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(
-                        0.40,
+                      color: AppColors.primary.withValues(alpha: 0.40,
                       ), // ← was white 25%
                       borderRadius: BorderRadius.circular(2),
                     ),
@@ -79,7 +78,7 @@ class VtInfoPanel extends StatelessWidget {
                       Icons.close_rounded,
                       color:
                           AppColors
-                              .textSecondary, // ← was Colors.white.withOpacity(0.6)
+                              .textSecondary, // ← was Colors.white.withValues(alpha: 0.6)
                       size: 22,
                     ),
                   ),
@@ -111,7 +110,7 @@ class VtInfoPanel extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(
                         alpha: 0.15,
-                      ), // ← was Colors.white.withOpacity(0.10)
+                      ), // ← was Colors.white.withValues(alpha: 0.10)
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -149,7 +148,7 @@ class VtInfoPanel extends StatelessWidget {
                     size: 12,
                     color:
                         AppColors
-                            .textSecondary, // ← was Colors.white.withOpacity(0.55)
+                            .textSecondary, // ← was Colors.white.withValues(alpha: 0.55)
                   ),
                   const SizedBox(width: AppSpacing.xs),
                   Flexible(
@@ -158,7 +157,7 @@ class VtInfoPanel extends StatelessWidget {
                       style: AppTextStyles.caption.copyWith(
                         color:
                             AppColors
-                                .textSecondary, // ← was Colors.white.withOpacity(0.55)
+                                .textSecondary, // ← was Colors.white.withValues(alpha: 0.55)
                         fontSize: 12,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -176,7 +175,7 @@ class VtInfoPanel extends StatelessWidget {
                 style: AppTextStyles.bodyMedium.copyWith(
                   color:
                       AppColors
-                          .textPrimary, // ← was Colors.white.withOpacity(0.78)
+                          .textPrimary, // ← was Colors.white.withValues(alpha: 0.78)
                   fontSize: 13,
                   height: 1.55,
                 ),
@@ -214,7 +213,7 @@ class VtInfoPanel extends StatelessWidget {
                           style: AppTextStyles.caption.copyWith(
                             color: AppColors.textSecondary.withValues(
                               alpha: 0.90,
-                            ), // ← was Colors.white.withOpacity(0.75)
+                            ), // ← was Colors.white.withValues(alpha: 0.75)
                             fontSize: 12,
                             height: 1.45,
                           ),

@@ -37,7 +37,7 @@ class AccommodationRoomTypeCard extends StatelessWidget {
               isSelected
                   ? [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.12),
+                      color: AppColors.primary.withValues(alpha: 0.12),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     ),
@@ -123,7 +123,9 @@ class AccommodationRoomTypeCard extends StatelessWidget {
                                 vertical: 3,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.textSecondary.withOpacity(0.1),
+                                color: AppColors.textSecondary.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(
                                   AppSpacing.radiusFull,
                                 ),
@@ -147,7 +149,9 @@ class AccommodationRoomTypeCard extends StatelessWidget {
                           Icon(
                             Icons.person_rounded,
                             size: 12,
-                            color: AppColors.textSecondary.withOpacity(0.7),
+                            color: AppColors.textSecondary.withValues(
+                              alpha: 0.7,
+                            ),
                           ),
                           const SizedBox(width: 3),
                           Text(
@@ -191,7 +195,7 @@ class AccommodationRoomTypeCard extends StatelessWidget {
             Divider(
               color:
                   isSelected
-                      ? AppColors.primary.withOpacity(0.2)
+                      ? AppColors.primary.withValues(alpha: 0.2)
                       : AppColors.divider,
               thickness: 1,
               height: 16,

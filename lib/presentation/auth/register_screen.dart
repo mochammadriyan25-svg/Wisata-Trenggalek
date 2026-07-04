@@ -162,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                 vertical: AppSpacing.xs + 1,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.9),
+                                color: AppColors.primary.withValues(alpha: 0.9),
                                 borderRadius: BorderRadius.circular(
                                   AppSpacing.radiusFull,
                                 ),
@@ -196,7 +196,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                             child: Text(
                               "Bergabung · Jelajahi · Rasakan",
                               style: AppTextStyles.overline.copyWith(
-                                color: AppColors.textOnDark.withOpacity(0.85),
+                                color: AppColors.textOnDark.withValues(
+                                  alpha: 0.85,
+                                ),
                                 letterSpacing: 2.0,
                               ),
                             ),
@@ -411,7 +413,7 @@ class _RegisterHeader extends StatelessWidget {
                 border: Border.all(color: AppColors.divider, width: 1.2),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.shadowNeutral.withOpacity(0.08),
+                    color: AppColors.shadowNeutral.withValues(alpha: 0.08),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),

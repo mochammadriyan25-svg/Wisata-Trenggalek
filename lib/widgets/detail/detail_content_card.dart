@@ -4,6 +4,7 @@ import 'package:aplikasi_wisata/core/theme/app_colors.dart';
 import 'package:aplikasi_wisata/core/theme/app_text_styles.dart';
 import 'package:aplikasi_wisata/core/theme/app_spacing.dart';
 import 'package:aplikasi_wisata/data/models/destination_model.dart';
+import 'package:aplikasi_wisata/data/models/place_model.dart';
 import 'package:aplikasi_wisata/widgets/detail/detail_section_label.dart';
 import 'package:aplikasi_wisata/widgets/detail/detail_map_section.dart';
 import 'package:aplikasi_wisata/widgets/detail/detail_entrance_fee_card.dart';
@@ -11,7 +12,9 @@ import 'package:aplikasi_wisata/widgets/detail/detail_action_buttons.dart';
 import 'package:aplikasi_wisata/widgets/review/review_section.dart';
 import 'package:aplikasi_wisata/widgets/detail/detail_recommendation_section.dart';
 import 'package:aplikasi_wisata/widgets/detail/accommodation_recommendation_section.dart';
+import 'package:aplikasi_wisata/widgets/detail/worship_recommendation_section.dart';
 import 'package:aplikasi_wisata/data/services/firestore/review_service.dart';
+import 'package:aplikasi_wisata/presentation/pages/place_detail_page.dart';
 
 class DetailContentCard extends StatelessWidget {
   final DestinationModel item;
@@ -28,6 +31,13 @@ class DetailContentCard extends StatelessWidget {
     required this.onOpenUrl,
     required this.onFavorite,
   });
+
+  void _navigateToPlace(BuildContext context, PlaceModel place) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => PlaceDetailPage(place: place)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +71,7 @@ class DetailContentCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const DetailSectionLabel(label: "Tentang Destinasi"),
+                const DetailSectionLabel(label: 'Tentang Destinasi'),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   item.description,
@@ -78,23 +88,51 @@ class DetailContentCard extends StatelessWidget {
                 const SizedBox(height: AppSpacing.lg),
                 Divider(color: AppColors.divider, thickness: 1),
                 const SizedBox(height: AppSpacing.lg),
+
+                // Ulasan
                 ReviewSection(
                   target: ReviewTarget.destination,
                   targetId: item.id,
                 ),
+
                 Divider(color: AppColors.divider, thickness: 1),
                 const SizedBox(height: AppSpacing.lg),
+
+                // Destinasi terdekat ≤5km
                 RecommendationSection(
                   currentDestinationId: item.id,
                   currentLatitude: item.latitude,
                   currentLongitude: item.longitude,
                 ),
+
                 Divider(color: AppColors.divider, thickness: 1),
                 const SizedBox(height: AppSpacing.lg),
+
+                // Akomodasi terdekat ≤5km
                 AccommodationRecommendationSection(
                   currentLatitude: item.latitude,
                   currentLongitude: item.longitude,
                 ),
+
+                // [NEW] Tempat ibadah — semua, sort jarak
+                Divider(color: AppColors.divider, thickness: 1),
+                const SizedBox(height: AppSpacing.lg),
+                WorshipRecommendationSection(
+                  currentLatitude: item.latitude,
+                  currentLongitude: item.longitude,
+                  onPlaceTap: (place) => _navigateToPlace(context, place),
+                ),
+
+                // [NEW] Fasilitas kesehatan — semua, sort jarak
+                const SizedBox(height: AppSpacing.lg),
+                Divider(color: AppColors.divider, thickness: 1),
+                const SizedBox(height: AppSpacing.lg),
+                HealthRecommendationSection(
+                  currentLatitude: item.latitude,
+                  currentLongitude: item.longitude,
+                  onPlaceTap: (place) => _navigateToPlace(context, place),
+                ),
+
                 const SizedBox(height: AppSpacing.xl),
                 DetailActionButtons(
                   isFavorite: isFavorite,

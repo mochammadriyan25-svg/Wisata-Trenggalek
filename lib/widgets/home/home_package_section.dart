@@ -151,12 +151,12 @@ class _PackageCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           border: Border.all(
-            color: AppColors.divider.withOpacity(0.7),
+            color: AppColors.divider.withValues(alpha: 0.7),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadowNeutral.withOpacity(0.08),
+              color: AppColors.shadowNeutral.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),

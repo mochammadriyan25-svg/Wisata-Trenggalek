@@ -35,8 +35,8 @@ class VtDestinationHeader extends StatelessWidget {
               stops: const [0.0, 0.55, 1.0],
               colors: [
                 // Gradient header — nilai spesifik efek visual, dibiarkan inline
-                Colors.black.withOpacity(0.70),
-                Colors.black.withOpacity(0.38),
+                Colors.black.withValues(alpha: 0.70),
+                Colors.black.withValues(alpha: 0.38),
                 Colors.transparent,
               ],
             ),
@@ -78,7 +78,7 @@ class VtDestinationHeader extends StatelessWidget {
                           size: w * 0.031,
                           color:
                               AppColors
-                                  .vtTextSubtle, // ← was Colors.white.withOpacity(0.65)
+                                  .vtTextSubtle, // ← was Colors.white.withValues(alpha: 0.65)
                         ),
                         const SizedBox(width: 3),
                         Flexible(
@@ -87,7 +87,7 @@ class VtDestinationHeader extends StatelessWidget {
                             style: AppTextStyles.caption.copyWith(
                               color:
                                   AppColors
-                                      .vtTextSubtle, // ← was Colors.white.withOpacity(0.65)
+                                      .vtTextSubtle, // ← was Colors.white.withValues(alpha: 0.65)
                               fontSize: w * 0.029,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -108,7 +108,7 @@ class VtDestinationHeader extends StatelessWidget {
                     Text(
                       'WISATA',
                       style: AppTextStyles.caption.copyWith(
-                        color: Colors.white.withOpacity(0.50),
+                        color: Colors.white.withValues(alpha: 0.50),
                         fontSize: w * 0.022,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1.8,
@@ -117,7 +117,7 @@ class VtDestinationHeader extends StatelessWidget {
                     Text(
                       'TRENGGALEK',
                       style: AppTextStyles.caption.copyWith(
-                        color: Colors.white.withOpacity(0.50),
+                        color: Colors.white.withValues(alpha: 0.50),
                         fontSize: w * 0.022,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1.8,
@@ -149,9 +149,12 @@ class _VtBadge extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         // 0.18 dan 0.35 dibiarkan inline — efek glass badge spesifik widget ini
-        color: Colors.white.withOpacity(0.18),
+        color: Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.35), width: 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.35),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

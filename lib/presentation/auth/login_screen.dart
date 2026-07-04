@@ -139,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen>
                       color: AppColors.surface,
                       borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                       border: Border.all(
-                        color: AppColors.divider.withOpacity(0.7),
+                        color: AppColors.divider.withValues(alpha: 0.7),
                         width: 1,
                       ),
                       boxShadow: const [
@@ -222,7 +222,7 @@ class _LoginHeader extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.3),
+                      color: AppColors.primary.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -301,7 +301,7 @@ class _HeroImage extends StatelessWidget {
                   vertical: AppSpacing.xs + 1,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.accent.withOpacity(0.92),
+                  color: AppColors.accent.withValues(alpha: 0.92),
                   borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
                 ),
                 child: Row(
@@ -333,7 +333,7 @@ class _HeroImage extends StatelessWidget {
               child: Text(
                 "JELAJAHI · TEMUKAN · KAGUMKAN",
                 style: AppTextStyles.overline.copyWith(
-                  color: AppColors.textOnDark.withOpacity(0.85),
+                  color: AppColors.textOnDark.withValues(alpha: 0.85),
                   letterSpacing: 2.0,
                 ),
               ),
@@ -540,7 +540,10 @@ class _LoginFooter extends StatelessWidget {
           bottom: Radius.circular(AppSpacing.radiusLg),
         ),
         border: Border(
-          top: BorderSide(color: AppColors.divider.withOpacity(0.5), width: 1),
+          top: BorderSide(
+            color: AppColors.divider.withValues(alpha: 0.5),
+            width: 1,
+          ),
         ),
       ),
       child: Row(

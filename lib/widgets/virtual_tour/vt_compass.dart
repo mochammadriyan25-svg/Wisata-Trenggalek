@@ -36,86 +36,90 @@ class VtCompass extends StatelessWidget {
       width: 58,
       height: 58,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.55),
+        color: Colors.black.withValues(alpha: 0.55),
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white.withOpacity(0.30), width: 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.30),
+          width: 1,
+        ),
       ),
-      child: Stack(alignment: Alignment.center, children: [
-        // ── Lingkaran skala kompas (dekoratif)
-        Positioned.fill(
-          child: CustomPaint(painter: _CompassScalePainter()),
-        ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // ── Lingkaran skala kompas (dekoratif)
+          Positioned.fill(child: CustomPaint(painter: _CompassScalePainter())),
 
-        // ── Jarum kompas (berputar berlawanan heading)
-        Transform.rotate(
-          angle: -heading * math.pi / 180,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Ujung utara (merah)
-              Container(
-                width: 3,
-                height: 14,
-                decoration: BoxDecoration(
-                  color: Colors.red.shade400,
-                  borderRadius: BorderRadius.circular(2),
+          // ── Jarum kompas (berputar berlawanan heading)
+          Transform.rotate(
+            angle: -heading * math.pi / 180,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Ujung utara (merah)
+                Container(
+                  width: 3,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade400,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
-              Container(
-                width: 4,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.white.withOpacity(0.5),
-                      blurRadius: 4,
-                    ),
-                  ],
+                Container(
+                  width: 4,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // Ujung selatan (putih)
-              Container(
-                width: 3,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.6),
-                  borderRadius: BorderRadius.circular(2),
+                // Ujung selatan (putih)
+                Container(
+                  width: 3,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
-
-        // ── Derajat heading (pojok bawah dalam circle)
-        Positioned(
-          bottom: 8,
-          child: Text(
-            '${heading.round()}°',
-            style: AppTextStyles.caption.copyWith(
-              color: Colors.white.withOpacity(0.70),
-              fontSize: 9,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.3,
+              ],
             ),
           ),
-        ),
 
-        // ── Label arah mata angin
-        Positioned(
-          top: 7,
-          child: Text(
-            _cardinalLabel,
-            style: AppTextStyles.caption.copyWith(
-              color: Colors.white,
-              fontSize: 9,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 0.5,
+          // ── Derajat heading (pojok bawah dalam circle)
+          Positioned(
+            bottom: 8,
+            child: Text(
+              '${heading.round()}°',
+              style: AppTextStyles.caption.copyWith(
+                color: Colors.white.withValues(alpha: 0.70),
+                fontSize: 9,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.3,
+              ),
             ),
           ),
-        ),
-      ]),
+
+          // ── Label arah mata angin
+          Positioned(
+            top: 7,
+            child: Text(
+              _cardinalLabel,
+              style: AppTextStyles.caption.copyWith(
+                color: Colors.white,
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -126,10 +130,11 @@ class _CompassScalePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2 - 3;
-    final paint = Paint()
-      ..color = Colors.white.withOpacity(0.20)
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
+    final paint =
+        Paint()
+          ..color = Colors.white.withValues(alpha: 0.20)
+          ..strokeWidth = 1
+          ..style = PaintingStyle.stroke;
 
     // Gambar 8 tick mark di sekeliling lingkaran
     for (int i = 0; i < 8; i++) {

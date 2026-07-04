@@ -1,3 +1,4 @@
+//lib/widgets/detail/detail_back_button.dart
 import 'package:flutter/material.dart';
 import 'package:aplikasi_wisata/core/theme/app_colors.dart';
 
@@ -8,8 +9,8 @@ class DetailGlassBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double solidRatio = (scrollOffset / 60).clamp(0.0, 1.0);
-    final Color bgGlass = Colors.white.withOpacity(0.18);
-    final Color bgSolid = AppColors.surface.withOpacity(0.96);
+    final Color bgGlass = Colors.white.withValues(alpha: 0.18);
+    final Color bgSolid = AppColors.surface.withValues(alpha: 0.96);
     final Color iconGlass = Colors.white;
     final Color iconSolid = AppColors.textPrimary;
 
@@ -25,7 +26,7 @@ class DetailGlassBackButton extends StatelessWidget {
           border: Border.all(
             color:
                 Color.lerp(
-                  Colors.white.withOpacity(0.28),
+                  Colors.white.withValues(alpha: 0.28),
                   AppColors.divider,
                   solidRatio,
                 )!,
@@ -35,8 +36,7 @@ class DetailGlassBackButton extends StatelessWidget {
               solidRatio > 0.5
                   ? [
                     BoxShadow(
-                      color: AppColors.shadowDeep.withOpacity(
-                        0.12 * solidRatio,
+                      color: AppColors.shadowDeep.withValues(alpha: 0.12 * solidRatio,
                       ),
                       blurRadius: 10,
                       offset: const Offset(0, 3),

@@ -85,8 +85,7 @@ class AccommodationMapSection extends StatelessWidget {
               ),
               children: [
                 TileLayer(
-                  urlTemplate:
-                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.aplikasi_wisata.app',
                 ),
                 MarkerLayer(
@@ -101,7 +100,7 @@ class AccommodationMapSection extends StatelessWidget {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withOpacity(0.4),
+                              color: AppColors.primary.withValues(alpha: 0.4),
                               blurRadius: 10,
                               offset: const Offset(0, 3),
                             ),

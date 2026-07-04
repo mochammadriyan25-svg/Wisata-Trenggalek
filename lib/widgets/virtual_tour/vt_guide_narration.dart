@@ -34,11 +34,13 @@ class VtGuideNarration extends StatelessWidget {
         key: ValueKey(currentIndex),
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: AppColors.primaryDark, // ← was Colors.black.withOpacity(0.62)
+          color:
+              AppColors
+                  .primaryDark, // ← was Colors.black.withValues(alpha: 0.62)
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd), // ← was 16
           border: Border.all(
             color: AppColors.vtGlassBorder,
-          ), // ← was Colors.white.withOpacity(0.15)
+          ), // ← was Colors.white.withValues(alpha: 0.15)
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,8 +63,7 @@ class VtGuideNarration extends StatelessWidget {
                           i == currentIndex
                               ? AppColors
                                   .textOnDark // ← was Colors.white
-                              : Colors.white.withOpacity(
-                                0.30,
+                              : Colors.white.withValues(alpha: 0.30,
                               ), // dibiarkan inline — 6px dot
                       borderRadius: BorderRadius.circular(3),
                     ),
@@ -74,7 +75,7 @@ class VtGuideNarration extends StatelessWidget {
                   style: AppTextStyles.caption.copyWith(
                     color:
                         AppColors
-                            .vtTextMuted, // ← was Colors.white.withOpacity(0.55)
+                            .vtTextMuted, // ← was Colors.white.withValues(alpha: 0.55)
                     fontSize: 11,
                   ),
                 ),
@@ -99,7 +100,7 @@ class VtGuideNarration extends StatelessWidget {
               style: AppTextStyles.caption.copyWith(
                 color:
                     AppColors
-                        .vtTextStrong, // ← was Colors.white.withOpacity(0.82)
+                        .vtTextStrong, // ← was Colors.white.withValues(alpha: 0.82)
                 fontSize: 12,
                 height: 1.55,
               ),

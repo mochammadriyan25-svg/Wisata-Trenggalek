@@ -84,7 +84,7 @@ class _SectionHeader extends StatelessWidget {
               color: AppColors.primarySurface,
               borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
               border: Border.all(
-                color: AppColors.primary.withOpacity(0.2),
+                color: AppColors.primary.withValues(alpha: 0.2),
                 width: 1,
               ),
             ),
@@ -148,7 +148,7 @@ class _FallbackPriceCard extends StatelessWidget {
         color: AppColors.primarySurface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         border: Border.all(
-          color: AppColors.primary.withOpacity(0.2),
+          color: AppColors.primary.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -186,9 +186,8 @@ class _FallbackPriceCard extends StatelessWidget {
                 Text(
                   item.formattedStartingPrice,
                   style: AppTextStyles.headlineSmall.copyWith(
-                    color: item.isFree
-                        ? Colors.green.shade700
-                        : AppColors.primary,
+                    color:
+                        item.isFree ? Colors.green.shade700 : AppColors.primary,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -197,7 +196,7 @@ class _FallbackPriceCard extends StatelessWidget {
                 Text(
                   'Informasi tipe kamar belum tersedia',
                   style: AppTextStyles.caption.copyWith(
-                    color: AppColors.textSecondary.withOpacity(0.6),
+                    color: AppColors.textSecondary.withValues(alpha: 0.6),
                     fontSize: 10,
                   ),
                 ),

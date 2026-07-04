@@ -82,10 +82,13 @@ class _DetailPageState extends State<DetailPage> {
     setState(() => _isTogglingFavorite = true);
 
     try {
+      // [CHANGED] Tambah userName agar log admin bisa menampilkan
+      // nama pengguna yang menghapus favorit.
       await context.read<FavoriteProvider>().toggleFavorite(
         userId,
         widget.destination.id,
         FavoriteItemType.destination,
+        userName: context.read<AuthProvider>().user?.name ?? '',
       );
 
       if (mounted) {
@@ -169,17 +172,11 @@ class _DetailPageState extends State<DetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // ── Hero
                 DetailHeroSection(
                   item: item,
                   onOpenUrl: _openUrl,
                   scrollOffset: _scrollOffset,
                 ),
-
-                // ✅ Transform.translate: hanya menggeser visual -22px ke atas
-                // Layout tetap dihitung dari posisi asli (bawah hero)
-                // sehingga scroll tetap bisa berjalan normal
-                // Gap 22px di bawah tidak terlihat karena tertutup background
                 Transform.translate(
                   offset: const Offset(0, -22),
                   child: DetailContentCard(
@@ -195,9 +192,6 @@ class _DetailPageState extends State<DetailPage> {
                         ),
                   ),
                 ),
-
-                // ✅ Padding bawah dikurangi 22 karena Transform menggeser
-                // card ke atas — total scroll height tetap benar
                 SizedBox(
                   height: (bottomPadding + AppSpacing.md - 22).clamp(
                     0.0,
@@ -207,8 +201,6 @@ class _DetailPageState extends State<DetailPage> {
               ],
             ),
           ),
-
-          // ── Back button overlay
           Positioned(
             top: MediaQuery.of(context).padding.top + AppSpacing.sm,
             left: AppSpacing.md,

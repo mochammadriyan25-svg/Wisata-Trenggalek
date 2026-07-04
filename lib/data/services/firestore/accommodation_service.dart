@@ -1,4 +1,4 @@
-// lib/data/services/firestore/accommodation_service.dart.
+// lib/data/services/firestore/accommodation_service.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:aplikasi_wisata/data/models/accommodation_model.dart';
 
@@ -8,7 +8,8 @@ class AccommodationService {
   CollectionReference get _collection =>
       _firestore.collection('accommodations');
 
-  // ── GET ALL ACCOMMODATIONS (Realtime) ─────────────────────────────────────
+  // ── READ ─────────────────────────────────────────────────────────────────
+
   Stream<List<AccommodationModel>> getAllAccommodations() {
     return _collection
         .orderBy('name')
@@ -21,9 +22,6 @@ class AccommodationService {
         );
   }
 
-  // ── GET RECOMMENDED ACCOMMODATIONS ───────────────────────────────────────
-  /// Catatan: butuh composite index di Firestore untuk
-  /// isRecommended + rating
   Stream<List<AccommodationModel>> getRecommendedAccommodations() {
     return _collection
         .where('isRecommended', isEqualTo: true)
@@ -38,7 +36,6 @@ class AccommodationService {
         );
   }
 
-  // ── GET ACCOMMODATIONS BY CATEGORY ───────────────────────────────────────
   Stream<List<AccommodationModel>> getByCategory(String categoryId) {
     return _collection
         .where('categoryId', isEqualTo: categoryId)
@@ -52,9 +49,6 @@ class AccommodationService {
         );
   }
 
-  // ── SEARCH BY NAME ────────────────────────────────────────────────────────
-  /// Firestore prefix search — case sensitive
-  /// Untuk case-insensitive, pertimbangkan Algolia/Typesense
   Stream<List<AccommodationModel>> searchByName(String keyword) {
     final lower = keyword.toLowerCase();
     return _collection
@@ -69,19 +63,38 @@ class AccommodationService {
         );
   }
 
-  // ── GET SINGLE BY ID (Future) ─────────────────────────────────────────────
   Future<AccommodationModel?> getById(String id) async {
     final doc = await _collection.doc(id).get();
     if (!doc.exists) return null;
     return AccommodationModel.fromFirestore(doc);
   }
 
-  // ── STREAM SINGLE BY ID (Realtime) ────────────────────────────────────────
-  /// Digunakan agar data di detail page update otomatis
   Stream<AccommodationModel?> streamById(String id) {
     return _collection.doc(id).snapshots().map((doc) {
       if (!doc.exists) return null;
       return AccommodationModel.fromFirestore(doc);
     });
+  }
+
+  // ── WRITE (Admin) ─────────────────────────────────────────────────────────
+
+  /// Buat akomodasi baru. Returns the new document ID.
+  Future<String> createAccommodation(AccommodationModel accommodation) async {
+    final ref = await _collection.add(accommodation.toCreateMap());
+    return ref.id;
+  }
+
+  /// Update akomodasi yang sudah ada.
+  Future<void> updateAccommodation(
+    String id,
+    AccommodationModel accommodation,
+  ) async {
+    await _collection.doc(id).update(accommodation.toUpdateMap());
+  }
+
+  /// Hapus akomodasi. Subcollection `reviews` tidak ikut terhapus secara
+  /// otomatis di client — di produksi gunakan Cloud Function untuk cleanup.
+  Future<void> deleteAccommodation(String id) async {
+    await _collection.doc(id).delete();
   }
 }

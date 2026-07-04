@@ -46,6 +46,18 @@ class CategoryProvider extends ChangeNotifier {
   List<CategoryModel> get accommodationCategories =>
       _categories.where((c) => c.isAccommodationCategory).toList();
 
+  /// ✅ Kategori tempat ibadah
+  List<CategoryModel> get placeWorshipCategories =>
+      _categories.where((c) => c.isPlaceWorshipCategory).toList();
+
+  /// ✅ Kategori fasilitas kesehatan
+  List<CategoryModel> get placeHealthCategories =>
+      _categories.where((c) => c.isPlaceHealthCategory).toList();
+
+  /// ✅ Semua kategori tempat (ibadah + kesehatan)
+  List<CategoryModel> get placeCategories =>
+      _categories.where((c) => c.isPlaceCategory).toList();
+
   // ── STREAM LISTENER ───────────────────────────────────────────────────────
   void _listenCategories() {
     _setLoading(true);

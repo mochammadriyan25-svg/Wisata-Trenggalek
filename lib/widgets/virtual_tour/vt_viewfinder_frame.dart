@@ -61,7 +61,7 @@ class _BracketPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint =
         Paint()
-          ..color = Colors.white.withOpacity(opacity)
+          ..color = Colors.white.withValues(alpha: opacity)
           ..strokeWidth = 2.0
           ..style = PaintingStyle.stroke
           ..strokeCap = StrokeCap.round;
@@ -125,4 +125,3 @@ class _BracketPainter extends CustomPainter {
   @override
   bool shouldRepaint(_BracketPainter old) => old.opacity != opacity;
 }
-  

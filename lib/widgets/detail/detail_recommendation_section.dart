@@ -166,7 +166,9 @@ class _RecommendationSectionState extends State<RecommendationSection> {
             decoration: BoxDecoration(
               color: AppColors.primarySurface,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-              border: Border.all(color: AppColors.divider.withOpacity(0.5)),
+              border: Border.all(
+                color: AppColors.divider.withValues(alpha: 0.5),
+              ),
             ),
             child: Row(
               children: [
@@ -243,7 +245,7 @@ class _RecommendationSectionState extends State<RecommendationSection> {
                       color: AppColors.primarySurface,
                       borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                       border: Border.all(
-                        color: AppColors.primary.withOpacity(0.3),
+                        color: AppColors.primary.withValues(alpha: 0.3),
                         width: 1.2,
                       ),
                     ),
@@ -308,12 +310,12 @@ class _RecommendationCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           color: AppColors.surface,
           border: Border.all(
-            color: AppColors.primary.withOpacity(0.35),
+            color: AppColors.primary.withValues(alpha: 0.35),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadowNeutral.withOpacity(0.08),
+              color: AppColors.shadowNeutral.withValues(alpha: 0.08),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -495,7 +497,7 @@ class _RecommendationCard extends StatelessWidget {
               child: Icon(
                 Icons.chevron_right_rounded,
                 size: 20,
-                color: AppColors.textSecondary.withOpacity(0.5),
+                color: AppColors.textSecondary.withValues(alpha: 0.5),
               ),
             ),
           ],

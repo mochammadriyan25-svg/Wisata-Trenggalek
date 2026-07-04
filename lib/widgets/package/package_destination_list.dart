@@ -85,7 +85,7 @@ class _DestinationItem extends StatelessWidget {
           color: AppColors.background,
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           border: Border.all(
-            color: AppColors.divider.withOpacity(0.7),
+            color: AppColors.divider.withValues(alpha: 0.7),
             width: 1,
           ),
         ),

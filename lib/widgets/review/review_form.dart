@@ -118,7 +118,7 @@ class _ReviewFormState extends State<ReviewForm> {
         color: AppColors.primarySurface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         border: Border.all(
-          color: AppColors.primary.withOpacity(0.15),
+          color: AppColors.primary.withValues(alpha: 0.15),
           width: 1,
         ),
       ),
@@ -281,14 +281,17 @@ class _ReviewFormState extends State<ReviewForm> {
           child: DecoratedBox(
             decoration: BoxDecoration(
               gradient: isLoading ? null : AppColors.primaryGradient,
-              color: isLoading ? AppColors.primaryLight.withOpacity(0.3) : null,
+              color:
+                  isLoading
+                      ? AppColors.primaryLight.withValues(alpha: 0.3)
+                      : null,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               boxShadow:
                   isLoading
                       ? []
                       : [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.3),
+                          color: AppColors.primary.withValues(alpha: 0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),

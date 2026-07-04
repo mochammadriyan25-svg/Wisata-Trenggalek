@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/utils/auth_guard.dart';
@@ -84,10 +83,12 @@ class _AccommodationDetailPageState extends State<AccommodationDetailPage> {
     setState(() => _isTogglingFavorite = true);
 
     try {
+      // [CHANGED] Tambah userName agar log admin mencatat nama pengguna.
       await context.read<FavoriteProvider>().toggleFavorite(
         userId,
         widget.accommodation.id,
         FavoriteItemType.accommodation,
+        userName: context.read<AuthProvider>().user?.name ?? '',
       );
 
       if (mounted) {
@@ -154,10 +155,6 @@ class _AccommodationDetailPageState extends State<AccommodationDetailPage> {
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          // ── Scrollable content
-          // ScrollConfiguration dengan _VerticalOnlyScrollBehavior memastikan
-          // SingleChildScrollView hanya merespons gesture vertikal,
-          // sehingga swipe horizontal di hero tidak dikonsumsi parent.
           ScrollConfiguration(
             behavior: _VerticalOnlyScrollBehavior(),
             child: SingleChildScrollView(
@@ -186,8 +183,6 @@ class _AccommodationDetailPageState extends State<AccommodationDetailPage> {
               ),
             ),
           ),
-
-          // ── Floating back button
           Positioned(
             top: MediaQuery.of(context).padding.top + AppSpacing.sm,
             left: AppSpacing.md,
@@ -198,10 +193,6 @@ class _AccommodationDetailPageState extends State<AccommodationDetailPage> {
     );
   }
 }
-
-// ── Vertical Only Scroll Behavior ──────────────────────────────────────────
-// Membatasi SingleChildScrollView hanya pada axis vertikal,
-// sehingga gesture horizontal bisa diteruskan ke PageView di dalam hero.
 
 class _VerticalOnlyScrollBehavior extends ScrollBehavior {
   @override

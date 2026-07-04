@@ -7,41 +7,36 @@ class UserService {
 
   CollectionReference get _collection => _firestore.collection('users');
 
-  // ── CREATE (first time login) ──────────────────
+  // ── CREATE ─────────────────────────────────────────────────────────────────
   Future<void> createUser(UserModel user) async {
     await _collection.doc(user.id).set(user.toMap());
   }
 
-  // ── SAVE / UPDATE PARTIAL DATA ─────────────────
-  // Dipakai saat register email/password & login sosial
   Future<void> saveUserData({
     required String userId,
     required String name,
     required String phone,
     required String email,
-    String? photoUrl, // ← TAMBAH
+    String? photoUrl,
   }) async {
     final data = <String, dynamic>{
       'name': name,
       'phone': phone,
       'email': email,
     };
-
     if (photoUrl != null && photoUrl.isNotEmpty) {
       data['photoUrl'] = photoUrl;
     }
-
     await _collection.doc(userId).set(data, SetOptions(merge: true));
   }
 
-  // ── GET (one-time fetch) ───────────────────────
+  // ── READ ───────────────────────────────────────────────────────────────────
   Future<UserModel?> getUser(String userId) async {
     final doc = await _collection.doc(userId).get();
     if (!doc.exists) return null;
     return UserModel.fromFirestore(doc);
   }
 
-  // ── STREAM (realtime) ──────────────────────────
   Stream<UserModel?> streamUser(String userId) {
     return _collection.doc(userId).snapshots().map((doc) {
       if (!doc.exists) return null;
@@ -49,12 +44,24 @@ class UserService {
     });
   }
 
-  // ── UPDATE PARTIAL ─────────────────────────────
+  /// Ambil semua user — hanya bisa dipanggil jika Firestore rules
+  /// mengizinkan admin (lihat isAdmin() function di firestore.rules).
+  Stream<List<UserModel>> getAllUsers() {
+    return _collection
+        .orderBy('name')
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => UserModel.fromFirestore(doc)).toList(),
+        );
+  }
+
+  // ── UPDATE ─────────────────────────────────────────────────────────────────
   Future<void> updateUser(String userId, Map<String, dynamic> data) async {
     await _collection.doc(userId).update(data);
   }
 
-  // ── DELETE ─────────────────────────────────────
+  // ── DELETE ─────────────────────────────────────────────────────────────────
   Future<void> deleteUser(String userId) async {
     await _collection.doc(userId).delete();
   }

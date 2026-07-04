@@ -5,9 +5,16 @@ class CategoryType {
   static const String package = 'package';
   static const String destination = 'destination';
   static const String accommodation = 'accommodation';
+  static const String placeWorship = 'place_worship'; // ✅ NEW
+  static const String placeHealth = 'place_health'; // ✅ NEW
 
-  // ✅ Semua valid types untuk validasi
-  static const List<String> values = [package, destination, accommodation];
+  static const List<String> values = [
+    package,
+    destination,
+    accommodation,
+    placeWorship,
+    placeHealth,
+  ];
 }
 
 class CategoryModel {
@@ -31,16 +38,23 @@ class CategoryModel {
   bool get isPackageCategory => type == CategoryType.package;
   bool get isDestinationCategory => type == CategoryType.destination;
   bool get isAccommodationCategory => type == CategoryType.accommodation;
+  bool get isPlaceWorshipCategory => type == CategoryType.placeWorship; // ✅ NEW
+  bool get isPlaceHealthCategory => type == CategoryType.placeHealth; // ✅ NEW
+  bool get isPlaceCategory =>
+      isPlaceWorshipCategory || isPlaceHealthCategory; // ✅ Helper
 
-  // ✅ Fix: collectionName sekarang benar untuk semua type
+  // ✅ collectionName untuk semua type
   String get collectionName {
     switch (type) {
       case CategoryType.package:
         return 'packages';
       case CategoryType.accommodation:
-        return 'accommodations'; // ✅ fix dari 'destinations'
+        return 'accommodations';
       case CategoryType.destination:
         return 'destinations';
+      case CategoryType.placeWorship:
+      case CategoryType.placeHealth:
+        return 'places';
       default:
         return 'destinations';
     }
@@ -51,7 +65,6 @@ class CategoryModel {
     final data = doc.data() as Map<String, dynamic>;
     final type = data['type'] ?? CategoryType.destination;
 
-    // ✅ Validasi type agar tidak silent fail
     assert(CategoryType.values.contains(type), 'Unknown category type: $type');
 
     return CategoryModel(

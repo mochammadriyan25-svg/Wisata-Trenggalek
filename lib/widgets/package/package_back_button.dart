@@ -19,10 +19,14 @@ class PackageBackButton extends StatelessWidget {
     final double t = ((scrollOffset - 20) / 60).clamp(0.0, 1.0);
 
     final Color bgColor =
-        Color.lerp(Colors.white.withOpacity(0.18), AppColors.surface, t)!;
+        Color.lerp(Colors.white.withValues(alpha: 0.18), AppColors.surface, t)!;
 
     final Color borderColor =
-        Color.lerp(Colors.white.withOpacity(0.35), Colors.transparent, t)!;
+        Color.lerp(
+          Colors.white.withValues(alpha: 0.35),
+          Colors.transparent,
+          t,
+        )!;
 
     final Color iconColor = Color.lerp(Colors.white, AppColors.textPrimary, t)!;
 
@@ -39,7 +43,7 @@ class PackageBackButton extends StatelessWidget {
           border: Border.all(color: borderColor, width: 1),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadowDeep.withOpacity(shadowOpacity),
+              color: AppColors.shadowDeep.withValues(alpha: shadowOpacity),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),

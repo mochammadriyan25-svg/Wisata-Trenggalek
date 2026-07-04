@@ -1,12 +1,13 @@
 // lib/presentation/pages/profil_page.dart
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:io';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
-import '../../core/theme/app_spacing.dart';
+import 'package:aplikasi_wisata/core/theme/app_colors.dart';
+import 'package:aplikasi_wisata/core/theme/app_text_styles.dart';
+import 'package:aplikasi_wisata/core/theme/app_spacing.dart';
+import 'package:aplikasi_wisata/data/services/cloudinary/cloudinary_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -18,9 +19,13 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
-
-  File? imageFile;
   final firestore = FirebaseFirestore.instance;
+
+  // Foto profil — URL dari Firestore (persistent) atau local preview saat upload
+  String _photoUrl = '';
+  File?
+  _localImageFile; // hanya untuk preview sementara saat upload berlangsung
+  bool _isUploadingPhoto = false;
 
   @override
   void initState() {
@@ -47,6 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           nameController.text = data?['name'] ?? '';
           phoneController.text = data?['phone'] ?? '';
+          _photoUrl = data?['photoUrl'] ?? '';
         });
       }
     } catch (e) {
@@ -64,12 +70,149 @@ class _ProfilePageState extends State<ProfilePage> {
     }, SetOptions(merge: true));
   }
 
-  Future<void> pickImage() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (picked != null && mounted) {
-      setState(() => imageFile = File(picked.path));
+  // ── FOTO PROFIL ───────────────────────────────────────────────────────────
+
+  /// Tampilkan bottom sheet pilihan sumber foto.
+  void _showPhotoPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSpacing.radiusLg),
+        ),
+      ),
+      builder:
+          (_) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.md,
+                    AppSpacing.md,
+                    AppSpacing.md,
+                    AppSpacing.xs,
+                  ),
+                  child: Text(
+                    'Ganti Foto Profil',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySurface,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    ),
+                    child: const Icon(
+                      Icons.photo_camera_rounded,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text('Ambil dari Kamera'),
+                  subtitle: const Text('Foto langsung menggunakan kamera'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickAndUpload(ImageSource.camera);
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySurface,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    ),
+                    child: const Icon(
+                      Icons.photo_library_rounded,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text('Pilih dari Galeri'),
+                  subtitle: const Text('Pilih foto yang sudah ada'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickAndUpload(ImageSource.gallery);
+                  },
+                ),
+                const SizedBox(height: AppSpacing.sm),
+              ],
+            ),
+          ),
+    );
+  }
+
+  /// Pick foto → upload ke Cloudinary → simpan URL ke Firestore.
+  Future<void> _pickAndUpload(ImageSource source) async {
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 85,
+    );
+    if (picked == null || !mounted) return;
+
+    final file = File(picked.path);
+    setState(() {
+      _localImageFile = file; // tampil preview lokal saat upload
+      _isUploadingPhoto = true;
+    });
+
+    try {
+      final url = await CloudinaryService.instance.uploadImage(file);
+      if (!mounted) return;
+
+      // Simpan URL ke Firestore
+      final user = _currentUser;
+      if (user != null) {
+        await firestore.collection('users').doc(user.uid).set({
+          'photoUrl': url,
+        }, SetOptions(merge: true));
+      }
+
+      if (mounted) {
+        setState(() {
+          _photoUrl = url;
+          _localImageFile = null; // beralih ke network URL
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Foto profil berhasil diperbarui'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _localImageFile = null);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal upload foto: $e'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isUploadingPhoto = false);
     }
   }
+
+  /// Image provider untuk avatar: local preview > network URL > placeholder.
+  ImageProvider get _avatarImage {
+    if (_localImageFile != null) return FileImage(_localImageFile!);
+    if (_photoUrl.isNotEmpty) return NetworkImage(_photoUrl);
+    return const NetworkImage('https://i.pravatar.cc/150');
+  }
+
+  // ── EDIT FIELD ────────────────────────────────────────────────────────────
 
   void editField(String title, TextEditingController controller) {
     showDialog(
@@ -142,7 +285,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.3),
+                      color: AppColors.primary.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -181,7 +324,8 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
-  // ── Info item row ────────────────────────────────────────────────
+  // ── INFO ITEM ROW ─────────────────────────────────────────────────────────
+
   Widget _infoItem(
     String label,
     String value,
@@ -199,14 +343,13 @@ class _ProfilePageState extends State<ProfilePage> {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: AppColors.divider.withOpacity(0.6),
+              color: AppColors.divider.withValues(alpha: 0.6),
               width: 1,
             ),
           ),
         ),
         child: Row(
           children: [
-            // Icon badge
             Container(
               width: 40,
               height: 40,
@@ -257,11 +400,13 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // ── BUILD ─────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     final user = _currentUser;
 
-    // ── Guest / not logged in ──────────────────────────────────────
+    // ── Guest state
     if (user == null) {
       return Scaffold(
         backgroundColor: AppColors.background,
@@ -320,64 +465,70 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     }
 
-    // ── Main profile ───────────────────────────────────────────────
+    // ── Main profile
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
-            // ── HEADER
+            // ── HEADER — selaras dengan _FavoriteHeader di favorite_page.dart
+            // [CHANGED] Hapus back button, pakai icon + teks "Profil"
             Container(
+              width: double.infinity,
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
-                vertical: AppSpacing.sm + 4,
+                vertical: AppSpacing.md,
               ),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 border: Border(
                   bottom: BorderSide(
-                    color: AppColors.divider.withOpacity(0.6),
+                    color: AppColors.divider.withValues(alpha: 0.6),
                     width: 1,
                   ),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.shadowNeutral.withValues(alpha: 0.05),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: AppColors.primarySurface,
-                        borderRadius: BorderRadius.circular(
-                          AppSpacing.radiusSm,
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      gradient: AppColors.primaryGradient,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.25),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
                         ),
-                        border: Border.all(color: AppColors.divider, width: 1),
-                      ),
-                      child: const Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        size: 15,
-                        color: AppColors.textPrimary,
-                      ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.person_rounded,
+                      color: AppColors.textOnDark,
+                      size: 18,
                     ),
                   ),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        'Profile',
-                        style: AppTextStyles.headlineMedium.copyWith(
-                          fontSize: 18,
-                        ),
-                      ),
+                  const SizedBox(width: AppSpacing.sm + 2),
+                  Text(
+                    'Profil',
+                    style: AppTextStyles.headlineSmall.copyWith(
+                      color: AppColors.textPrimary,
                     ),
                   ),
-                  // Spacer agar judul tetap di tengah
-                  const SizedBox(width: 40),
                 ],
               ),
             ),
 
+            // ── BODY
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -393,7 +544,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       child: Column(
                         children: [
-                          // Avatar
+                          // Avatar dengan tombol edit
                           Stack(
                             children: [
                               Container(
@@ -408,31 +559,40 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.primary.withOpacity(
-                                        0.25,
+                                      color: AppColors.primary.withValues(
+                                        alpha: 0.25,
                                       ),
                                       blurRadius: 20,
                                       offset: const Offset(0, 6),
                                     ),
                                   ],
-                                  image: DecorationImage(
-                                    image:
-                                        imageFile != null
-                                            ? FileImage(imageFile!)
-                                                as ImageProvider
-                                            : const NetworkImage(
-                                              'https://i.pravatar.cc/150',
-                                            ),
-                                    fit: BoxFit.cover,
-                                  ),
+                                  // Image dari local preview atau network URL
+                                  image:
+                                      _isUploadingPhoto
+                                          ? null
+                                          : DecorationImage(
+                                            image: _avatarImage,
+                                            fit: BoxFit.cover,
+                                          ),
                                 ),
+                                child:
+                                    _isUploadingPhoto
+                                        ? const CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: AppColors.textOnDark,
+                                        )
+                                        : null,
                               ),
-                              // Edit badge
+
+                              // Edit badge — tap buka picker kamera/galeri
                               Positioned(
                                 bottom: 2,
                                 right: 2,
                                 child: GestureDetector(
-                                  onTap: pickImage,
+                                  onTap:
+                                      _isUploadingPhoto
+                                          ? null
+                                          : _showPhotoPicker,
                                   child: Container(
                                     width: 30,
                                     height: 30,
@@ -445,8 +605,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: AppColors.primary.withOpacity(
-                                            0.3,
+                                          color: AppColors.primary.withValues(
+                                            alpha: 0.3,
                                           ),
                                           blurRadius: 6,
                                           offset: const Offset(0, 2),
@@ -486,7 +646,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           const SizedBox(height: AppSpacing.md),
 
-                          // Member badge — earthy pill
+                          // Member badge
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: AppSpacing.md,
@@ -558,7 +718,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     const SizedBox(height: AppSpacing.sm),
 
-                    // ── LOGOUT BUTTON
+                    // ── LOGOUT
                     Container(
                       color: AppColors.surface,
                       padding: const EdgeInsets.all(AppSpacing.md),
@@ -569,9 +729,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           onPressed: logout,
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.error,
-                            backgroundColor: AppColors.error.withOpacity(0.05),
+                            backgroundColor: AppColors.error.withValues(
+                              alpha: 0.05,
+                            ),
                             side: BorderSide(
-                              color: AppColors.error.withOpacity(0.3),
+                              color: AppColors.error.withValues(alpha: 0.3),
                               width: 1.2,
                             ),
                             shape: RoundedRectangleBorder(

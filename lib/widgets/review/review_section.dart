@@ -152,7 +152,7 @@ class _ReviewHeader extends StatelessWidget {
                 color: AppColors.primarySurface,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -216,7 +216,7 @@ class _ReviewList extends StatelessWidget {
               color: AppColors.primarySurface,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               border: Border.all(
-                color: AppColors.divider.withOpacity(0.5),
+                color: AppColors.divider.withValues(alpha: 0.5),
                 width: 1,
               ),
             ),
@@ -240,7 +240,7 @@ class _ReviewList extends StatelessWidget {
               color: AppColors.primarySurface,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               border: Border.all(
-                color: AppColors.divider.withOpacity(0.5),
+                color: AppColors.divider.withValues(alpha: 0.5),
                 width: 1,
               ),
             ),

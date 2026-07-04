@@ -21,10 +21,13 @@ class ReviewItem extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        border: Border.all(color: AppColors.divider.withOpacity(0.7), width: 1),
+        border: Border.all(
+          color: AppColors.divider.withValues(alpha: 0.7),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowNeutral.withOpacity(0.05),
+            color: AppColors.shadowNeutral.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

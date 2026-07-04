@@ -8,7 +8,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../data/models/destination_model.dart';
 import '../../data/models/accommodation_model.dart';
-// tambah import di bagian atas
+import '../../data/models/place_model.dart';
 import '../../data/models/package_model.dart';
 // ── CATEGORY CHIP ─────────────────────────────────────────────────────────────
 
@@ -94,12 +94,12 @@ class ExploreDestinationCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           border: Border.all(
-            color: AppColors.divider.withOpacity(0.7),
+            color: AppColors.divider.withValues(alpha: 0.7),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadowNeutral.withOpacity(0.07),
+              color: AppColors.shadowNeutral.withValues(alpha: 0.07),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -280,12 +280,12 @@ class ExploreAccommodationCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           border: Border.all(
-            color: AppColors.divider.withOpacity(0.7),
+            color: AppColors.divider.withValues(alpha: 0.7),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadowNeutral.withOpacity(0.07),
+              color: AppColors.shadowNeutral.withValues(alpha: 0.07),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -468,12 +468,12 @@ class ExplorePackageCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           border: Border.all(
-            color: AppColors.divider.withOpacity(0.7),
+            color: AppColors.divider.withValues(alpha: 0.7),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadowNeutral.withOpacity(0.07),
+              color: AppColors.shadowNeutral.withValues(alpha: 0.07),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -625,6 +625,177 @@ class ExplorePackageCard extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// PLACE CARD — layout horizontal (Tempat Ibadah & Fasilitas Kesehatan)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class ExplorePlaceCard extends StatelessWidget {
+  final PlaceModel item;
+  final VoidCallback onTap;
+
+  const ExplorePlaceCard({super.key, required this.item, required this.onTap});
+
+  Color get _accent =>
+      item.isWorship
+          ? const Color(0xFF8B5CF6) // Ungu untuk ibadah
+          : const Color(0xFF10B981); // Hijau untuk kesehatan
+
+  String get _typeLabel =>
+      item.isWorship ? 'Tempat Ibadah' : 'Fasilitas Kesehatan';
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
+        padding: const EdgeInsets.all(AppSpacing.sm + 4),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          border: Border.all(
+            color: AppColors.divider.withValues(alpha: 0.7),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadowNeutral.withValues(alpha: 0.07),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // ── Thumbnail
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  child: Image.network(
+                    item.imageUrl,
+                    width: 90,
+                    height: 90,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        width: 90,
+                        height: 90,
+                        color: AppColors.primarySurface,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      );
+                    },
+                    errorBuilder:
+                        (_, __, ___) => Container(
+                          width: 90,
+                          height: 90,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [_accent.withValues(alpha: 0.7), _accent],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: Icon(
+                            item.isWorship
+                                ? Icons.place_rounded
+                                : Icons.local_hospital_rounded,
+                            color: AppColors.textOnDark,
+                            size: 28,
+                          ),
+                        ),
+                  ),
+                ),
+                // Type badge
+                Positioned(
+                  top: 5,
+                  left: 5,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _accent.withValues(alpha: 0.85),
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    ),
+                    child: Text(
+                      _typeLabel,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(width: AppSpacing.sm + 4),
+
+            // ── Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.headlineSmall.copyWith(
+                      fontSize: 14,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs + 2),
+                  Row(
+                    children: [
+                      Icon(Icons.location_on_rounded, size: 12, color: _accent),
+                      const SizedBox(width: 3),
+                      Expanded(
+                        child: Text(
+                          item.location,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Row(
+                    children: [
+                      if (item.hasVirtualTour) ...[
+                        const ExploreVirtualTourBadge(),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.textHint,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // SHARED WIDGETS
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -682,7 +853,7 @@ class ExploreRatingBadge extends StatelessWidget {
         color: AppColors.accentSurface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
         border: Border.all(
-          color: AppColors.accentLight.withOpacity(0.4),
+          color: AppColors.accentLight.withValues(alpha: 0.4),
           width: 1,
         ),
       ),

@@ -388,14 +388,14 @@ class _VtWebviewSectionState extends State<VtWebviewSection> {
     }
     function stopRotate() {
       if (rotInterval) { clearInterval(rotInterval); rotInterval = null; }
-    }
+    } 
     function setPov(h,p,z) {
       stopRotate();
       pano.setPov({heading:h, pitch:p||0});
       if (z !== undefined) pano.setZoom(z);
     }
     function disableNavigation() {
-      pano.setOptions({linksControl:false, clickToGo:false});
+      if (pano) pano.setOptions({linksControl:false, clickToGo:false}); // ✅ TAMBAH guard
     }
   </script>
   <script async defer

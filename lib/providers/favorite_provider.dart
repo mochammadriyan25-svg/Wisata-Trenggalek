@@ -18,7 +18,6 @@ class FavoriteProvider extends ChangeNotifier {
 
   List<FavoriteModel> _favorites = [];
 
-  // Data hasil resolve per tipe
   List<DestinationModel> _favoriteDestinations = [];
   List<AccommodationModel> _favoriteAccommodations = [];
   List<PackageModel> _favoritePackages = [];
@@ -27,7 +26,7 @@ class FavoriteProvider extends ChangeNotifier {
   String? _errorMessage;
   StreamSubscription<List<FavoriteModel>>? _favoriteSubscription;
 
-  // ── GETTERS
+  // ── GETTERS ───────────────────────────────────────────────────────────────
   List<FavoriteModel> get favorites => _favorites;
   List<DestinationModel> get favoriteDestinations => _favoriteDestinations;
   List<AccommodationModel> get favoriteAccommodations =>
@@ -36,7 +35,6 @@ class FavoriteProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  // Cek favorit berdasarkan itemId + tipe
   bool isFavorite(String itemId, FavoriteItemType itemType) {
     return _favorites.any((f) => f.itemId == itemId && f.itemType == itemType);
   }
@@ -73,20 +71,17 @@ class FavoriteProvider extends ChangeNotifier {
             .where((f) => f.itemType == FavoriteItemType.destination)
             .map((f) => f.itemId)
             .toList();
-
     final accommodationIds =
         favorites
             .where((f) => f.itemType == FavoriteItemType.accommodation)
             .map((f) => f.itemId)
             .toList();
-
     final packageIds =
         favorites
             .where((f) => f.itemType == FavoriteItemType.package)
             .map((f) => f.itemId)
             .toList();
 
-    // Load paralel supaya lebih cepat
     await Future.wait([
       _loadDestinations(destinationIds),
       _loadAccommodations(accommodationIds),
@@ -145,12 +140,52 @@ class FavoriteProvider extends ChangeNotifier {
     }
   }
 
+  // ── TOGGLE FAVORITE ───────────────────────────────────────────────────────
+
+  /// Toggle favorit dengan log otomatis saat menghapus.
+  ///
+  /// [userName] — nama user (dari AuthProvider.user?.name). Opsional,
+  /// tapi sebaiknya selalu diteruskan agar log admin terbaca jelas.
+  ///
+  /// Cara pakai di halaman detail:
+  /// ```dart
+  /// context.read<FavoriteProvider>().toggleFavorite(
+  ///   userId,
+  ///   destination.id,
+  ///   FavoriteItemType.destination,
+  ///   userName: context.read<AuthProvider>().user?.name ?? '',
+  /// );
+  /// ```
   Future<void> toggleFavorite(
     String userId,
     String itemId,
-    FavoriteItemType itemType,
-  ) async {
+    FavoriteItemType itemType, {
+    String userName = '',
+  }) async {
     final alreadyFavorite = isFavorite(itemId, itemType);
+
+    // Resolve nama item dari cache sebelum optimistic update menghapusnya
+    // — nama ini akan disertakan di log saat user menghapus favorit.
+    String resolvedItemName = '';
+    if (alreadyFavorite) {
+      resolvedItemName = switch (itemType) {
+        FavoriteItemType.destination =>
+          _favoriteDestinations
+                  .where((d) => d.id == itemId)
+                  .firstOrNull
+                  ?.name ??
+              '',
+        FavoriteItemType.accommodation =>
+          _favoriteAccommodations
+                  .where((a) => a.id == itemId)
+                  .firstOrNull
+                  ?.name ??
+              '',
+        FavoriteItemType.package =>
+          _favoritePackages.where((p) => p.id == itemId).firstOrNull?.name ??
+              '',
+      };
+    }
 
     // Optimistic update
     if (alreadyFavorite) {
@@ -172,7 +207,14 @@ class FavoriteProvider extends ChangeNotifier {
     _setLoading(true);
     try {
       if (alreadyFavorite) {
-        await _favoriteService.removeFavorite(userId, itemId, itemType);
+        // Teruskan userName + itemName agar log admin terbaca jelas
+        await _favoriteService.removeFavorite(
+          userId,
+          itemId,
+          itemType,
+          userName: userName,
+          itemName: resolvedItemName,
+        );
       } else {
         await _favoriteService.addFavorite(userId, itemId, itemType);
       }

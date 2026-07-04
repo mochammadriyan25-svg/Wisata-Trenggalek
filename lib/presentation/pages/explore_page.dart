@@ -8,15 +8,18 @@ import '../../core/theme/app_spacing.dart';
 import '../../providers/destination_provider.dart';
 import '../../providers/accommodation_provider.dart';
 import '../../providers/category_provider.dart';
+import '../../providers/place_provider.dart';
 import '../../widgets/explore/explore_widget.dart';
 import 'detail_page.dart';
 import 'package:aplikasi_wisata/presentation/pages/accommodation_detail_page.dart';
 import 'package:aplikasi_wisata/presentation/pages/package_detail_page.dart';
+import 'package:aplikasi_wisata/presentation/pages/place_detail_page.dart';
 import '../../providers/package_provider.dart';
 import '../../data/models/category_model.dart';
+import '../../data/models/place_model.dart';
 
-// ── ENUM tetap ada agar tidak merusak navigasi dari halaman lain
-enum ExploreMode { destination, accommodation, package }
+// ✅ FIX: Tambah ExploreMode.place
+enum ExploreMode { destination, accommodation, package, place }
 
 class ExplorePage extends StatefulWidget {
   final String initialCategoryId;
@@ -36,14 +39,14 @@ class ExplorePage extends StatefulWidget {
   State<ExplorePage> createState() => _ExplorePageState();
 }
 
-enum _ExploreTab { destination, accommodation, package }
+// ✅ FIX: Tambah _ExploreTab.place
+enum _ExploreTab { destination, accommodation, package, place }
 
 class _ExplorePageState extends State<ExplorePage>
     with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _chipScrollController = ScrollController();
 
-  // ✅ Key per chip: index 0 = "Semua", index 1..n = categories
   final Map<int, GlobalKey> _chipKeys = {};
 
   _ExploreTab _activeTab = _ExploreTab.destination;
@@ -56,6 +59,9 @@ class _ExplorePageState extends State<ExplorePage>
   late PackageProvider _packageProvider;
   bool _providersInitialized = false;
 
+  // ✅ NEW: Simpan categoryId untuk filter place
+  String _selectedPlaceCategoryId = '';
+
   @override
   void initState() {
     super.initState();
@@ -66,6 +72,10 @@ class _ExplorePageState extends State<ExplorePage>
         break;
       case ExploreMode.package:
         _activeTab = _ExploreTab.package;
+        break;
+      case ExploreMode.place:
+        _activeTab = _ExploreTab.place;
+        _selectedPlaceCategoryId = widget.initialCategoryId;
         break;
       default:
         _activeTab = _ExploreTab.destination;
@@ -91,14 +101,19 @@ class _ExplorePageState extends State<ExplorePage>
     if (!_providersInitialized) {
       _destProvider = context.read<DestinationProvider>();
       _accomProvider = context.read<AccommodationProvider>();
-      _packageProvider = context.read<PackageProvider>();
+      _packageProvider = context.read<PackageProvider>();// ✅ NEW
       _providersInitialized = true;
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
 
         if (widget.initialCategoryId.isNotEmpty) {
-          _destProvider.filterByCategory(widget.initialCategoryId);
+          if (widget.initialMode == ExploreMode.place) {
+            // ✅ NEW: Filter place by category
+            _selectedPlaceCategoryId = widget.initialCategoryId;
+          } else {
+            _destProvider.filterByCategory(widget.initialCategoryId);
+          }
         }
 
         if (widget.initialSearch.isNotEmpty) {
@@ -108,19 +123,24 @@ class _ExplorePageState extends State<ExplorePage>
           _packageProvider.search(widget.initialSearch);
         }
 
-        // ✅ Scroll ke chip aktif saat halaman pertama dibuka
-        // Delay sedikit agar CategoryProvider sudah populate _chipKeys
         Future.delayed(const Duration(milliseconds: 150), () {
           if (!mounted) return;
           final catProvider = context.read<CategoryProvider>();
           final categories = catProvider.categories;
 
-          // Cari index chip yang aktif
-          // index 0 = "Semua", index 1..n = categories
           int activeIndex = 0;
           for (int i = 0; i < categories.length; i++) {
             final cat = categories[i];
-            final chipIndex = i + 1; // +1 karena "Semua" di index 0
+            final chipIndex = i + 1;
+
+            // ✅ FIX: Handle place_worship & place_health
+            if ((cat.type == CategoryType.placeWorship ||
+                    cat.type == CategoryType.placeHealth) &&
+                _activeTab == _ExploreTab.place &&
+                cat.id == widget.initialCategoryId) {
+              activeIndex = chipIndex;
+              break;
+            }
             if (cat.type == CategoryType.accommodation &&
                 _activeTab == _ExploreTab.accommodation) {
               activeIndex = chipIndex;
@@ -145,21 +165,16 @@ class _ExplorePageState extends State<ExplorePage>
 
   @override
   void dispose() {
-    // ── FIX: simpan referensi lokal sebelum dispose ──────────────────────────
-    // clearFilter() memanggil notifyListeners() yang memicu markNeedsBuild().
-    // Memanggil ini langsung di dispose() menyebabkan exception karena
-    // widget tree sedang di-lock oleh Flutter saat phase unmounting.
-    // Solusi: tunda ke frame berikutnya via addPostFrameCallback.
     final dest = _destProvider;
     final accom = _accomProvider;
-    final pkg = _packageProvider;
+    final pkg = _packageProvider; // ✅ NEW
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       dest.clearFilter();
       accom.clearFilter();
       pkg.clearFilter();
+      // PlaceProvider tidak punya clearFilter, tidak perlu dipanggil
     });
-    // ─────────────────────────────────────────────────────────────────────────
 
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
@@ -173,9 +188,9 @@ class _ExplorePageState extends State<ExplorePage>
     _destProvider.search(keyword);
     _accomProvider.search(keyword);
     _packageProvider.search(keyword);
+    // ✅ NEW: Filter place by name (manual filtering di build)
   }
 
-  /// ✅ Scroll chips agar chip aktif terlihat di layar
   void _scrollToActiveChip(int chipIndex) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final key = _chipKeys[chipIndex];
@@ -183,13 +198,11 @@ class _ExplorePageState extends State<ExplorePage>
       final context = key.currentContext;
       if (context == null) return;
 
-      // Render box chip relatif terhadap ListView
       final box = context.findRenderObject() as RenderBox?;
       if (box == null) return;
       final chipOffset = box.localToGlobal(Offset.zero, ancestor: null).dx;
       final chipWidth = box.size.width;
 
-      // Hitung scroll offset agar chip berada di tengah layar
       final screenWidth = MediaQuery.of(this.context).size.width;
       final targetScroll =
           _chipScrollController.offset +
@@ -212,13 +225,22 @@ class _ExplorePageState extends State<ExplorePage>
   }) {
     final isSameTab = _activeTab == tab;
     final isSameCategory =
-        tab == _ExploreTab.destination &&
-        _destProvider.selectedCategoryId == categoryId;
+        tab == _ExploreTab.place
+            ? _selectedPlaceCategoryId == categoryId
+            : tab == _ExploreTab.destination &&
+                _destProvider.selectedCategoryId == categoryId;
 
     if (isSameTab && isSameCategory) return;
 
     _fadeController.reset();
-    setState(() => _activeTab = tab);
+    setState(() {
+      _activeTab = tab;
+      if (tab == _ExploreTab.place) {
+        _selectedPlaceCategoryId = categoryId;
+      } else {
+        _selectedPlaceCategoryId = '';
+      }
+    });
     _fadeController.forward();
     _searchController.clear();
 
@@ -230,7 +252,6 @@ class _ExplorePageState extends State<ExplorePage>
       _destProvider.filterByCategory(categoryId);
     }
 
-    // ✅ Scroll ke chip yang dipilih
     _scrollToActiveChip(chipIndex);
   }
 
@@ -239,6 +260,7 @@ class _ExplorePageState extends State<ExplorePage>
     final destProvider = context.watch<DestinationProvider>();
     final accomProvider = context.watch<AccommodationProvider>();
     final packageProvider = context.watch<PackageProvider>();
+    final placeProvider = context.watch<PlaceProvider>(); // ✅ NEW
     final catProvider = context.watch<CategoryProvider>();
 
     return Scaffold(
@@ -251,6 +273,7 @@ class _ExplorePageState extends State<ExplorePage>
               destProvider,
               accomProvider,
               packageProvider,
+              placeProvider, // ✅ NEW
               catProvider,
             ),
             const SizedBox(height: 8),
@@ -270,6 +293,10 @@ class _ExplorePageState extends State<ExplorePage>
                     context,
                     packageProvider,
                   ),
+                  _ExploreTab.place => _buildPlaceList(
+                    context,
+                    placeProvider,
+                  ), // ✅ NEW
                 },
               ),
             ),
@@ -279,30 +306,34 @@ class _ExplorePageState extends State<ExplorePage>
     );
   }
 
-  // ── HEADER ──────────────────────────────────────────────────────────────────
+  // ── HEADER ──
   Widget _buildHeader(
     BuildContext context,
     DestinationProvider destProvider,
     AccommodationProvider accomProvider,
     PackageProvider packageProvider,
+    PlaceProvider placeProvider, // ✅ NEW
     CategoryProvider catProvider,
   ) {
     final totalCount = switch (_activeTab) {
       _ExploreTab.destination => destProvider.filteredDestinations.length,
       _ExploreTab.accommodation => accomProvider.filteredAccommodations.length,
       _ExploreTab.package => packageProvider.filteredPackages.length,
+      _ExploreTab.place => _getFilteredPlaces(placeProvider).length, // ✅ NEW
     };
 
     final isLoading = switch (_activeTab) {
       _ExploreTab.destination => destProvider.isLoading,
       _ExploreTab.accommodation => accomProvider.isLoading,
       _ExploreTab.package => packageProvider.isLoading,
+      _ExploreTab.place => placeProvider.isLoading, // ✅ NEW
     };
 
     final searchHint = switch (_activeTab) {
       _ExploreTab.destination => "Cari destinasi...",
       _ExploreTab.accommodation => "Cari akomodasi...",
       _ExploreTab.package => "Cari paket wisata...",
+      _ExploreTab.place => "Cari tempat...", // ✅ NEW
     };
 
     final selectedCategoryId = destProvider.selectedCategoryId;
@@ -317,13 +348,13 @@ class _ExplorePageState extends State<ExplorePage>
         color: AppColors.surface,
         border: Border(
           bottom: BorderSide(
-            color: AppColors.divider.withOpacity(0.6),
+            color: AppColors.divider.withValues(alpha: 0.6),
             width: 1,
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowNeutral.withOpacity(0.05),
+            color: AppColors.shadowNeutral.withValues(alpha: 0.05),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -332,7 +363,6 @@ class _ExplorePageState extends State<ExplorePage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Title row
           Row(
             children: [
               if (widget.showBackButton)
@@ -366,7 +396,7 @@ class _ExplorePageState extends State<ExplorePage>
                   borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.25),
+                      color: AppColors.primary.withValues(alpha: 0.25),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -399,7 +429,6 @@ class _ExplorePageState extends State<ExplorePage>
 
           const SizedBox(height: AppSpacing.md),
 
-          // ── Search
           TextField(
             controller: _searchController,
             textInputAction: TextInputAction.search,
@@ -451,7 +480,7 @@ class _ExplorePageState extends State<ExplorePage>
 
           const SizedBox(height: AppSpacing.md),
 
-          // ── Chips: urutan mengikuti CategoryProvider (dari Firestore)
+          // ✅ FIX: Chip logic handle semua tipe kategori
           SizedBox(
             height: 36,
             child:
@@ -475,17 +504,22 @@ class _ExplorePageState extends State<ExplorePage>
                               ),
                         ),
 
-                        // Loop semua kategori, index mulai dari 1
+                        // Loop semua kategori
                         ...catProvider.categories.asMap().entries.map((entry) {
                           final i = entry.key;
                           final cat = entry.value;
                           final chipIndex = i + 1;
 
+                          // ✅ FIX: Handle place_worship & place_health
                           final bool isSelected = switch (cat.type) {
                             CategoryType.accommodation =>
                               _activeTab == _ExploreTab.accommodation,
                             CategoryType.package =>
                               _activeTab == _ExploreTab.package,
+                            CategoryType.placeWorship ||
+                            CategoryType.placeHealth =>
+                              _activeTab == _ExploreTab.place &&
+                                  _selectedPlaceCategoryId == cat.id,
                             _ =>
                               _activeTab == _ExploreTab.destination &&
                                   selectedCategoryId == cat.id,
@@ -512,6 +546,14 @@ class _ExplorePageState extends State<ExplorePage>
                                     chipIndex: chipIndex,
                                   );
                                   break;
+                                case CategoryType.placeWorship:
+                                case CategoryType.placeHealth:
+                                  _switchTab(
+                                    _ExploreTab.place,
+                                    categoryId: cat.id,
+                                    chipIndex: chipIndex,
+                                  );
+                                  break;
                                 default:
                                   _switchTab(
                                     _ExploreTab.destination,
@@ -530,7 +572,29 @@ class _ExplorePageState extends State<ExplorePage>
     );
   }
 
-  // ── DESTINATION LIST ─────────────────────────────────────────────────────────
+  // ✅ NEW: Helper filter place by category + search
+  List<PlaceModel> _getFilteredPlaces(PlaceProvider provider) {
+    final keyword = _searchController.text.toLowerCase().trim();
+    var places = provider.allPlaces;
+
+    // Filter by categoryId
+    if (_selectedPlaceCategoryId.isNotEmpty) {
+      places =
+          places
+              .where((p) => p.categoryId == _selectedPlaceCategoryId)
+              .toList();
+    }
+
+    // Filter by search keyword
+    if (keyword.isNotEmpty) {
+      places =
+          places.where((p) => p.name.toLowerCase().contains(keyword)).toList();
+    }
+
+    return places;
+  }
+
+  // ── DESTINATION LIST ──
   Widget _buildDestinationList(
     BuildContext context,
     DestinationProvider destProvider,
@@ -577,7 +641,7 @@ class _ExplorePageState extends State<ExplorePage>
     );
   }
 
-  // ── ACCOMMODATION LIST ───────────────────────────────────────────────────────
+  // ── ACCOMMODATION LIST ──
   Widget _buildAccommodationList(
     BuildContext context,
     AccommodationProvider accomProvider,
@@ -626,7 +690,7 @@ class _ExplorePageState extends State<ExplorePage>
     );
   }
 
-  // ── PACKAGE LIST ─────────────────────────────────────────────────────────────
+  // ── PACKAGE LIST ──
   Widget _buildPackageList(
     BuildContext context,
     PackageProvider packageProvider,
@@ -675,7 +739,53 @@ class _ExplorePageState extends State<ExplorePage>
     );
   }
 
-  // ── ERROR STATE ──────────────────────────────────────────────────────────────
+  // ✅ FIX: PLACE LIST — hapus cek errorMessage karena tidak ada di PlaceProvider
+  Widget _buildPlaceList(BuildContext context, PlaceProvider placeProvider) {
+    if (placeProvider.isLoading) return const ExploreLoadingState();
+
+    // ❌ HAPUS: if (placeProvider.errorMessage != null) { ... }
+
+    final places = _getFilteredPlaces(placeProvider);
+    if (places.isEmpty) {
+      return ExploreEmptyState(
+        message: "Tidak ada tempat ditemukan",
+        icon: Icons.place_rounded,
+        onReset:
+            _selectedPlaceCategoryId.isNotEmpty ||
+                    _searchController.text.isNotEmpty
+                ? () {
+                  setState(() {
+                    _selectedPlaceCategoryId = '';
+                  });
+                  _searchController.clear();
+                }
+                : null,
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      physics: const BouncingScrollPhysics(),
+      itemCount: places.length,
+      itemBuilder: (context, index) {
+        final item = places[index];
+        return ExplorePlaceCard(
+          item: item,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => PlaceDetailPage(place: item)),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ── ERROR STATE ──
   Widget _buildError({required VoidCallback onRetry}) => Center(
     child: Column(
       mainAxisSize: MainAxisSize.min,
